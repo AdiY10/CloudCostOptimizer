@@ -1,0 +1,10 @@
+include *
+recursive-include CORScanner *
+
+exclude .gitignore
+global-exclude .DS_Store
+recursive-exclude CORScanner/.git/ *
+recursive-exclude * __pycache__
+recursive-exclude * *.pyc
+recursive-exclude * *.pyo
+recursive-exclude * *.orig
