@@ -31,6 +31,7 @@ class SpotCalculator:
             price['storage_size'] = storage_size
             lst.append(price)
         lst = sorted(lst, key=lambda p: p['total_price'])
+        print("fine")
         return lst[0:30]
 
     def get_fleet_offers(self, os, region, app_size, params: [[Component]]):
