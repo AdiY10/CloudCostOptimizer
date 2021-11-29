@@ -1,4 +1,5 @@
 import re
+import pandasql as ps
 '''
 this file has the SingleInstanceCalculator that matches instances to a single component 
 and the EbsCalculator which matchs an ebs volume to the instance
@@ -15,11 +16,19 @@ class SingleInstanceCalculator:
     def __init__(self,ec2):
         self.ec2 = ec2
 
-    def get_spot_estimations(self, vCPUs, memory, region='all', type='all', behavior='terminate', frequency=4, network=0,burstable = True):
+    def get_spot_estimations(self, vCPUs, memory, AWSPrices, region='all', type='all', behavior='terminate', frequency=4, network=0,burstable = True):
         ec2 = self.get_spot_filter( vCPUs, memory, region, type, behavior, frequency, network, burstable)
         lst = []
         for price in ec2:
-            price['spot_price'] = float(price['onDemandPrice']) * (100 - float(price['discount'])) / 100
+            ## price attributes- onDemandPrice, region, cpu, ebsOnly, family, memory, network, os, typeMajor, typeMinor,
+            ## storage, typeName, discount, interruption_frequency, interruption_frequency_filter
+            pTest = AWSPrices[(AWSPrices['Region'] == price['region']) & (AWSPrices['TypeName'] == price['typeName'])&(AWSPrices['OS'] == price['os'])]
+            if not pTest.empty:
+                pTestPrice = float(pTest.iloc[0][1])
+            else:
+                pTestPrice = 100000
+            price['spot_price'] = pTestPrice
+            #price['spot_price'] = float(price['onDemandPrice']) * (100 - float(price['discount'])) / 100 ##previous calculation
             lst.append(price)
         return sorted(lst, key= lambda p:p['spot_price'])
 
