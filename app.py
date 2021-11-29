@@ -9,6 +9,7 @@ from FindPrice import GetPriceFromAWS
 
 
 calc = SpotCalculator()
+AWSPrice = GetPriceFromAWS()
 app = Flask(__name__)
 CORS(app)
 
@@ -37,7 +38,7 @@ def get_spot_prices():
         burstable  = True
         if network > 0:
             burstable = filter['burstable'] == True if 'burstable' in filter else False
-        AWSPrices = GetPriceFromAWS().calculatePrice()
+        AWSPrices = AWSPrice.calculatePrice()
         res = calc.get_spot_estimations(os, vCPUs, memory,storage_size,AWSPrices , region, type, behavior, storage_type, iops, throughput, frequency, network,burstable)
         return jsonify(res)
     else:

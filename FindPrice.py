@@ -6,8 +6,11 @@ import datetime
 class GetPriceFromAWS:
     def __init__(self):
         self.url = 'http://spot-price.s3.amazonaws.com/spot.js'
+        self.df = pd.DataFrame()
 
     def calculatePrice(self):
+        if not self.df.empty:
+            return self.df
         ## extract callback file, and clean it
         fileToRead = urlopen(self.url)
         raw_data = fileToRead.read()
@@ -15,15 +18,16 @@ class GetPriceFromAWS:
         ## create json file
         data = json.loads(raw_data)
         ##normalize json into dataframe
-        df = pd.json_normalize(data['config']['regions'], record_path=['instanceTypes', 'sizes', 'valueColumns'],
+        self.df = pd.json_normalize(data['config']['regions'], record_path=['instanceTypes', 'sizes', 'valueColumns'],
                                meta=['region', ['instanceTypes', 'type'], ['instanceTypes', 'sizes', 'size']])
 
-        df.rename(columns={'name': 'OS',
+        self.df.rename(columns={'name': 'OS',
                            'prices.USD': 'Price',
                            'region': 'Region',
                            'instanceTypes.type': 'Family',
                            'instanceTypes.sizes.size': 'TypeName'
                            }, inplace=True)
-        df.loc[(df['OS'] == 'linux'), 'OS'] = 'Linux'
-        df.loc[(df['OS'] == 'mswin'), 'OS'] = 'Windows'
-        return (df)
+        self.df.loc[(self.df['OS'] == 'linux'), 'OS'] = 'Linux'
+        self.df.loc[(self.df['OS'] == 'mswin'), 'OS'] = 'Windows'
+        self.PricesExtracted = True
+        return (self.df)

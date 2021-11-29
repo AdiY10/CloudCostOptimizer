@@ -17,7 +17,6 @@ class SpotCalculator:
 
     def get_spot_estimations(self, os, vCPUs, memory, storage_size, AWSPrices , region='all', type='all', behavior='terminate',
                              storage_type='all', iops=250, throughput=250, frequency=4, network=0, burstable = True):
-        print("AWSPrices-done")
         ec2_data = self.get_ec2_from_cache(region, os)
         ## ec2_data attributes- onDemandPrice, region, cpu, ebsOnly, family, memory, network, os, typeMajor, typeMinor,
         ## storage, typeName, discount, interruption_frequency, interruption_frequency_filter
