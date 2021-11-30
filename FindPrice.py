@@ -31,3 +31,17 @@ class GetPriceFromAWS:
         self.df.loc[(self.df['OS'] == 'mswin'), 'OS'] = 'Windows'
         self.PricesExtracted = True
         return (self.df)
+
+    def calculateSpotPrice(self,ec2):
+        AWSData = self.calculatePrice()
+        for k, v in ec2.items():
+            for price in v:
+                spotPrice = AWSData[(AWSData['Region'] == price['region']) & (AWSData['TypeName'] == price['typeName']) & (AWSData['OS'] == price['os'])]
+                if not spotPrice.empty:
+                    SpotPriceValue = float(spotPrice.iloc[0][1])
+                else:
+                    SpotPriceValue = 100000  # the instance is not available, therefore- high price
+                price['spot_price'] = SpotPriceValue
+        print(ec2)
+        return ec2
+

@@ -2,6 +2,8 @@ from ebs_prices import get_ebs_for_region, get_ebs
 from ec2_prices import Ec2Parser
 from fleet_offers import Component, get_fleet_offers
 from single_instance_calculator import SingleInstanceCalculator, EbsCalculator
+from FindPrice import GetPriceFromAWS
+
 
 '''
 main calculator class, handles caching and calls to the singleInstanceCalculator and fleetOffers 
@@ -10,22 +12,22 @@ main calculator class, handles caching and calls to the singleInstanceCalculator
 class SpotCalculator:
 
     def __init__(self):
+        self.AWSPrice = GetPriceFromAWS()
         self.ec2_cache = {}
         self.ebs_cache = {}
         self.cached_os = {'linux': False, 'windows': False}
         self.all_ebs = False
 
-    def get_spot_estimations(self, os, vCPUs, memory, storage_size, AWSPrices , region='all', type='all', behavior='terminate',
+    def get_spot_estimations(self, os, vCPUs, memory, storage_size , region='all', type='all', behavior='terminate',
                              storage_type='all', iops=250, throughput=250, frequency=4, network=0, burstable = True):
         ec2_data = self.get_ec2_from_cache(region, os)
         ## ec2_data attributes- onDemandPrice, region, cpu, ebsOnly, family, memory, network, os, typeMajor, typeMinor,
         ## storage, typeName, discount, interruption_frequency, interruption_frequency_filter
         ebs_data = self.get_ebs_from_cache(region)
-        ec2 = SingleInstanceCalculator(ec2_data).get_spot_estimations(vCPUs, memory,AWSPrices, region, type, behavior,
+        ec2 = SingleInstanceCalculator(ec2_data).get_spot_estimations(vCPUs, memory, region, type, behavior,
                                                                       frequency, network,burstable)
         ebs = EbsCalculator(ebs_data).get_ebs_lowest_price(region, storage_type, iops, throughput)
         lst = []
-
         for price in ec2:
             ## price attributes- onDemandPrice, region, cpu, ebsOnly, family, memory, network, os, typeMajor, typeMinor,
             ## storage, typeName, discount, interruption_frequency, interruption_frequency_filter
@@ -33,7 +35,6 @@ class SpotCalculator:
                 continue
             price['volumeType'] = ebs[price['region']]['volumeType']
             price['storagePrice'] = ebs[price['region']]['price']
-            ##price['total_price'] = round(price['spot_price'] + float(price['storagePrice']) * storage_size, 4)
             price['total_price'] = price['spot_price']
             price['storage_size'] = storage_size
             lst.append(price)
@@ -73,12 +74,14 @@ class SpotCalculator:
             ec2 = Ec2Parser()
             if region != 'all':
                 ec2_data = ec2.get_ec2_for_region(os, region)
+                ec2_data = self.AWSPrice.calculateSpotPrice(ec2_data)
                 if os not in self.ec2_cache:
                     self.ec2_cache[os] = {}
                 self.ec2_cache[os][region] = ec2_data[region]
                 return ec2_data
             else:
                 ec2_data = ec2.get_ec2(os)
+                ec2_data = self.AWSPrice.calculateSpotPrice(ec2_data)
                 self.ec2_cache[os] = ec2_data
                 self.cached_os[os] = True
                 return ec2_data
