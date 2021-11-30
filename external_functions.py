@@ -1,4 +1,4 @@
-"""this files have functions that modifing them will give the user an easy way to change the behvior of the calculations and sorting"""
+"""this file has functions that modifying them will give the user an easy way to change the behaviour of the calculations and sorting"""
 
 from itertools import groupby
 

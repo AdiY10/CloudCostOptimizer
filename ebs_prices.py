@@ -1,8 +1,8 @@
 import grequests
 import itertools
 import requests
-
 import constants
+
 '''
 this file handles and parses data from EBS
 '''

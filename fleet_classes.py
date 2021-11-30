@@ -1,5 +1,4 @@
 import copy
-
 from external_functions import calculate_group_score, calculate_offer_score
 
 '''

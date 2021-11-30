@@ -2,7 +2,6 @@ import constants
 from external_functions import sort_fleet_offers
 from fleet_classes import Component, GroupedInstance, GroupedParam, Offer, ComponentOffer
 from group_generator import create_groups, partition2
-
 from single_instance_calculator import SingleInstanceCalculator, EbsCalculator
 
 '''

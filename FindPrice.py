@@ -20,7 +20,7 @@ class GetPriceFromAWS:
         ##normalize json into dataframe
         self.df = pd.json_normalize(data['config']['regions'], record_path=['instanceTypes', 'sizes', 'valueColumns'],
                                meta=['region', ['instanceTypes', 'type'], ['instanceTypes', 'sizes', 'size']])
-
+        ## rename df columns
         self.df.rename(columns={'name': 'OS',
                            'prices.USD': 'Price',
                            'region': 'Region',
@@ -42,6 +42,5 @@ class GetPriceFromAWS:
                 else:
                     SpotPriceValue = 100000  # the instance is not available, therefore- high price
                 price['spot_price'] = SpotPriceValue
-        print(ec2)
         return ec2
 

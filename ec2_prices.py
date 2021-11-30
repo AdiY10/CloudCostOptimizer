@@ -1,7 +1,7 @@
 import grequests
 import requests
-
 import constants
+
 '''
 this class handles calls and parses data from EC2 and the SpotAdvisor
 '''

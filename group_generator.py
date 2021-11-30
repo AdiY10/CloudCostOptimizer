@@ -6,7 +6,6 @@ def partition(collection):
     if len(collection) == 1:
         yield [ collection ]
         return
-
     first = collection[0]
     for smaller in partition(collection[1:]):
         # insert `first` in each of the subpartition's subsets

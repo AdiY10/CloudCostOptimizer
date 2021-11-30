@@ -1,1 +1,1 @@
-"# spot_calc_flask" 
+spotCalculator Repository

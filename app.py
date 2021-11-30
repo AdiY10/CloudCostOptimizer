@@ -15,6 +15,7 @@ CORS(app)
 def hello_world():
     return 'Hello World!'
 
+## single instance
 @app.route('/getPrices', methods=['POST'])
 @cross_origin()
 def get_spot_prices():
@@ -41,36 +42,7 @@ def get_spot_prices():
         return jsonify()
 
 
-
-"""
-POST endpoint to get spot fleet hourly price estimations
-body: configuration for fleet, i.e apps,components and other optional configurations
-    dto = {
-        selectedOs: <str>               REQUIRED, requested instances os. options: linux,windows
-        region: <str>                   OPTIONAL, region for instances. options: us-east-2 etc. (see readme for full options)
-        apps: [                         REQUIRED, list of app specifications
-            {
-            name: <str>                 REQUIRED, name of app
-            share: <str>                REQUIRED, set to true if app can share instances with other apps
-            components:[                REQUIRED, list of component specifications
-                {
-                    name: <str>         REQUIRED, name of component
-                    cpu: <int>          REQUIRED, required cpu for component
-                    memory: <int>       REQUIRED, required memory for component (GB)
-                    network: <int>      OPTIONAL, component network consumption (GBs)
-                    behavior: <str>     OPTIONAL, component required interruption behavior: options: terminate,stop,hibernation
-                    interruptionFrequency: <int>    OPTIONAL, limit interruption frequency of the instances. options: 0-4 (see readme)
-                    storageSize: <int>  REQUIRED, component storage size (GB)
-                    IOPS: <int>         OPTIONAL, component required IOPS (MiB I/O)
-                    throughput: <int>   OPTIONAL, component required throughput (MB/s)
-                     
-                }
-                ]
-            }
-        ]
-               
-                                                                                                                                                                                                         
-"""
+## fleet search
 @app.route('/getFleet', methods=['POST'])
 @cross_origin()
 def get_fleet_prices():
@@ -100,14 +72,14 @@ def get_fleet_prices():
 
 def serialize_group(group:Offer):
     res = dict()
-    res['price'] = round(group.total_price,4)
+    res['price'] = round(group.total_price,5)
     res['instances'] = list(map(lambda i:serializeInstance(i),group.instance_groups))
     res['region'] = group.region
     return res
 
 def serializeInstance(instance):
     result = instance.instance.copy()
-    result['total_price'] = round(instance.total_price,4)
+    result['total_price'] = round(instance.total_price,5)
     result['components'] = list(map(lambda param: serializeComponent(param),instance.components))
     return  result
 
@@ -118,5 +90,39 @@ def serializeComponent(component: ComponentOffer):
     result['storagePrice'] = component.storage_price
     return result
 
+
+
 if __name__ == '__main__':
     app.run()
+
+
+
+"""
+POST endpoint to get spot fleet hourly price estimations
+body: configuration for fleet, i.e apps,components and other optional configurations
+    dto = {
+        selectedOs: <str>               REQUIRED, requested instances os. options: linux,windows
+        region: <str>                   OPTIONAL, region for instances. options: us-east-2 etc. (see readme for full options)
+        apps: [                         REQUIRED, list of app specifications
+            {
+            name: <str>                 REQUIRED, name of app
+            share: <str>                REQUIRED, set to true if app can share instances with other apps
+            components:[                REQUIRED, list of component specifications
+                {
+                    name: <str>         REQUIRED, name of component
+                    cpu: <int>          REQUIRED, required cpu for component
+                    memory: <int>       REQUIRED, required memory for component (GB)
+                    network: <int>      OPTIONAL, component network consumption (GBs)
+                    behavior: <str>     OPTIONAL, component required interruption behavior: options: terminate,stop,hibernation
+                    interruptionFrequency: <int>    OPTIONAL, limit interruption frequency of the instances. options: 0-4 (see readme)
+                    storageSize: <int>  REQUIRED, component storage size (GB)
+                    IOPS: <int>         OPTIONAL, component required IOPS (MiB I/O)
+                    throughput: <int>   OPTIONAL, component required throughput (MB/s)
+
+                }
+                ]
+            }
+        ]
+
+
+"""
