@@ -18,6 +18,7 @@ class SpotCalculator:
         self.cached_os = {'linux': False, 'windows': False}
         self.all_ebs = False
 
+    ##single instance
     def get_spot_estimations(self, os, vCPUs, memory, storage_size , region='all', type='all', behavior='terminate',
                              storage_type='all', iops=250, throughput=250, frequency=4, network=0, burstable = True):
         ec2_data = self.get_ec2_from_cache(region, os)
@@ -41,6 +42,7 @@ class SpotCalculator:
         lst = sorted(lst, key=lambda p: p['total_price'])
         return lst[0:30]
 
+    ##fleet offers
     def get_fleet_offers(self, os, region, app_size, params: [[Component]]):
         ec2_data = self.get_ec2_from_cache(region, os)
         ebs_data = self.get_ebs_from_cache(region)

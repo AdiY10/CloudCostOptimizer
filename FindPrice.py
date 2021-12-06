@@ -29,6 +29,12 @@ class GetPriceFromAWS:
                            }, inplace=True)
         self.df.loc[(self.df['OS'] == 'linux'), 'OS'] = 'Linux'
         self.df.loc[(self.df['OS'] == 'mswin'), 'OS'] = 'Windows'
+        self.df.loc[(self.df['Region'] == 'us-east'), 'Region'] = 'us-east-1'
+        self.df.loc[(self.df['Region'] == 'us-west'), 'Region'] = 'us-west-1'
+        self.df.loc[(self.df['Region'] == 'apac-sin'), 'Region'] = 'ap-southeast-1'
+        self.df.loc[(self.df['Region'] == 'apac-syd'), 'Region'] = 'ap-southeast-2'
+        self.df.loc[(self.df['Region'] == 'apac-tokyo'), 'Region'] = 'ap-northeast-1'
+        self.df.loc[(self.df['Region'] == 'eu-ireland'), 'Region'] = 'eu-west-1'
         self.PricesExtracted = True
         return (self.df)
 
@@ -38,7 +44,10 @@ class GetPriceFromAWS:
             for price in v:
                 spotPrice = AWSData[(AWSData['Region'] == price['region']) & (AWSData['TypeName'] == price['typeName']) & (AWSData['OS'] == price['os'])]
                 if not spotPrice.empty:
-                    SpotPriceValue = float(spotPrice.iloc[0][1])
+                    if (spotPrice.iloc[0][1] == 'N/A*'):
+                        SpotPriceValue = 100000
+                    else:
+                        SpotPriceValue = float(spotPrice.iloc[0][1])
                 else:
                     SpotPriceValue = 100000  # the instance is not available, therefore- high price
                 price['spot_price'] = SpotPriceValue
