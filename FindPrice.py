@@ -9,6 +9,7 @@ class GetPriceFromAWS:
         self.df = pd.DataFrame()
 
     def calculatePrice(self):
+        print("Calculates spot prices")
         if not self.df.empty:
             return self.df
         ## extract callback file, and clean it
@@ -38,18 +39,36 @@ class GetPriceFromAWS:
         self.PricesExtracted = True
         return (self.df)
 
+    def addScores(self,ec2):
+        for k, v in ec2.items():
+            values_cpu = [i['score_cpu_price'] for i in v]
+            values_memory = [i['score_memory_price'] for i in v]
+            minimum_cpu_score = min(values_cpu)
+            maximum_cpu_score= max(values_cpu)
+            minimum_memory_score = min(values_memory)
+            maximum_memory_score = max(values_memory)
+            for i in v:
+                i['score_cpu_price'] = (i['score_cpu_price']-minimum_cpu_score)/float(maximum_cpu_score-minimum_cpu_score)
+                i['score_memory_price'] = (i['score_memory_price'] - minimum_memory_score) / float(maximum_memory_score - minimum_memory_score)
+        return ec2
+
+
     def calculateSpotPrice(self,ec2):
         AWSData = self.calculatePrice()
+        print('Join spot prices')
         for k, v in ec2.items():
             for price in v:
                 spotPrice = AWSData[(AWSData['Region'] == price['region']) & (AWSData['TypeName'] == price['typeName']) & (AWSData['OS'] == price['os'])]
                 if not spotPrice.empty:
                     if (spotPrice.iloc[0][1] == 'N/A*'):
-                        SpotPriceValue = 100000
+                        SpotPriceValue = 100000 ## the instance is not available, therefore- high price
                     else:
                         SpotPriceValue = float(spotPrice.iloc[0][1])
                 else:
-                    SpotPriceValue = 100000  # the instance is not available, therefore- high price
+                    SpotPriceValue = 100000  ## the instance is not available, therefore- high price
                 price['spot_price'] = SpotPriceValue
+                price['score_cpu_price'] = float(float(price['cpu']) / SpotPriceValue)
+                price['score_memory_price'] = float(float(price['memory']) / SpotPriceValue)
+        print('Calculates CPU and Memory normalized Scores')
+        ec2 = self.addScores(ec2)
         return ec2
-

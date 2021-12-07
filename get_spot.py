@@ -37,7 +37,8 @@ class SpotCalculator:
             price['volumeType'] = ebs[price['region']]['volumeType']
             price['storagePrice'] = ebs[price['region']]['price']
             price['total_price'] = price['spot_price']
-            price['storage_size'] = storage_size
+            price['CPU_Score'] = price['score_cpu_price']
+            price['Memory_Score'] = price['score_memory_price']
             lst.append(price)
         lst = sorted(lst, key=lambda p: p['total_price'])
         return lst[0:30]
