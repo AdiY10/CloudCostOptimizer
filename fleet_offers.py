@@ -54,6 +54,7 @@ def get_fleet_offers(params:[[Component]],region,os,app_size,ec2 ):
         for pl in updated_params:
             for p in pl:
                 storage_offer = calculator.createComponentOffer(p,region)
+                print(storage_offer)
                 if storage_offer is None:
                     p.iops = 0
                     p.throughput = 0

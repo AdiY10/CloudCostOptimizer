@@ -24,21 +24,21 @@ class SpotCalculator:
         ec2_data = self.get_ec2_from_cache(region, os)
         ## ec2_data attributes- onDemandPrice, region, cpu, ebsOnly, family, memory, network, os, typeMajor, typeMinor,
         ## storage, typeName, discount, interruption_frequency, interruption_frequency_filter
-        ebs_data = self.get_ebs_from_cache(region)
+        # ebs_data = self.get_ebs_from_cache(region)
         ec2 = SingleInstanceCalculator(ec2_data).get_spot_estimations(vCPUs, memory, region, type, behavior,
                                                                       frequency, network,burstable)
-        ebs = EbsCalculator(ebs_data).get_ebs_lowest_price(region, storage_type, iops, throughput)
+        #ebs = EbsCalculator(ebs_data).get_ebs_lowest_price(region, storage_type, iops, throughput)
         lst = []
         for price in ec2:
             ## price attributes- onDemandPrice, region, cpu, ebsOnly, family, memory, network, os, typeMajor, typeMinor,
             ## storage, typeName, discount, interruption_frequency, interruption_frequency_filter
-            if ebs[price['region']] is None:
-                continue
-            price['volumeType'] = ebs[price['region']]['volumeType']
-            price['storagePrice'] = ebs[price['region']]['price']
+            # if ebs[price['region']] is None:
+            #     continue
+            # price['volumeType'] = ebs[price['region']]['volumeType']
+            # price['storagePrice'] = ebs[price['region']]['price']
             price['total_price'] = price['spot_price']
-            price['CPU_Score'] = price['score_cpu_price']
-            price['Memory_Score'] = price['score_memory_price']
+            price['CPU_Score'] = round(price['score_cpu_price'],5)
+            price['Memory_Score'] = round(price['score_memory_price'],5)
             lst.append(price)
         lst = sorted(lst, key=lambda p: p['total_price'])
         return lst[0:30]
