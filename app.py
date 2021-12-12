@@ -48,9 +48,9 @@ def get_spot_prices():
 def get_fleet_prices():
     if(request.method == 'POST'):
         filter = request.get_json()
-        shared_apps = []
-        partitions = []
-        app_size = dict()
+        shared_apps = [] # list of components of shared apps
+        partitions = [] ## list of ALL components
+        app_size = dict() ##size of each app
         for i,a in enumerate(filter['apps']):
             app_size[i]=len(a['components'])
             if 'share' in a and a['share'] == True:
@@ -60,13 +60,14 @@ def get_fleet_prices():
                 app = []
                 for c in a['components']:
                     app.append(Component(i,a['app'],c))
-                partitions.append(app)
-        if len(shared_apps)>0:
+                if len(app) > 0:
+                    partitions.append(app)
+        if len(shared_apps) > 0:
             partitions.append(shared_apps)
         os = filter['selectedOs']
         region = filter['region'] if 'region' in filter else 'all'
-        res = calc.get_fleet_offers(os,region,app_size,partitions)
-        return jsonify(list(map(lambda g: serialize_group(g),res)))
+        listOfOffers = calc.get_fleet_offers(os,region,app_size,partitions)
+        return jsonify(list(map(lambda g: serialize_group(g),listOfOffers)))
     else:
         return jsonify()
 
@@ -85,6 +86,7 @@ def serializeInstance(instance):
 
 def serializeComponent(component: ComponentOffer):
     result = component.ebs_instance.copy()
+    print(result)
     result['appName'] = component.app_name
     result['componentName'] = component.component_name
     result['storagePrice'] = component.storage_price
