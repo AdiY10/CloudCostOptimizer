@@ -38,7 +38,7 @@ class GroupedParam(object):
         self.interruption_frequency = min(map(lambda p: p.interruption_frequency,params))
         self.score = calculate_group_score(params,app_sizes)
         self.burstable = False if False in map(lambda p:p.burstable,params) else True
-        self.storage_price = 0 ##intead of 0 = sum(map(lambda p: p.storage_offer.storage_price,params)) in order to add EBS price
+        self.storage_price = 0 ## intead of 0 = sum(map(lambda p: p.storage_offer.storage_price,params)) in order to add EBS price
 
 class ComponentOffer(object):
     def __init__(self,app_name,component_name,storage_price,ebs_instance):
