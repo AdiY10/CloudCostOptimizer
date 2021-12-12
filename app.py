@@ -80,16 +80,16 @@ def serialize_group(group:Offer):
 
 def serializeInstance(instance):
     result = instance.instance.copy()
-    result['total_price'] = round(instance.total_price,5)
+    result['spot_price'] = instance.instance['spot_price']
+    result['CPU/Price_Score'] = round(instance.instance['score_cpu_price'],5)
+    result['Memory/Price_Score'] = round(instance.instance['score_memory_price'],5)
     result['components'] = list(map(lambda param: serializeComponent(param),instance.components))
-    return  result
+    return result
 
 def serializeComponent(component: ComponentOffer):
-    result = component.ebs_instance.copy()
-    print(result)
+    result = dict()
     result['appName'] = component.app_name
     result['componentName'] = component.component_name
-    result['storagePrice'] = component.storage_price
     return result
 
 

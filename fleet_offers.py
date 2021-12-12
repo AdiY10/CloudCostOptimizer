@@ -9,16 +9,16 @@ this file handles the logic for fleet offers
 '''
 
 class FleetCalculator:
-    def __init__(self,ec2_calculator:SingleInstanceCalculator,ebs_calculator: EbsCalculator):
+    def __init__(self,ec2_calculator:SingleInstanceCalculator):
         self.ec2_calculator = ec2_calculator
-        self.ebs_calculator = ebs_calculator
+        #self.ebs_calculator = ebs_calculator
 
     def createComponentOffer(self,component: Component,region):
-        ebs = self.ebs_calculator.get_ebs_lowest_price(region,component.storage_type,component.iops, component.throughput)[region]
-        if ebs is None:
-            return None
-        storage_price = component.storage_size*ebs['price']
-        return ComponentOffer(component.app_name,component.component_name,storage_price,ebs)
+        # ebs = self.ebs_calculator.get_ebs_lowest_price(region,component.storage_type,component.iops, component.throughput)[region]
+        # if ebs is None:
+        #     return None
+        # storage_price = component.storage_size*ebs['price']
+        return ComponentOffer(component.app_name,component.component_name)
 
     def match_group(self,grouped_param:GroupedParam,region):
         instances = self.ec2_calculator.get_spot_estimations(grouped_param.total_vcpus, grouped_param.total_memory,
@@ -43,10 +43,10 @@ class FleetCalculator:
             result.append(new_group)
         return result
 
-def get_fleet_offers(params:[[Component]],region,os,app_size,ebs, ec2 ):
+def get_fleet_offers(params:[[Component]],region,os,app_size,ec2 ):
     res = []
     regions = [region]
-    calculator = FleetCalculator(ec2, ebs)
+    calculator = FleetCalculator(ec2)
     if region == 'all':
         regions = constants.regions.copy()
     for region in regions:

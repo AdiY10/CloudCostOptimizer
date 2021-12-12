@@ -41,22 +41,19 @@ class GroupedParam(object):
         self.storage_price = 0 ## intead of 0 = sum(map(lambda p: p.storage_offer.storage_price,params)) in order to add EBS price
 
 class ComponentOffer(object):
-    def __init__(self,app_name,component_name,storage_price,ebs_instance):
+    def __init__(self,app_name,component_name):
         self.app_name = app_name
         self.component_name = component_name
-        self.ebs_instance = ebs_instance
-        print(self.ebs_instance)
-        self.storage_price = storage_price
+        #self.ebs_instance = ebs_instance
+        self.storage_price = 0 ## = storage_price # in case EBS should be calculated
 
 
 class GroupedInstance(object):
     def __init__(self, instance, components):
-        self.spot_price = round(instance['spot_price'],4)
+        self.spot_price = round(instance['spot_price'],5)
         self.components = components
         self.instance = instance
         self.total_price = self.spot_price ##+ sum(map(lambda c: c.storage_price,components)) in order to add EBS price
-
-
 
 
 class Offer(object):

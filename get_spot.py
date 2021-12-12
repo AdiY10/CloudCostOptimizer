@@ -46,10 +46,10 @@ class SpotCalculator:
     ##fleet offers
     def get_fleet_offers(self, os, region, app_size, params: [[Component]]):
         ec2_data = self.get_ec2_from_cache(region, os)
-        ebs_data = self.get_ebs_from_cache(region)
+        #ebs_data = self.get_ebs_from_cache(region)
         ec2 = SingleInstanceCalculator(ec2_data)
-        ebs = EbsCalculator(ebs_data)
-        return get_fleet_offers(params,region,os,app_size,ebs, ec2)
+        #ebs = EbsCalculator(ebs_data)
+        return get_fleet_offers(params,region,os,app_size, ec2)
 
     def is_cached(self, os, region):
         if self.cached_os[os]:
