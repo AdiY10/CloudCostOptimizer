@@ -24,7 +24,10 @@ class Component(object):
         self.component_name = component_specs['name']
         self.storage_offer = None
 
-class GroupedParam(object):
+    def get_component_name(self):
+        return (self.component_name)
+
+class GroupedParam(object): ## group (sum) all the parameters values together
     def __init__(self, params:[Component],app_sizes):
         self.params = params
         self.total_vcpus = 0
@@ -38,7 +41,10 @@ class GroupedParam(object):
         self.interruption_frequency = min(map(lambda p: p.interruption_frequency,params))
         self.score = calculate_group_score(params,app_sizes)
         self.burstable = False if False in map(lambda p:p.burstable,params) else True
-        self.storage_price = 0 ## intead of 0 = sum(map(lambda p: p.storage_offer.storage_price,params)) in order to add EBS price
+        self.storage_price = 0 ## intead of 0 = sum(map(lambda p: p.storage_offer.storage_price,params)) in case EBS should be calculated
+
+    def get_info(self):
+        return self.params
 
 class ComponentOffer(object):
     def __init__(self,app_name,component_name):
@@ -47,14 +53,19 @@ class ComponentOffer(object):
         #self.ebs_instance = ebs_instance
         self.storage_price = 0 ## = storage_price # in case EBS should be calculated
 
+    def get_component(self):
+        return([self.component_name])
+
 
 class GroupedInstance(object):
-    def __init__(self, instance, components):
+    def __init__(self, instance, components): ## Offer for each combination
         self.spot_price = round(instance['spot_price'],5)
         self.components = components
         self.instance = instance
-        self.total_price = self.spot_price ##+ sum(map(lambda c: c.storage_price,components)) in order to add EBS price
+        self.total_price = self.spot_price ##+ sum(map(lambda c: c.storage_price,components)) in case EBS should be calculated
 
+    def get_info(self):
+        return(self.components)
 
 class Offer(object):
     def __init__(self,partitions,app_sizes):
@@ -62,7 +73,10 @@ class Offer(object):
        self.total_price = sum(map(lambda p: p.storage_price,self.remaining_partitions))
        self.instance_groups = []
        self.region = ''
-       self.score = calculate_offer_score(self.remaining_partitions)
+       #self.score = calculate_offer_score(self.remaining_partitions) ## currently not relevant
+
+    def get_info(self):
+        return self.remaining_partitions
 
     def copy_group(self):
         return copy.deepcopy(self)

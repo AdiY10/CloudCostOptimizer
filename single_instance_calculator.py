@@ -12,7 +12,7 @@ def set_string_filter( type, key):
         return lambda x: type.lower() == x[key].lower()
 
 
-class SingleInstanceCalculator:
+class SpotInstanceCalculator:
     def __init__(self,ec2):
         self.ec2 = ec2
 

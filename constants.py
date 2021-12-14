@@ -2,7 +2,7 @@ regions = ['us-east-2', 'us-east-1', 'us-west-1', 'us-west-2', 'af-south-1',
                    'ap-east-1', 'ap-south-1', 'ap-northeast-3', 'ap-northeast-2',
                    'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'ca-central-1',
                    'eu-central-1', 'eu-west-1', 'eu-west-2', 'eu-south-1',
-                   'eu-west-3', 'eu-north-1', 'me-south-1', 'sa-east-1']
+                   'eu-west-3', 'eu-north-1', 'me-south-1', 'sa-east-1'] ##currently there are issues with stockholm eu-north-1 and milan eu-south-1, and bahrian me-south-1 (fleet)
 
 regionsSpotPrices = ['us-east-2', 'us-east', 'us-west', 'us-west-2', 'af-south-1','us-west-2-lax-1a',
                    'ap-east-1', 'ap-south-1', 'ap-northeast-3', 'ap-northeast-2',

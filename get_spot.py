@@ -1,7 +1,7 @@
 from ebs_prices import get_ebs_for_region, get_ebs
 from ec2_prices import Ec2Parser
 from fleet_offers import Component, get_fleet_offers
-from single_instance_calculator import SingleInstanceCalculator, EbsCalculator
+from single_instance_calculator import SpotInstanceCalculator, EbsCalculator
 from FindPrice import GetPriceFromAWS
 
 
@@ -25,7 +25,7 @@ class SpotCalculator:
         ## ec2_data attributes- onDemandPrice, region, cpu, ebsOnly, family, memory, network, os, typeMajor, typeMinor,
         ## storage, typeName, discount, interruption_frequency, interruption_frequency_filter
         # ebs_data = self.get_ebs_from_cache(region)
-        ec2 = SingleInstanceCalculator(ec2_data).get_spot_estimations(vCPUs, memory, region, type, behavior,
+        ec2 = SpotInstanceCalculator(ec2_data).get_spot_estimations(vCPUs, memory, region, type, behavior,
                                                                       frequency, network,burstable)
         #ebs = EbsCalculator(ebs_data).get_ebs_lowest_price(region, storage_type, iops, throughput)
         lst = []
@@ -44,11 +44,11 @@ class SpotCalculator:
         return lst[0:30]
 
     ##fleet offers
-    def get_fleet_offers(self, os, region, app_size, params: [[Component]]):
+    def get_fleet_offers(self, os, region, app_size, params): ## params- list of all components
         ec2_data = self.get_ec2_from_cache(region, os)
-        #ebs_data = self.get_ebs_from_cache(region)
-        ec2 = SingleInstanceCalculator(ec2_data)
-        #ebs = EbsCalculator(ebs_data)
+        ec2 = SpotInstanceCalculator(ec2_data)
+        # ebs_data = self.get_ebs_from_cache(region) ## get EBS volumes from AWS
+        # ebs = EbsCalculator(ebs_data)
         return get_fleet_offers(params,region,os,app_size, ec2)
 
     def is_cached(self, os, region):

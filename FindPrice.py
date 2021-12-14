@@ -67,8 +67,8 @@ class GetPriceFromAWS:
                 else:
                     SpotPriceValue = 100000  ## the instance is not available, therefore- high price
                 price['spot_price'] = SpotPriceValue
-                price['score_cpu_price'] = float(float(price['cpu']) / SpotPriceValue)
-                price['score_memory_price'] = float(float(price['memory']) / SpotPriceValue)
+                price['score_cpu_price'] = float(SpotPriceValue / float(price['cpu']))
+                price['score_memory_price'] = float(SpotPriceValue / float(price['memory']))
         print('Calculates CPU and Memory normalized Scores')
         ec2 = self.addScores(ec2)
         return ec2
