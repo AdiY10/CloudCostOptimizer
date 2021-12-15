@@ -15,6 +15,16 @@ class FleetCalculator:
         self.rep = 0
         self.count = 0
 
+    def calculate_limits_cpu(self,region):
+        maxCPU = max(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
+        minCPU = min(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
+        return float(maxCPU)
+
+    def calculate_limits_memory(self,region):
+        maxMemory = max(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
+        minMemory = min(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
+        return float(maxMemory)
+
     def createComponentOffer(self,component: Component,region):
         # ebs = self.ebs_calculator.get_ebs_lowest_price(region,component.storage_type,component.iops, component.throughput)[region]
         # if ebs is None:
@@ -34,18 +44,23 @@ class FleetCalculator:
             # print('repetition: ', self.rep)
             # print(sub_combination_str)
         else:
-            instances = self.ec2_calculator.get_spot_estimations(grouped_param.total_vcpus, grouped_param.total_memory,
-                                                                     region, 'all', grouped_param.behavior,
-                                                                     grouped_param.interruption_frequency, grouped_param.network,grouped_param.burstable)
-            combination = []
-            for singleComponent in grouped_param.params:
-                combination.append(singleComponent.get_component_name())
-            combination.append(region)
-            combination_str = str(combination)
-            self.calculated_combinations[combination_str] = instances
-            # self.count = self.count + 1 ##check number of calculations
-            # print ('first time calculation', self.count)
-            # print(combination_str)
+            limitsCPU = self.calculate_limits_cpu(region)
+            limitsMemory = self.calculate_limits_memory(region)
+            if(grouped_param.total_vcpus <= limitsCPU and grouped_param.total_memory <= limitsMemory):
+                instances = self.ec2_calculator.get_spot_estimations(grouped_param.total_vcpus, grouped_param.total_memory,
+                                                                         region, 'all', grouped_param.behavior,
+                                                                         grouped_param.interruption_frequency, grouped_param.network,grouped_param.burstable)
+                combination = []
+                for singleComponent in grouped_param.params:
+                    combination.append(singleComponent.get_component_name())
+                combination.append(region)
+                combination_str = str(combination)
+                self.calculated_combinations[combination_str] = instances
+                # self.count = self.count + 1 ##check number of calculations
+                # print ('number of first time calculations', self.count)
+                # print(combination_str)
+            else:
+                return None
         components = list(grouped_param.params)
         if len(instances) == 0:
             return None

@@ -3,13 +3,16 @@ from fleet_classes import Offer
 '''this file creates all the partitions for the fleet offers'''
 
 def partition2(collection):
-    if len(collection) == 1:
+    if not collection:
+        print('There is no relevant configuration right now.')
+    else:
+        if len(collection) == 1:
+            for c in collection[0]:
+               yield c
+            return
         for c in collection[0]:
-           yield c
-        return
-    for c in collection[0]:
-        for smaller in partition2(collection[1:]):
-            yield c + smaller
+            for smaller in partition2(collection[1:]):
+                yield c + smaller
 
 def partition(collection):
     if len(collection) == 1:

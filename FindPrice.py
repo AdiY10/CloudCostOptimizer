@@ -48,8 +48,8 @@ class GetPriceFromAWS:
             minimum_memory_score = min(values_memory)
             maximum_memory_score = max(values_memory)
             for i in v:
-                i['score_cpu_price'] = (i['score_cpu_price']-minimum_cpu_score)/float(maximum_cpu_score-minimum_cpu_score)
-                i['score_memory_price'] = (i['score_memory_price'] - minimum_memory_score) / float(maximum_memory_score - minimum_memory_score)
+                i['score_cpu_price'] = round((i['score_cpu_price']-minimum_cpu_score)/float(maximum_cpu_score-minimum_cpu_score),5)
+                i['score_memory_price'] = round((i['score_memory_price'] - minimum_memory_score) / float(maximum_memory_score - minimum_memory_score),5)
         return ec2
 
 
