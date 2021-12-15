@@ -12,6 +12,8 @@ class FleetCalculator:
     def __init__(self,ec2_calculator:SpotInstanceCalculator):
         self.ec2_calculator = ec2_calculator
         self.calculated_combinations = dict()
+        self.rep = 0
+        self.count = 0
 
     def createComponentOffer(self,component: Component,region):
         # ebs = self.ebs_calculator.get_ebs_lowest_price(region,component.storage_type,component.iops, component.throughput)[region]
@@ -20,13 +22,17 @@ class FleetCalculator:
         # storage_price = component.storage_size*ebs['price']
         return ComponentOffer(component.app_name,component.component_name)
 
-    def match_group(self,grouped_param:GroupedParam,region):
+    def match_group(self,grouped_param:GroupedParam,region): ## finds best configuration for each combination
         sub_combination = []
         for singleComponent in grouped_param.params:
             sub_combination.append(singleComponent.get_component_name())
+        sub_combination.append(region)
         sub_combination_str = str(sub_combination)
         if sub_combination_str in self.calculated_combinations:
             instances = self.calculated_combinations[sub_combination_str]
+            # self.rep = self.rep + 1 ## check number of repetitive calculation
+            # print('repetition: ', self.rep)
+            # print(sub_combination_str)
         else:
             instances = self.ec2_calculator.get_spot_estimations(grouped_param.total_vcpus, grouped_param.total_memory,
                                                                      region, 'all', grouped_param.behavior,
@@ -34,8 +40,12 @@ class FleetCalculator:
             combination = []
             for singleComponent in grouped_param.params:
                 combination.append(singleComponent.get_component_name())
+            combination.append(region)
             combination_str = str(combination)
             self.calculated_combinations[combination_str] = instances
+            # self.count = self.count + 1 ##check number of calculations
+            # print ('first time calculation', self.count)
+            # print(combination_str)
         components = list(grouped_param.params)
         if len(instances) == 0:
             return None
@@ -55,7 +65,7 @@ class FleetCalculator:
     def get_offers(self, group: Offer, region):
         instances = []
         for i in group.remaining_partitions:
-            instances.append(self.match_group(i,region))
+            instances.append(self.match_group(i,region)) ## finds best configuration for each combination
             # for i in instances:
             #     print('the instance is=========> ',i)
             #     for j in i:
@@ -79,6 +89,7 @@ def get_fleet_offers(params,region,os,app_size,ec2):
     if region == 'all':
         regions = constants.regions.copy()
     for region in regions:
+        # print('region: ', region)
         updated_params = params.copy()
         for pl in updated_params:
             for p in pl:
@@ -99,8 +110,8 @@ def get_fleet_offers(params,region,os,app_size,ec2):
         #             print('components names: ', k.get_component_name())
         for group in groups: ## for each combination (group) find N (=3) best offers
             res += calculator.get_offers(group,region)
-    print('number of possible combinations:', len(groups))
-    print('number of saved calculations:', len(groups) - len([*calculator.calculated_combinations]))
+    # print('number of possible combinations:', len(groups))
+    # print('number of saved calculations:', len(groups) - len([*calculator.calculated_combinations]))
     # print('calculated sub combinations (once): ', [*calculator.calculated_combinations])
     res = filter(lambda g: g is not None, res)
     return sort_fleet_offers(res)
