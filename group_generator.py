@@ -4,7 +4,7 @@ from fleet_classes import Offer
 
 def partition2(collection):
     if not collection:
-        print('There is no relevant configuration right now.')
+        print('There are no relevant configurations right now.')
     else:
         if len(collection) == 1:
             for c in collection[0]:
@@ -14,7 +14,7 @@ def partition2(collection):
             for smaller in partition2(collection[1:]):
                 yield c + smaller
 
-def partition(collection):
+def partition(collection): ##first collection- all the group of components
     if len(collection) == 1:
         yield [ collection ]
         return
@@ -27,12 +27,12 @@ def partition(collection):
         yield [ [ first ] ] + smaller
 
 
-def create_partitions(params):
-    return [p for p in partition(params)]
+def create_partitions(comp):
+    return [c for c in partition(comp)]
 
 
-def create_groups(params,app_size):
-    partitions = list(map(lambda i: create_partitions(i),params)) ## list of all components in each combination
+def create_groups(comp,app_size): ## comp- list of the groups (shared/non-shared), which includes groups' components
+    partitions = list(map(lambda i: create_partitions(i),comp)) ## list of all components in each combination
     return [Offer(p, app_size) for p in partition2(partitions)]
 
 

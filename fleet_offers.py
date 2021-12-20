@@ -3,6 +3,7 @@ from external_functions import sort_fleet_offers
 from fleet_classes import Component, GroupedInstance, GroupedParam, Offer, ComponentOffer
 from group_generator import create_groups, partition2
 from single_instance_calculator import SpotInstanceCalculator, EbsCalculator
+from BBAlgorithm import simplestComb, bestCurrentPrice
 
 '''
 this file handles the logic for fleet offers
@@ -12,6 +13,7 @@ class FleetCalculator:
     def __init__(self,ec2_calculator:SpotInstanceCalculator):
         self.ec2_calculator = ec2_calculator
         self.calculated_combinations = dict()
+        self.bestPrice = dict()
         self.rep = 0
         self.count = 0
 
@@ -56,6 +58,8 @@ class FleetCalculator:
                 combination.append(region)
                 combination_str = str(combination)
                 self.calculated_combinations[combination_str] = instances
+                # print(self.calculated_combinations.get(combination_str)[0].get('spot_price'))
+                # self.bestPrice[combination_str] = instances
                 # self.count = self.count + 1 ##check number of calculations
                 # print ('number of first time calculations', self.count)
                 # print(combination_str)
@@ -64,7 +68,7 @@ class FleetCalculator:
         components = list(grouped_param.params)
         if len(instances) == 0:
             return None
-        return [[GroupedInstance(instances[i],components)] for i in range(min(len(instances),3))]
+        return [[GroupedInstance(instances[i],components)] for i in range(min(len(instances),2))]
 
     ## match_group function of the first version. Should stay, in order to check times improvement
     # def match_group(self,grouped_param:GroupedParam,region):
@@ -94,7 +98,12 @@ class FleetCalculator:
             new_group.instance_groups = partition
             new_group.region = region
             result.append(new_group)
-        return result
+        return result ## result is a list of Offer objects
+
+    def BB(self,group: Offer, region):
+        instances = []
+        return []
+
 
 def get_fleet_offers(params,region,os,app_size,ec2):
     print('Finds best configuration')
@@ -104,6 +113,7 @@ def get_fleet_offers(params,region,os,app_size,ec2):
     if region == 'all':
         regions = constants.regions.copy()
     for region in regions:
+        res_region = []
         # print('region: ', region)
         updated_params = params.copy()
         for pl in updated_params:
@@ -115,7 +125,7 @@ def get_fleet_offers(params,region,os,app_size,ec2):
                     p.storage_type = 'all'
                     storage_offer = calculator.createComponentOffer(p,region)
                 p.storage_offer = storage_offer
-        groups = create_groups(updated_params, app_size) ## creates all the possible combinations
+        # groups = create_groups(updated_params, app_size) ## creates all the possible combinations
         # print('groups', groups) ## in order to view combinations- remove comments below
         # for i in groups: ##groups are Offer objects
         #     print('groups', i)
@@ -123,8 +133,16 @@ def get_fleet_offers(params,region,os,app_size,ec2):
         #         print('components info: ', j)
         #         for k in (j.get_info()): ## k are Component objects
         #             print('components names: ', k.get_component_name())
-        for group in groups: ## for each combination (group) find N (=3) best offers
-            res += calculator.get_offers(group,region)
+        # for group in groups: ## for each combination (group) find N (=3) best offers ##Algorithm for optimal results
+        #     res += calculator.get_offers(group,region) ##Algorithm for optimal results
+        firstBranch = simplestComb(updated_params, app_size)
+        for combination in firstBranch:
+            # print(combination)
+            res += calculator.get_offers(combination,region)
+            # BestPrice = calculator.
+
+        # BestPrice = bestCurrentPrice(res)
+        # print(BestPrice)
     # print('number of possible combinations:', len(groups))
     # print('number of saved calculations:', len(groups) - len([*calculator.calculated_combinations]))
     # print('calculated sub combinations (once): ', [*calculator.calculated_combinations])
