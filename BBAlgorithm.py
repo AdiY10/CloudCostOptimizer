@@ -28,12 +28,17 @@ def simplestPartition(collection): ##first collection- all the group of componen
                     flat_list.append([item])
             else:
                 flat_list.append([element])
-        return flat_list
+        return [flat_list]
 
-def separate_partitions(comp):
-    return [[c for c in simplestPartition(comp)]]
+def separate_partitions(compList):
+    return [c for c in simplestPartition(compList)]
 
 
 def simplestComb(comp,app_size): ## comp- list of the groups (shared/non-shared), which includes groups' components
     partitions = list(map(lambda i: separate_partitions(i), comp))  ## list of all components in each combination
     return [Offer(p, app_size) for p in partition2(partitions)]
+
+def branchStep(compList,app_size):
+    for l in compList:
+        for comb in itertools.combinations(l, 3):
+            print(comb)

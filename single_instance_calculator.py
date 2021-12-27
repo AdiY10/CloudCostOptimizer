@@ -18,10 +18,14 @@ class SpotInstanceCalculator:
 
     def get_spot_estimations(self, vCPUs, memory, region='all', type='all', behavior='terminate', frequency=4, network=0,burstable = True):
         ec2 = self.get_spot_filter( vCPUs, memory, region, type, behavior, frequency, network, burstable)
-        lst = []
-        for price in ec2:
-            lst.append(price)
-        return sorted(lst, key= lambda p:p['spot_price'])
+        # lst = []
+        # for price in ec2:
+        #     lst.append(price)
+        return sorted(ec2, key= lambda p:p['spot_price'])
+
+    def advancedFilter(self,fi,vCPUs):
+        fi = filter(lambda price: float(price['cpu']) <= (2 * vCPUs), fi)
+        return fi
 
     def get_spot_filter(self, vCPUs, memory, region='all', type='all', behavior='terminate', frequency = 4, network = 0,burstable = True):
         ec2_data = self.ec2
@@ -31,11 +35,16 @@ class SpotInstanceCalculator:
                 result.extend(v)
         else:
             result.extend(ec2_data[region])
+        # print(region)
+        # print('before filtering',len(result))
         fi = filter(lambda price: float(price['cpu']) >= vCPUs and float(price['memory']) >= memory and price['interruption_frequency_filter'] <= frequency, result)
         fi = filter(self.networkFilter(network,burstable), fi)
         fi = filter(self.interruptionFilter(behavior), fi)
         fi = filter(set_string_filter(type, 'family'), fi)
-        return list(fi)
+        fi = self.advancedFilter(fi,vCPUs)
+        fi = list(fi)
+        # print('after filtering',len(fi))
+        return fi
 
     def networkFilter(self,network,burstable):
         if network == 0:

@@ -3,7 +3,7 @@ from external_functions import sort_fleet_offers
 from fleet_classes import Component, GroupedInstance, GroupedParam, Offer, ComponentOffer
 from group_generator import create_groups, partition2
 from single_instance_calculator import SpotInstanceCalculator, EbsCalculator
-from BBAlgorithm import simplestComb, bestCurrentPrice
+from BBAlgorithm import simplestComb, bestCurrentPrice, branchStep
 
 '''
 this file handles the logic for fleet offers
@@ -125,6 +125,9 @@ def get_fleet_offers(params,region,os,app_size,ec2):
                     p.storage_type = 'all'
                     storage_offer = calculator.createComponentOffer(p,region)
                 p.storage_offer = storage_offer
+
+        # ##Algorithm for optimal results
+        # print('updated_params', updated_params)
         # groups = create_groups(updated_params, app_size) ## creates all the possible combinations
         # print('groups', groups) ## in order to view combinations- remove comments below
         # for i in groups: ##groups are Offer objects
@@ -134,12 +137,23 @@ def get_fleet_offers(params,region,os,app_size,ec2):
         #         for k in (j.get_info()): ## k are Component objects
         #             print('components names: ', k.get_component_name())
         # for group in groups: ## for each combination (group) find N (=3) best offers ##Algorithm for optimal results
-        #     res += calculator.get_offers(group,region) ##Algorithm for optimal results
+        #     res += calculator.get_offers(group,region)
+
+        ## B&B Algorithm- first step
+        # print(updated_params)
         firstBranch = simplestComb(updated_params, app_size)
         for combination in firstBranch:
-            # print(combination)
             res += calculator.get_offers(combination,region)
-            # BestPrice = calculator.
+        # secondBranch = branchStep(firstBranch)
+        # for combination in secondBranch:
+        #     res += calculator.get_offers(combination,region)
+
+        ## B&B Algorithm
+        # print(updated_params)
+        # for i in range(2):
+        #     firstBranch = branchStep(updated_params, app_size)
+
+
 
         # BestPrice = bestCurrentPrice(res)
         # print(BestPrice)

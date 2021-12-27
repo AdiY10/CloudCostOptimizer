@@ -1,12 +1,20 @@
 from urllib.request import urlopen
 import json
 import pandas as pd
-import datetime
+import numpy as np
+
+
 
 class GetPriceFromAWS:
     def __init__(self):
         self.url = 'http://spot-price.s3.amazonaws.com/spot.js'
         self.df = pd.DataFrame()
+        self.cpu = []
+        self.cpu_score = []
+        self.memory = []
+        self.memory_score = []
+        self.spotPrice = []
+
 
     def calculatePrice(self):
         print("Calculates spot prices")
@@ -50,8 +58,27 @@ class GetPriceFromAWS:
             for i in v:
                 i['score_cpu_price'] = round((i['score_cpu_price']-minimum_cpu_score)/float(maximum_cpu_score-minimum_cpu_score),5)
                 i['score_memory_price'] = round((i['score_memory_price'] - minimum_memory_score) / float(maximum_memory_score - minimum_memory_score),5)
+                self.cpu.append(float(i['cpu']))
+                self.memory.append(float(i['memory']))
+                self.cpu_score.append(i['score_cpu_price'])
+                self.memory_score.append(i['score_memory_price'])
         return ec2
 
+    def calculateCorrelations(self):
+        data = [self.spotPrice,self.cpu,self.cpu_score,self.memory,self.memory_score]
+        print(np.corrcoef(data))
+
+
+    def exportArraysToCsv(self):
+        pd.DataFrame(self.spotPrice).to_csv("/home/ayehoshu/Calculator Work/spotPrice.csv")
+        pd.DataFrame(self.cpu).to_csv("/home/ayehoshu/Calculator Work/cpu.csv")
+        pd.DataFrame(self.cpu_score).to_csv("/home/ayehoshu/Calculator Work/cpu_score.csv")
+        pd.DataFrame(self.memory).to_csv("/home/ayehoshu/Calculator Work/memory.csv")
+        pd.DataFrame(self.memory_score).to_csv("/home/ayehoshu/Calculator Work/memory_score.csv")
+
+    # def analysis(self):
+    #     self.calculateCorrelations()
+    #     self.exportArraysToCsv()
 
     def calculateSpotPrice(self,ec2):
         AWSData = self.calculatePrice()
@@ -69,6 +96,8 @@ class GetPriceFromAWS:
                 price['spot_price'] = SpotPriceValue
                 price['score_cpu_price'] = float(SpotPriceValue / float(price['cpu']))
                 price['score_memory_price'] = float(SpotPriceValue / float(price['memory']))
+                self.spotPrice.append(SpotPriceValue)
         print('Calculates CPU and Memory normalized Scores')
         ec2 = self.addScores(ec2)
+        # self.analysis()
         return ec2

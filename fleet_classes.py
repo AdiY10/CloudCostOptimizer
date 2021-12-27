@@ -39,7 +39,7 @@ class GroupedParam(object): ## group (sum) all the parameters values together
         behaviors = map(lambda p: p.behavior,params)
         self.behavior = 'hibernation' if 'hibernation' in behaviors else ('stop' if 'stop' in behaviors else 'terminate')
         self.interruption_frequency = min(map(lambda p: p.interruption_frequency,params))
-        self.score = calculate_group_score(params,app_sizes)
+        # self.score = calculate_group_score(params,app_sizes)
         self.burstable = False if False in map(lambda p:p.burstable,params) else True
         self.storage_price = 0 ## intead of 0 = sum(map(lambda p: p.storage_offer.storage_price,params)) in case EBS should be calculated
 
