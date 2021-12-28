@@ -2,7 +2,14 @@ from urllib.request import urlopen
 import json
 import pandas as pd
 import numpy as np
-
+# import boto3
+#
+#
+# def boto3():
+#     client = boto3.client('ec2', region_name = 'us-east-1')
+#     filters = [{'Name': 'instance-type', 'Values': ['g4ad.2xlarge','m5zn.12xlarge'],'StartTime':}]
+#     details = client.describe_spot_price(Filters=filters)
+#     details2 = client.describe_spot_price_history(NextToken=details['NextToken'], Filters=filters)
 
 
 class GetPriceFromAWS:

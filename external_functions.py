@@ -14,4 +14,4 @@ def calculate_offer_score(groups):
    return sum(map(lambda g: g.score, groups))/len(groups)
 
 def sort_fleet_offers(offers):
-    return sorted(offers,key=lambda g: g.total_price)[:30]
+    return sorted(offers,key=lambda g: g.total_price)[:20]

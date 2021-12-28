@@ -62,6 +62,7 @@ class GroupedInstance(object):
         self.spot_price = round(instance['spot_price'],5)
         self.components = components
         self.instance = instance
+        # self.region = instance['region'] ##cross region option
         self.total_price = self.spot_price ##+ sum(map(lambda c: c.storage_price,components)) in case EBS should be calculated
 
     def get_info(self):

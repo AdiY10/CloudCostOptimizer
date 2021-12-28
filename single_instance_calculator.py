@@ -16,6 +16,10 @@ class SpotInstanceCalculator:
     def __init__(self,ec2):
         self.ec2 = ec2
 
+    def get_spot_estimations_allregions(self, vCPUs, memory, region='all', type='all', behavior='terminate', frequency=4, network=0,burstable = True):
+        ec2 = self.get_spot_filter(vCPUs, memory, region, type, behavior, frequency, network, burstable)
+        return sorted(ec2, key=lambda p: p['spot_price'])
+
     def get_spot_estimations(self, vCPUs, memory, region='all', type='all', behavior='terminate', frequency=4, network=0,burstable = True):
         ec2 = self.get_spot_filter( vCPUs, memory, region, type, behavior, frequency, network, burstable)
         # lst = []
