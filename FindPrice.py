@@ -2,14 +2,8 @@ from urllib.request import urlopen
 import json
 import pandas as pd
 import numpy as np
-# import boto3
-#
-#
-# def boto3():
-#     client = boto3.client('ec2', region_name = 'us-east-1')
-#     filters = [{'Name': 'instance-type', 'Values': ['g4ad.2xlarge','m5zn.12xlarge'],'StartTime':}]
-#     details = client.describe_spot_price(Filters=filters)
-#     details2 = client.describe_spot_price_history(NextToken=details['NextToken'], Filters=filters)
+import boto3
+
 
 
 class GetPriceFromAWS:
@@ -21,6 +15,14 @@ class GetPriceFromAWS:
         self.memory = []
         self.memory_score = []
         self.spotPrice = []
+
+    def boto3(self, region, instance,os):
+        print(region, instance)
+        client = boto3.client('ec2', region_name=region)
+        filters = [{'Name': 'instance-type', 'Values': [instance]}]
+        details = client.describe_spot_price_history(Filters=filters)
+        if (details['SpotPriceHistory']):
+            print('min', (min(details['SpotPriceHistory'], key=lambda x:x['SpotPrice']))['SpotPrice'])
 
 
     def calculatePrice(self):
@@ -92,6 +94,7 @@ class GetPriceFromAWS:
         print('Join spot prices')
         for k, v in ec2.items():
             for price in v:
+                # self.boto3(price['region'],price['typeName'],price['os'])
                 spotPrice = AWSData[(AWSData['Region'] == price['region']) & (AWSData['TypeName'] == price['typeName']) & (AWSData['OS'] == price['os'])]
                 if not spotPrice.empty:
                     if (spotPrice.iloc[0][1] == 'N/A*'):
@@ -101,6 +104,7 @@ class GetPriceFromAWS:
                 else:
                     SpotPriceValue = 100000  ## the instance is not available, therefore- high price
                 price['spot_price'] = SpotPriceValue
+                # print('spotPrice',SpotPriceValue)
                 price['score_cpu_price'] = float(SpotPriceValue / float(price['cpu']))
                 price['score_memory_price'] = float(SpotPriceValue / float(price['memory']))
                 self.spotPrice.append(SpotPriceValue)
