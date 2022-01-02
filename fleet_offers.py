@@ -111,11 +111,17 @@ class FleetCalculator:
         for i in group.remaining_partitions:
             instances.append(self.match_group(i,region)) ## finds best configuration for each combination
             # for i in instances:
-            #     print('the instance is=========> ',i)
+            #     print('i',i)
             #     for j in i:
+            #         print('j',j)
             #         for k in j:
-            #             print('i-',i,'j-', j, 'k-', k, 'k info-', k.get_info()[0].get_component_name())
+            #             for z in k.get_info():
+            #                 print('i-',i,'j-', j, 'k-', k, 'k.instance-', k.instance, k.spot_price, 'k info-', k.get_info(),'z-',z.get_component_name())
         result = []
+        ### only for the First step algorithm! otherwise, don't execute the if
+        if (None in instances):
+            print('there is no match in ', region, ' region')
+            instances.clear()
         instances = list(filter(None,instances))
         for partition in partition2(instances):
             new_group = group.copy_group()
@@ -192,7 +198,9 @@ def get_fleet_offers(params,region,os,app_size,ec2):
     # print('number of possible combinations:', len(groups))
     # print('number of saved calculations:', len(groups) - len([*calculator.calculated_combinations]))
     # print('calculated sub combinations (once): ', [*calculator.calculated_combinations])
-    res = filter(lambda g: g is not None, res)
+    res = list(filter(lambda g: g is not None, res))
+    if not res:
+        print('couldnt find any match')
     return sort_fleet_offers(res)
 
 
