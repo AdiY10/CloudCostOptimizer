@@ -117,12 +117,12 @@ class FleetCalculator:
             #         for k in j:
             #             for z in k.get_info():
             #                 print('i-',i,'j-', j, 'k-', k, 'k.instance-', k.instance, k.spot_price, 'k info-', k.get_info(),'z-',z.get_component_name())
-        result = []
         ### only for the First step algorithm! otherwise, don't execute the if
         if (None in instances):
             print('there is no match in ', region, ' region')
             instances.clear()
         instances = list(filter(None,instances))
+        result = []
         for partition in partition2(instances):
             new_group = group.copy_group()
             new_group.total_price = sum(map(lambda i: i.total_price,partition))
