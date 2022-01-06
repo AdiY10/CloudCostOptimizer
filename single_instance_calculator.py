@@ -1,8 +1,8 @@
 import re
-import pandasql as ps
+import boto3
 '''
 this file has the SingleInstanceCalculator that matches instances to a single component 
-and the EbsCalculator which matchs an ebs volume to the instance
+and the EbsCalculator which matches an ebs volume to the instance
 '''
 
 def set_string_filter( type, key):
@@ -15,6 +15,7 @@ def set_string_filter( type, key):
 class SpotInstanceCalculator:
     def __init__(self,ec2):
         self.ec2 = ec2
+        # self.client = boto3.client('ec2')
 
     def get_spot_estimations_allregions(self, vCPUs, memory, region='all', type='all', behavior='terminate', frequency=4, network=0,burstable = True):
         ec2 = self.get_spot_filter(vCPUs, memory, region, type, behavior, frequency, network, burstable)
@@ -31,6 +32,16 @@ class SpotInstanceCalculator:
         fi = filter(lambda price: float(price['cpu']) <= (2 * vCPUs), fi)
         return fi
 
+    # def botoFilter(self,instance):
+    #     filters = [{'Name': 'instance-type', 'Values': instance}]
+    #     details = self.client.describe_spot_price_history(Filters=filters)
+    #     # details2 = client.describe_spot_price_history(NextToken=details['NextToken'], Filters=filters)
+    #     if details['SpotPriceHistory']:
+    #         for i in range(len(details['SpotPriceHistory'])):
+    #             print(details['SpotPriceHistory'][i])
+    #         print('min', (min(details['SpotPriceHistory'], key=lambda x: x['SpotPrice']))['SpotPrice'])
+
+
     def get_spot_filter(self, vCPUs, memory, region='all', type='all', behavior='terminate', frequency = 4, network = 0,burstable = True):
         ec2_data = self.ec2
         result = []
@@ -45,8 +56,9 @@ class SpotInstanceCalculator:
         fi = filter(self.networkFilter(network,burstable), fi)
         fi = filter(self.interruptionFilter(behavior), fi)
         fi = filter(set_string_filter(type, 'family'), fi)
-        fi = self.advancedFilter(fi,vCPUs)
+        # self.botoFilter([a_dict['typeName'] for a_dict in list(fi)])
         fi = list(fi)
+        # fi = self.advancedFilter(fi,vCPUs)
         # print('after filtering',len(fi))
         return fi
 

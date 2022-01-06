@@ -5,6 +5,7 @@ from group_generator import create_groups, partition2
 from single_instance_calculator import SpotInstanceCalculator, EbsCalculator
 from BBAlgorithm import simplestComb, bestCurrentPrice, branchStep
 
+
 '''
 this file handles the logic for fleet offers
 '''
@@ -51,7 +52,7 @@ class FleetCalculator:
             sub_combination.append(singleComponent.get_component_name())
         sub_combination.append(region)
         sub_combination_str = str(sub_combination)
-        if sub_combination_str in self.calculated_combinations:
+        if sub_combination_str in self.calculated_combinations: ## prevent repetitive calculations
             instances = self.calculated_combinations[sub_combination_str]
             # self.rep = self.rep + 1 ## check number of repetitive calculation
             # print('repetition: ', self.rep)
@@ -79,6 +80,9 @@ class FleetCalculator:
         components = list(grouped_param.params)
         if len(instances) == 0:
             return None
+        # print(grouped_param.params)
+        # if (len(grouped_param.params[0].component_name) < 2):
+        #     return [[GroupedInstance(instances[i],components)] for i in range(min(len(instances),2))]
         return [[GroupedInstance(instances[i],components)] for i in range(min(len(instances),1))]
 
     ## match_group function of the first version (with repetitions). Should stay, in order to check times improvement

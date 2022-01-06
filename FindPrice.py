@@ -2,7 +2,7 @@ from urllib.request import urlopen
 import json
 import pandas as pd
 import numpy as np
-import boto3
+# import boto3
 
 
 
@@ -16,13 +16,14 @@ class GetPriceFromAWS:
         self.memory_score = []
         self.spotPrice = []
 
-    def boto3(self, region, instance,os):
-        print(region, instance)
-        client = boto3.client('ec2', region_name=region)
-        filters = [{'Name': 'instance-type', 'Values': [instance]}]
-        details = client.describe_spot_price_history(Filters=filters)
-        if (details['SpotPriceHistory']):
-            print('min', (min(details['SpotPriceHistory'], key=lambda x:x['SpotPrice']))['SpotPrice'])
+    # def boto3(self, region, instance,os):
+    #     # print(region, instance)
+    #     client = boto3.client('ec2', region_name=region)
+    #     filters = [{'Name': 'instance-type', 'Values': [instance]}]
+    #     details = client.describe_spot_price_history(Filters=filters)
+    #     if (details['SpotPriceHistory']):
+    #         return(float((min(details['SpotPriceHistory'], key=lambda x:x['SpotPrice']))['SpotPrice']))
+    #     return None
 
 
     def calculatePrice(self):
@@ -94,10 +95,14 @@ class GetPriceFromAWS:
         print('Join spot prices')
         for k, v in ec2.items():
             for price in v:
-                # self.boto3(price['region'],price['typeName'],price['os'])
+                # ##boto3
+                # SpotPriceValue = self.boto3(price['region'],price['typeName'],price['os'])
+                # if not SpotPriceValue:
+                #     SpotPriceValue = 100000
+                ## web
                 spotPrice = AWSData[(AWSData['Region'] == price['region']) & (AWSData['TypeName'] == price['typeName']) & (AWSData['OS'] == price['os'])]
                 if not spotPrice.empty:
-                    if (spotPrice.iloc[0][1] == 'N/A*'):
+                    if (spotPrice.iloc[0][1] == 'N/A*' or None):
                         SpotPriceValue = 100000 ## the instance is not available, therefore- high price
                     else:
                         SpotPriceValue = float(spotPrice.iloc[0][1])
@@ -108,7 +113,7 @@ class GetPriceFromAWS:
                 price['score_cpu_price'] = float(SpotPriceValue / float(price['cpu']))
                 price['score_memory_price'] = float(SpotPriceValue / float(price['memory']))
                 self.spotPrice.append(SpotPriceValue)
-        print('Calculates CPU and Memory normalized Scores')
+        # print('Calculates CPU and Memory normalized Scores')
         ec2 = self.addScores(ec2)
         # self.analysis()
         return ec2
