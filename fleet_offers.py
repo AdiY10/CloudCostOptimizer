@@ -3,7 +3,7 @@ from external_functions import sort_fleet_offers
 from fleet_classes import Component, GroupedInstance, GroupedParam, Offer, ComponentOffer
 from group_generator import create_groups, partition2
 from single_instance_calculator import SpotInstanceCalculator, EbsCalculator
-from BBAlgorithm import simplestComb, bestCurrentPrice, branchStep
+from BBAlgorithm import simplestComb, bestCurrentPrice ,OnePair, AllPairs
 
 
 '''
@@ -160,7 +160,8 @@ def get_fleet_offers(params,region,os,app_size,ec2):
                     p.storage_type = 'all'
                     storage_offer = calculator.createComponentOffer(p,regionToCheck)
                 p.storage_offer = storage_offer
-        ##Algorithm for optimal results
+
+        # ##Algorithm for optimal results
         # # print('updated_params', updated_params)
         # groups = create_groups(updated_params, app_size) ## creates all the possible combinations
         # # print('groups', groups) ## in order to view combinations- remove comments below
@@ -173,12 +174,12 @@ def get_fleet_offers(params,region,os,app_size,ec2):
         # for group in groups: ## for each combination (group) find N (=3) best offers ##Algorithm for optimal results
         #     res += calculator.get_offers(group,regionToCheck)
 
-        ## B&B Algorithm- first step
-        firstBranch = simplestComb(updated_params, app_size)
-        for combination in firstBranch:
-            res += calculator.get_offers(combination,regionToCheck)
+        # ## B&B Algorithm- first step
+        # firstBranch = simplestComb(updated_params, app_size)
+        # for combination in firstBranch:
+        #     res += calculator.get_offers(combination, regionToCheck)
 
-        ## B&B Algorithm- first step- cross region
+        # ## B&B Algorithm- first step- cross region
         # print(updated_params)
         # if region == 'all':
         #     firstBranch = simplestComb(updated_params, app_size)
@@ -188,15 +189,23 @@ def get_fleet_offers(params,region,os,app_size,ec2):
         # else:
         #     firstBranch = simplestComb(updated_params, app_size)
         #     for combination in firstBranch:
-        #         res += calculator.get_offers(combination,regionToCheck)
+        #         res += calculator.get_offers(combination, regionToCheck)
         # secondBranch = branchStep(firstBranch)
         # for combination in secondBranch:
-        #     res += calculator.get_offers(combination,regionToCheck)
+        #     res += calculator.get_offers(combination, regionToCheck)
+
+        # ## onePair Algorithm
+        # pairs = OnePair(updated_params, app_size)
+        # for combination in pairs:
+        #     res += calculator.get_offers(combination, regionToCheck)
+
+        ## AllPairs Algorithm
+        pairs = AllPairs(updated_params, app_size)
+        for combination in pairs:
+            res += calculator.get_offers(combination, regionToCheck)
 
         ## B&B Algorithm
-        # print(updated_params)
-        # for i in range(2):
-        #     firstBranch = branchStep(updated_params, app_size)
+        # TBD
 
 
     # print('number of possible combinations:', len(groups))

@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request
 import json
 from flask_cors import CORS, cross_origin
+from gevent import monkey
+monkey.patch_all() ## Prevent an Error "greenlet.error: cannot switch to a different thread"
 
 from fleet_classes import Offer, ComponentOffer
 from fleet_offers import Component
