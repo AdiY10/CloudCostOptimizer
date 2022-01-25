@@ -39,8 +39,8 @@ def get_spot_prices():
         if network > 0:
             burstable = filter['burstable'] == True if 'burstable' in filter else False
         res = calc.get_spot_estimations(os, vCPUs, memory,storage_size , region, type, behavior, storage_type, iops, throughput, frequency, network,burstable)
-        with open('ECresults.json', 'w', encoding='utf-8') as f:
-            json.dump(res, f, ensure_ascii=False, indent=4)
+        # with open('ECresults.json', 'w', encoding='utf-8') as f:
+        #     json.dump(res, f, ensure_ascii=False, indent=4)
         return jsonify(res)
     else:
         return jsonify()
@@ -71,7 +71,10 @@ def get_fleet_prices():
         os = filter['selectedOs']
         region = filter['region'] if 'region' in filter else 'all'
         listOfOffers = calc.get_fleet_offers(os,region,app_size,partitions)
-        return jsonify(list(map(lambda g: serialize_group(g),listOfOffers)))
+        res = list(map(lambda g: serialize_group(g),listOfOffers))
+        # with open('ECresults.json', 'w', encoding='utf-8') as f:
+        #     json.dump(res, f, ensure_ascii=False, indent=4)
+        return jsonify(res)
     else:
         return jsonify()
 
