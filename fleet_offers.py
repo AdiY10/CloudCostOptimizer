@@ -122,7 +122,7 @@ class FleetCalculator:
             #             for z in k.get_info():
             #                 print('i-',i,'j-', j, 'k-', k, 'k.instance-', k.instance, k.spot_price, 'k info-', k.get_info(),'z-',z.get_component_name())
         ### only for the First step algorithm! otherwise, don't execute the if
-        if (None in instances):
+        if (instances == [None]): #### check!!!!
             print('there is no match in ', region, ' region')
             instances.clear()
         instances = list(filter(None,instances))
@@ -161,20 +161,22 @@ def get_fleet_offers(params,region,os,app_size,ec2):
                     storage_offer = calculator.createComponentOffer(p,regionToCheck)
                 p.storage_offer = storage_offer
 
-        # ##Algorithm for optimal results
-        # # print('updated_params', updated_params)
-        # groups = create_groups(updated_params, app_size) ## creates all the possible combinations
-        # # print('groups', groups) ## in order to view combinations- remove comments below
-        # # for i in groups: ##groups are Offer objects
-        # #     print('groups', i)
-        # #     for j in (i.get_info()): ## j are GroupedParam object
-        # #         print('components info: ', j)
-        # #         for k in (j.get_info()): ## k are Component objects
-        # #             print('components names: ', k.get_component_name())
-        # for group in groups: ## for each combination (group) find N (=3) best offers ##Algorithm for optimal results
-        #     res += calculator.get_offers(group,regionToCheck)
+        ## Brute-Force Algorithm, for optimal results
+        # print('updated_params', updated_params)
+        print('creating groups')
+        groups = create_groups(updated_params, app_size) ## creates all the possible combinations
+        print('created all possible groups')
+        # print('groups', groups) ## in order to view combinations- remove comments below
+        # for i in groups: ##groups are Offer objects
+        #     print('groups', i)
+        #     for j in (i.get_info()): ## j are GroupedParam object
+        #         print('components info: ', j)
+        #         for k in (j.get_info()): ## k are Component objects
+        #             print('components names: ', k.get_component_name())
+        for group in groups: ## for each combination (group) find N (=3) best offers ##Algorithm for optimal results
+            res += calculator.get_offers(group,regionToCheck)
 
-        # ## B&B Algorithm- first step
+        # ## B&B Algorithm- First step
         # firstBranch = simplestComb(updated_params, app_size)
         # for combination in firstBranch:
         #     res += calculator.get_offers(combination, regionToCheck)
@@ -199,10 +201,10 @@ def get_fleet_offers(params,region,os,app_size,ec2):
         # for combination in pairs:
         #     res += calculator.get_offers(combination, regionToCheck)
 
-        ## AllPairs Algorithm
-        pairs = AllPairs(updated_params, app_size)
-        for combination in pairs:
-            res += calculator.get_offers(combination, regionToCheck)
+        # ## AllPairs Algorithm
+        # pairs = AllPairs(updated_params, app_size)
+        # for combination in pairs:
+        #     res += calculator.get_offers(combination, regionToCheck)
 
         ## B&B Algorithm
         # TBD
