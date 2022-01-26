@@ -3,6 +3,7 @@ from ec2_prices import Ec2Parser
 from fleet_offers import Component, get_fleet_offers
 from single_instance_calculator import SpotInstanceCalculator, EbsCalculator
 from FindPrice import GetPriceFromAWS
+import json
 
 
 '''
@@ -21,7 +22,9 @@ class SpotCalculator:
     ##single instance
     def get_spot_estimations(self, os, vCPUs, memory, storage_size , region='all', type='all', behavior='terminate',
                              storage_type='all', iops=250, throughput=250, frequency=4, network=0, burstable = True):
-        ec2_data = self.get_ec2_from_cache(region, os)
+        # ec2_data = self.get_ec2_from_cache(region, os)
+        file = open('ec2_data.json')
+        ec2_data = json.load(file)
         ## ec2_data attributes- onDemandPrice, region, cpu, ebsOnly, family, memory, network, os, typeMajor, typeMinor,
         ## storage, typeName, discount, interruption_frequency, interruption_frequency_filter
         # ebs_data = self.get_ebs_from_cache(region)
@@ -45,7 +48,9 @@ class SpotCalculator:
 
     ##fleet offers
     def get_fleet_offers(self, os, region, app_size, params): ## params- list of all components
-        ec2_data = self.get_ec2_from_cache(region, os)
+        # ec2_data = self.get_ec2_from_cache(region, os)
+        file = open('ec2_data.json')
+        ec2_data = json.load(file)
         ec2 = SpotInstanceCalculator(ec2_data)
         # ebs_data = self.get_ebs_from_cache(region) ## get EBS volumes from AWS
         # ebs = EbsCalculator(ebs_data)
@@ -78,6 +83,8 @@ class SpotCalculator:
             if region != 'all':
                 ec2_data = ec2.get_ec2_for_region(os, region)
                 ec2_data = self.AWSPrice.calculateSpotPrice(ec2_data)
+                with open('ec2_data.json', 'w', encoding='utf-8') as f:
+                    json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 if os not in self.ec2_cache:
                     self.ec2_cache[os] = {}
                 self.ec2_cache[os][region] = ec2_data[region]
@@ -85,6 +92,8 @@ class SpotCalculator:
             else:
                 ec2_data = ec2.get_ec2(os)
                 ec2_data = self.AWSPrice.calculateSpotPrice(ec2_data)
+                with open('ec2_data.json', 'w', encoding='utf-8') as f:
+                    json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 self.ec2_cache[os] = ec2_data
                 self.cached_os[os] = True
                 return ec2_data
