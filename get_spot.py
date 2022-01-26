@@ -63,17 +63,18 @@ class SpotCalculator:
             return False
         return region in self.ec2_cache[os]
 
-    def get_ebs_from_cache(self, region):
-        if self.all_ebs or region in self.ebs_cache:
-            return self.ebs_cache
-        else:
-            ebs_prices = get_ebs_for_region(region) if region != 'all' else get_ebs()
-            if region != 'all':
-                self.ebs_cache[region] = ebs_prices[region]
-            else:
-                self.ebs_cache = ebs_prices
-                self.all_ebs = True
-            return self.ebs_cache
+    # ##Currently not relevant
+    # def get_ebs_from_cache(self, region):
+    #     if self.all_ebs or region in self.ebs_cache:
+    #         return self.ebs_cache
+    #     else:
+    #         ebs_prices = get_ebs_for_region(region) if region != 'all' else get_ebs()
+    #         if region != 'all':
+    #             self.ebs_cache[region] = ebs_prices[region]
+    #         else:
+    #             self.ebs_cache = ebs_prices
+    #             self.all_ebs = True
+    #         return self.ebs_cache
 
     def get_ec2_from_cache(self, region, os):
         if self.is_cached(os, region):
@@ -83,8 +84,8 @@ class SpotCalculator:
             if region != 'all':
                 ec2_data = ec2.get_ec2_for_region(os, region)
                 ec2_data = self.AWSPrice.calculateSpotPrice(ec2_data)
-                with open('ec2_data.json', 'w', encoding='utf-8') as f:
-                    json.dump(ec2_data, f, ensure_ascii=False, indent=4)
+                # with open('ec2_data.json', 'w', encoding='utf-8') as f:
+                #     json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 if os not in self.ec2_cache:
                     self.ec2_cache[os] = {}
                 self.ec2_cache[os][region] = ec2_data[region]
@@ -92,8 +93,8 @@ class SpotCalculator:
             else:
                 ec2_data = ec2.get_ec2(os)
                 ec2_data = self.AWSPrice.calculateSpotPrice(ec2_data)
-                with open('ec2_data.json', 'w', encoding='utf-8') as f:
-                    json.dump(ec2_data, f, ensure_ascii=False, indent=4)
+                # with open('ec2_data.json', 'w', encoding='utf-8') as f:
+                #     json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 self.ec2_cache[os] = ec2_data
                 self.cached_os[os] = True
                 return ec2_data

@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 import json
 from flask_cors import CORS, cross_origin
 from gevent import monkey
+import time
 monkey.patch_all() ## Prevent an Error "greenlet.error: cannot switch to a different thread"
 
 from fleet_classes import Offer, ComponentOffer
@@ -13,9 +14,15 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
+@app.route('/getAWSData', methods=['POST'])
+@cross_origin()
+def get_AWS_Data_ToJson():
+    time.sleep(2)
+    print('hello WORLD')
+    # AWSData = calc.get_ec2_from_cache('all','linux')
+    # with open('AWSData.json', 'w', encoding='utf-8') as f:
+    #     json.dump(AWSData, f, ensure_ascii=False, indent=4)
+    return jsonify()
 
 ## single instance
 @app.route('/getPrices', methods=['POST'])
@@ -26,7 +33,7 @@ def get_spot_prices():
         os = filter['selectedOs']
         vCPUs = float(filter['vCPUs'])
         memory = float(filter['memory'])
-        storage_size = float(filter['size'])
+        storage_size = float(filter['size']) if 'size' in filter else 0
         region = filter['selectedRegion'] if 'selectedRegion' in filter else 'all'
         type = filter['type'] if 'type' in filter else 'all'
         behavior = filter['behavior'] if 'behavior' in filter else 'terminate'
@@ -36,6 +43,7 @@ def get_spot_prices():
         frequency = float(filter['frequency']) if 'frequency' in filter else 4
         network = float(filter['network']) if 'network' in filter else 0
         burstable  = True
+        print(os)
         if network > 0:
             burstable = filter['burstable'] == True if 'burstable' in filter else False
         res = calc.get_spot_estimations(os, vCPUs, memory,storage_size , region, type, behavior, storage_type, iops, throughput, frequency, network,burstable)

@@ -12,7 +12,7 @@ class Component(object):
         self.network = float(component_specs['network']) if 'network' in component_specs else 0.0
         self.behavior = component_specs['behavior'] if 'behavior' in component_specs else 'terminate'
         self.interruption_frequency = int(component_specs['frequency']) if 'frequency' in component_specs else 4
-        self.storage_size = float(component_specs['size'])
+        self.storage_size = float(component_specs['size']) if 'size' in component_specs else 0
         self.iops = float(component_specs['iops']) if 'iops' in component_specs and component_specs['iops'] is not None else 0
         self.throughput = float(component_specs['throughput']) if 'throughput' in component_specs and component_specs['throughput'] is not None else 0
         self.storage_type = component_specs['storageType'] if 'storageType' in component_specs and component_specs['storageType'] is not None else 'all'

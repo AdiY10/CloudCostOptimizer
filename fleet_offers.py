@@ -163,9 +163,7 @@ def get_fleet_offers(params,region,os,app_size,ec2):
 
         ## Brute-Force Algorithm, for optimal results
         # print('updated_params', updated_params)
-        print('creating groups')
         groups = create_groups(updated_params, app_size) ## creates all the possible combinations
-        print('created all possible groups')
         # print('groups', groups) ## in order to view combinations- remove comments below
         # for i in groups: ##groups are Offer objects
         #     print('groups', i)
