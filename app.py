@@ -2,7 +2,6 @@ from flask import Flask, jsonify, request
 import json
 from flask_cors import CORS, cross_origin
 from gevent import monkey
-import time
 
 monkey.patch_all() ## Prevent an Error "greenlet.error: cannot switch to a different thread"
 
@@ -33,7 +32,11 @@ def get_AWS_Data_ToJson():
 @cross_origin()
 def get_spot_prices():
     if(request.method == 'POST'):
-        filter = request.get_json()
+        filter = request.get_json() ## In case of using the GUI
+        # file = open('input_Single_instance.json.json') ## In case of using external json file
+        # input = json.load(file)
+        # os = input['os']
+        # vCPUs = input['vCPUs']
         os = filter['selectedOs']
         vCPUs = float(filter['vCPUs'])
         memory = float(filter['memory'])
@@ -62,7 +65,9 @@ def get_spot_prices():
 @cross_origin()
 def get_fleet_prices():
     if(request.method == 'POST'):
-        filter = request.get_json()
+        filter = request.get_json() ## In case of using the GUI
+        # file = open('input_Fleet.json') ## In case of using external json file
+        # filter = json.load(file)
         shared_apps = [] # list of components of shared apps
         partitions = [] ## list of ALL components
         app_size = dict() ##size of each app
@@ -135,7 +140,7 @@ body: configuration for fleet, i.e apps,components and other optional configurat
                     network: <int>      OPTIONAL, component network consumption (GBs)
                     behavior: <str>     OPTIONAL, component required interruption behavior: options: terminate,stop,hibernation
                     interruptionFrequency: <int>    OPTIONAL, limit interruption frequency of the instances. options: 0-4 (see readme)
-                    storageSize: <int>  REQUIRED, component storage size (GB)
+                    storageSize: <int>  OPTIONAL, component storage size (GB)
                     IOPS: <int>         OPTIONAL, component required IOPS (MiB I/O)
                     throughput: <int>   OPTIONAL, component required throughput (MB/s)
 

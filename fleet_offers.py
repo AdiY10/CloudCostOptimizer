@@ -135,10 +135,6 @@ class FleetCalculator:
             result.append(new_group)
         return result ## result is a list of Offer objects
 
-    def BB(self,group: Offer, region):
-        instances = []
-        return []
-
 
 def get_fleet_offers(params,region,os,app_size,ec2):
     print('Finds best configuration')
@@ -161,22 +157,24 @@ def get_fleet_offers(params,region,os,app_size,ec2):
                     storage_offer = calculator.createComponentOffer(p,regionToCheck)
                 p.storage_offer = storage_offer
 
-        ## Brute-Force Algorithm, for optimal results
-        # print('updated_params', updated_params)
+        ## Brute-Force Algorithm- optimal results / more complex
         groups = create_groups(updated_params, app_size) ## creates all the possible combinations
-        # print('groups', groups) ## in order to view combinations- remove comments below
-        # for i in groups: ##groups are Offer objects
-        #     print('groups', i)
-        #     for j in (i.get_info()): ## j are GroupedParam object
-        #         print('components info: ', j)
-        #         for k in (j.get_info()): ## k are Component objects
-        #             print('components names: ', k.get_component_name())
         for group in groups: ## for each combination (group) find N (=3) best offers ##Algorithm for optimal results
             res += calculator.get_offers(group,regionToCheck)
 
-        # ## B&B Algorithm- First step
+        # ## First Step- match an instance for every component
         # firstBranch = simplestComb(updated_params, app_size)
         # for combination in firstBranch:
+        #     res += calculator.get_offers(combination, regionToCheck)
+
+        # ## onePair Algorithm
+        # pairs = OnePair(updated_params, app_size)
+        # for combination in pairs:
+        #     res += calculator.get_offers(combination, regionToCheck)
+
+        # ## AllPairs Algorithm
+        # pairs = AllPairs(updated_params, app_size)
+        # for combination in pairs:
         #     res += calculator.get_offers(combination, regionToCheck)
 
         # ## B&B Algorithm- first step- cross region
@@ -194,26 +192,13 @@ def get_fleet_offers(params,region,os,app_size,ec2):
         # for combination in secondBranch:
         #     res += calculator.get_offers(combination, regionToCheck)
 
-        # ## onePair Algorithm
-        # pairs = OnePair(updated_params, app_size)
-        # for combination in pairs:
-        #     res += calculator.get_offers(combination, regionToCheck)
 
-        # ## AllPairs Algorithm
-        # pairs = AllPairs(updated_params, app_size)
-        # for combination in pairs:
-        #     res += calculator.get_offers(combination, regionToCheck)
+        ## Full B&B Algorithm
+        # Coming Soon
 
-        ## B&B Algorithm
-        # TBD
-
-
-    # print('number of possible combinations:', len(groups))
-    # print('number of saved calculations:', len(groups) - len([*calculator.calculated_combinations]))
-    # print('calculated sub combinations (once): ', [*calculator.calculated_combinations])
     res = list(filter(lambda g: g is not None, res))
     if not res:
-        print('couldnt find any match')
+        print('Couldnt find any match')
     return sort_fleet_offers(res)
 
 

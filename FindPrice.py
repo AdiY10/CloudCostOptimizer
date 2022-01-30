@@ -59,19 +59,19 @@ class GetPriceFromAWS:
 
     def addScores(self,ec2):
         for k, v in ec2.items():
-            values_cpu = [i['score_cpu_price'] for i in v]
-            values_memory = [i['score_memory_price'] for i in v]
+            values_cpu = [i['Price_per_CPU'] for i in v]
+            values_memory = [i['Price_per_memory'] for i in v]
             minimum_cpu_score = min(values_cpu)
             maximum_cpu_score= max(values_cpu)
             minimum_memory_score = min(values_memory)
             maximum_memory_score = max(values_memory)
             for i in v:
-                i['score_cpu_price'] = round((i['score_cpu_price']-minimum_cpu_score)/float(maximum_cpu_score-minimum_cpu_score),5)
-                i['score_memory_price'] = round((i['score_memory_price'] - minimum_memory_score) / float(maximum_memory_score - minimum_memory_score),5)
+                i['Price_per_CPU'] = round((i['Price_per_CPU']-minimum_cpu_score)/float(maximum_cpu_score-minimum_cpu_score),5)
+                i['Price_per_memory'] = round((i['Price_per_memory'] - minimum_memory_score) / float(maximum_memory_score - minimum_memory_score),5)
                 self.cpu.append(float(i['cpu']))
                 self.memory.append(float(i['memory']))
-                self.cpu_score.append(i['score_cpu_price'])
-                self.memory_score.append(i['score_memory_price'])
+                self.cpu_score.append(i['Price_per_CPU'])
+                self.memory_score.append(i['Price_per_memory'])
         return ec2
 
     def calculateCorrelations(self):
@@ -110,10 +110,10 @@ class GetPriceFromAWS:
                     SpotPriceValue = 100000  ## the instance is not available, therefore- high price
                 price['spot_price'] = SpotPriceValue
                 # print('spotPrice',SpotPriceValue)
-                price['score_cpu_price'] = float(SpotPriceValue / float(price['cpu']))
-                price['score_memory_price'] = float(SpotPriceValue / float(price['memory']))
+                price['Price_per_CPU'] = float(SpotPriceValue / float(price['cpu']))
+                price['Price_per_memory'] = float(SpotPriceValue / float(price['memory']))
                 self.spotPrice.append(SpotPriceValue)
         # print('Calculates CPU and Memory normalized Scores')
-        ec2 = self.addScores(ec2)
+        # ec2 = self.addScores(ec2)
         # self.analysis()
         return ec2

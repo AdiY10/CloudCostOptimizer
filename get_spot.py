@@ -43,8 +43,8 @@ class SpotCalculator:
             # price['volumeType'] = ebs[price['region']]['volumeType']
             # price['storagePrice'] = ebs[price['region']]['price']
             price['total_price'] = price['spot_price']
-            price['CPU_Score'] = round(price['score_cpu_price'],5)
-            price['Memory_Score'] = round(price['score_memory_price'],5)
+            price['CPU_Score'] = round(price['Price_per_CPU'],5)
+            price['Memory_Score'] = round(price['Price_per_memory'],5)
             lst.append(price)
         lst = sorted(lst, key=lambda p: p['total_price'])
         return lst[0:30]
@@ -52,7 +52,10 @@ class SpotCalculator:
     ##fleet offers
     def get_fleet_offers(self, os, region, app_size, params): ## params- list of all components
         # ec2_data = self.get_ec2_from_cache(region, os)
-        file = open('ec2_data.json')
+        if os == 'linux':
+            file = open('ec2_data_Linux.json')
+        else:
+            file = open('ec2_data_Windows.json')
         ec2_data = json.load(file)
         ec2 = SpotInstanceCalculator(ec2_data)
         # ebs_data = self.get_ebs_from_cache(region) ## get EBS volumes from AWS

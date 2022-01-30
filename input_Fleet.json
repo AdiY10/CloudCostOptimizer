@@ -1,0 +1,71 @@
+{
+    "selectedOs": "linux",
+    "region": "all",
+    "apps": [
+        {
+            "app": "App1",
+            "share": true,
+            "components": [
+                {
+                    "memory": 8,
+                    "vCPUs": 4,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp1"
+                },
+                {
+                    "memory": 8,
+                    "vCPUs": 3,
+                    "network": 0,
+                    "behavior": "hibernate",
+                    "frequency": "3",
+                    "storageType": null,
+                    "burstable": true,
+                    "name": "comp2"
+                },
+                                {
+                    "memory": 8,
+                    "vCPUs": 3,
+                    "network": 0,
+                    "behavior": "hibernate",
+                    "frequency": "3",
+                    "storageType": null,
+                    "burstable": true,
+                    "name": "comp5"
+                }
+            ]
+        },
+        {
+            "app": "App2",
+            "share": true,
+            "components": [
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 0,
+                    "behavior": "stop",
+                    "frequency": "4",
+                    "storageType": null,
+                    "burstable": true,
+                    "name": "Comp3"
+                }
+            ]
+        },
+        {
+            "app": "App3",
+            "components": [
+                {
+                    "memory": 16,
+                    "vCPUs": 6,
+                    "behavior": "stop",
+                    "frequency": "0",
+                    "storageType": null,
+                    "burstable": true,
+                    "name": "Comp4"
+                }
+            ]
+        }
+    ]
+}
