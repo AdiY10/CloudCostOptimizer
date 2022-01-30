@@ -23,7 +23,10 @@ class SpotCalculator:
     def get_spot_estimations(self, os, vCPUs, memory, storage_size , region='all', type='all', behavior='terminate',
                              storage_type='all', iops=250, throughput=250, frequency=4, network=0, burstable = True):
         # ec2_data = self.get_ec2_from_cache(region, os)
-        file = open('ec2_data.json')
+        if os == 'linux':
+            file = open('ec2_data_Linux.json')
+        else:
+            file = open('ec2_data_Windows.json')
         ec2_data = json.load(file)
         ## ec2_data attributes- onDemandPrice, region, cpu, ebsOnly, family, memory, network, os, typeMajor, typeMinor,
         ## storage, typeName, discount, interruption_frequency, interruption_frequency_filter

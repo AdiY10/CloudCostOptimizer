@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 import json
 from flask_cors import CORS, cross_origin
 from gevent import monkey
+import time
 
 monkey.patch_all() ## Prevent an Error "greenlet.error: cannot switch to a different thread"
 
@@ -17,11 +18,14 @@ CORS(app)
 @app.route('/getAWSData', methods=['POST'])
 @cross_origin()
 def get_AWS_Data_ToJson():
-    ## extracting data from AWS- here!
-    print('hello WORLD')
-    # AWSData = calc.get_ec2_from_cache('all','linux')
-    # with open('AWSData.json', 'w', encoding='utf-8') as f:
-    #     json.dump(AWSData, f, ensure_ascii=False, indent=4)
+    print('Extracting Data- Linux')
+    AWSData_Linux = calc.get_ec2_from_cache('all','linux')
+    print('Extracting Data- Windows')
+    AWSData_Windows = calc.get_ec2_from_cache('all', 'windows')
+    with open('ec2_data_Linux.json', 'w', encoding='utf-8') as f:
+        json.dump(AWSData_Linux, f, ensure_ascii=False, indent=4)
+    with open('ec2_data_Windows.json', 'w', encoding='utf-8') as f:
+        json.dump(AWSData_Windows, f, ensure_ascii=False, indent=4)
     return jsonify()
 
 ## single instance
@@ -46,8 +50,8 @@ def get_spot_prices():
         if network > 0:
             burstable = filter['burstable'] == True if 'burstable' in filter else False
         res = calc.get_spot_estimations(os, vCPUs, memory,storage_size , region, type, behavior, storage_type, iops, throughput, frequency, network,burstable)
-        # with open('ECresults.json', 'w', encoding='utf-8') as f:
-        #     json.dump(res, f, ensure_ascii=False, indent=4)
+        with open('SingleInstanceECresults.json', 'w', encoding='utf-8') as f:
+            json.dump(res, f, ensure_ascii=False, indent=4)
         return jsonify(res)
     else:
         return jsonify()
@@ -79,8 +83,8 @@ def get_fleet_prices():
         region = filter['region'] if 'region' in filter else 'all'
         listOfOffers = calc.get_fleet_offers(os,region,app_size,partitions)
         res = list(map(lambda g: serialize_group(g),listOfOffers))
-        # with open('ECresults.json', 'w', encoding='utf-8') as f:
-        #     json.dump(res, f, ensure_ascii=False, indent=4)
+        with open('FleetECresults.json', 'w', encoding='utf-8') as f:
+            json.dump(res, f, ensure_ascii=False, indent=4)
         return jsonify(res)
     else:
         return jsonify()
