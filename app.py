@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 import json
 from flask_cors import CORS, cross_origin
 from gevent import monkey
-import time
+
 monkey.patch_all() ## Prevent an Error "greenlet.error: cannot switch to a different thread"
 
 from fleet_classes import Offer, ComponentOffer
@@ -17,7 +17,7 @@ CORS(app)
 @app.route('/getAWSData', methods=['POST'])
 @cross_origin()
 def get_AWS_Data_ToJson():
-    time.sleep(2)
+    ## extracting data from AWS- here!
     print('hello WORLD')
     # AWSData = calc.get_ec2_from_cache('all','linux')
     # with open('AWSData.json', 'w', encoding='utf-8') as f:
@@ -43,7 +43,6 @@ def get_spot_prices():
         frequency = float(filter['frequency']) if 'frequency' in filter else 4
         network = float(filter['network']) if 'network' in filter else 0
         burstable  = True
-        print(os)
         if network > 0:
             burstable = filter['burstable'] == True if 'burstable' in filter else False
         res = calc.get_spot_estimations(os, vCPUs, memory,storage_size , region, type, behavior, storage_type, iops, throughput, frequency, network,burstable)
