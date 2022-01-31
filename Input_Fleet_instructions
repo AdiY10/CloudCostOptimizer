@@ -6,12 +6,12 @@ body: configuration for fleet, i.e apps,components and other optional configurat
         region: <str>                   OPTIONAL, region for instances. options: us-east-2 etc. (see readme for full options)
         apps: [                         REQUIRED, list of app specifications
             {
-            name: <str>                 REQUIRED, name of app
+            app: <str>                 REQUIRED, name of app
             share: <str>                REQUIRED, set to true if app can share instances with other apps
             components:[                REQUIRED, list of component specifications
                 {
                     name: <str>         REQUIRED, name of component
-                    cpu: <int>          REQUIRED, required cpu for component
+                    vCPUs: <int>          REQUIRED, required cpu for component
                     memory: <int>       REQUIRED, required memory for component (GB)
                     network: <int>      OPTIONAL, component network consumption (GBs)
                     behavior: <str>     OPTIONAL, component required interruption behavior: options: terminate,stop,hibernation
