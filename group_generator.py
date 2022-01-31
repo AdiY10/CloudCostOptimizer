@@ -1,6 +1,8 @@
 from fleet_classes import Offer
 
-'''this file creates all the partitions for the fleet offers'''
+'''
+This script creates all the partitions for the fleet offers
+'''
 
 def partition2(collection):
     if not collection:

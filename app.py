@@ -3,11 +3,15 @@ import json
 from flask_cors import CORS, cross_origin
 from gevent import monkey
 
-monkey.patch_all() ## Prevent an Error "greenlet.error: cannot switch to a different thread"
+monkey.patch_all() ##internal use- Prevent an Error "greenlet.error: cannot switch to a different thread"
 
 from fleet_classes import Offer, ComponentOffer
 from fleet_offers import Component
 from get_spot import SpotCalculator
+
+'''
+This script is for the web-based optimizer
+'''
 
 calc = SpotCalculator()
 app = Flask(__name__)
@@ -104,8 +108,8 @@ def serialize_group(group:Offer):
 def serializeInstance(instance):
     result = instance.instance.copy()
     result['spot_price'] = instance.instance['spot_price']
-    result['CPU/Price_Score'] = round(instance.instance['score_cpu_price'],5)
-    result['Memory/Price_Score'] = round(instance.instance['score_memory_price'],5)
+    # result['CPU/Price_Score'] = round(instance.instance['score_cpu_price'],5)
+    # result['Memory/Price_Score'] = round(instance.instance['score_memory_price'],5)
     result['components'] = list(map(lambda param: serializeComponent(param),instance.components))
     return result
 

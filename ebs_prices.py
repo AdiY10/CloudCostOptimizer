@@ -1,10 +1,9 @@
 import grequests
-import itertools
 import requests
 import constants
 
 '''
-this file handles and parses data from EBS
+This file handles and parses data from EBS
 '''
 
 def get_ebs_region(region):

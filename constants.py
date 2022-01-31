@@ -4,11 +4,14 @@ regions = ['us-east-2', 'us-east-1', 'us-west-1', 'us-west-2', 'af-south-1',
                    'eu-central-1', 'eu-west-1', 'eu-west-2', 'eu-south-1',
                    'eu-west-3', 'eu-north-1', 'me-south-1', 'sa-east-1']
 
+'''
 regionsSpotPrices = ['us-east-2', 'us-east', 'us-west', 'us-west-2', 'af-south-1','us-west-2-lax-1a',
                    'ap-east-1', 'ap-south-1', 'ap-northeast-3', 'ap-northeast-2',
                    'apac-sin', 'apac-syd', 'apac-tokyo', 'ca-central-1',
                    'eu-central-1', 'eu-ireland', 'eu-west-2', 'eu-south-1',
                    'eu-west-3', 'eu-north-1', 'me-south-1', 'sa-east-1']
+
+'''
 
 
 hardware = {

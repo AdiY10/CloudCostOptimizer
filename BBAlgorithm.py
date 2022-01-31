@@ -1,13 +1,14 @@
 from fleet_classes import Offer
 import itertools
-
+'''
+This script creates all partitions for first-step/one-pair/all-pairs/BB algorithm
+'''
 def bestCurrentPrice(offers):
     sortedList = sorted(offers,key=lambda g: g.total_price)[:1]
     return sortedList[0].total_price
 
 def addIndividuals(original):
     return [[el] for el in original]
-
 
 def completeCombination(original,pairs):
     temp = []

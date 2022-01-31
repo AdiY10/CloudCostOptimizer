@@ -3,7 +3,7 @@ import requests
 import constants
 
 '''
-this class handles calls and parses data from EC2 and the SpotAdvisor
+This class handles calls and parses data from EC2 and the SpotAdvisor
 '''
 
 class Ec2Parser:

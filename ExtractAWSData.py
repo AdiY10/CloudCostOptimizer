@@ -1,6 +1,10 @@
 import json
 from get_spot import SpotCalculator
 
+'''
+This script extracts data from AWS 
+'''
+
 calc = SpotCalculator()
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 import re
 # import boto3
 '''
-this file has the SingleInstanceCalculator that matches instances to a single component 
+This file has the SingleInstanceCalculator that matches instances to a single component 
 and the EbsCalculator which matches an ebs volume to the instance
 '''
 

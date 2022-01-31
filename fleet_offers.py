@@ -7,7 +7,7 @@ from BBAlgorithm import simplestComb, bestCurrentPrice ,OnePair, AllPairs
 
 
 '''
-this file handles the logic for fleet offers
+This script handles the logic for fleet offers
 '''
 
 class FleetCalculator:
@@ -137,7 +137,6 @@ class FleetCalculator:
 
 
 def get_fleet_offers(params,region,os,app_size,ec2):
-    print('Finds best configuration')
     res = []
     regions = [region]
     calculator = FleetCalculator(ec2)

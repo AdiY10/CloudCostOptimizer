@@ -7,7 +7,7 @@ import json
 
 
 '''
-main calculator class, handles caching and calls to the singleInstanceCalculator and fleetOffers 
+Main calculator class, handles caching and calls to the singleInstanceCalculator and fleetOffers 
 '''
 
 class SpotCalculator:

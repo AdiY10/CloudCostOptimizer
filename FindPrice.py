@@ -74,17 +74,16 @@ class GetPriceFromAWS:
                 self.memory_score.append(i['Price_per_memory'])
         return ec2
 
-    def calculateCorrelations(self):
-        data = [self.spotPrice,self.cpu,self.cpu_score,self.memory,self.memory_score]
-        print(np.corrcoef(data))
+    # def calculateCorrelations(self):
+    #     data = [self.spotPrice,self.cpu,self.cpu_score,self.memory,self.memory_score]
+    #     print(np.corrcoef(data))
 
-
-    def exportArraysToCsv(self):
-        pd.DataFrame(self.spotPrice).to_csv("/home/ayehoshu/Calculator Work/spotPrice.csv")
-        pd.DataFrame(self.cpu).to_csv("/home/ayehoshu/Calculator Work/cpu.csv")
-        pd.DataFrame(self.cpu_score).to_csv("/home/ayehoshu/Calculator Work/cpu_score.csv")
-        pd.DataFrame(self.memory).to_csv("/home/ayehoshu/Calculator Work/memory.csv")
-        pd.DataFrame(self.memory_score).to_csv("/home/ayehoshu/Calculator Work/memory_score.csv")
+    # def exportArraysToCsv(self):
+    #     pd.DataFrame(self.spotPrice).to_csv("/home/ayehoshu/Calculator Work/spotPrice.csv")
+    #     pd.DataFrame(self.cpu).to_csv("/home/ayehoshu/Calculator Work/cpu.csv")
+    #     pd.DataFrame(self.cpu_score).to_csv("/home/ayehoshu/Calculator Work/cpu_score.csv")
+    #     pd.DataFrame(self.memory).to_csv("/home/ayehoshu/Calculator Work/memory.csv")
+    #     pd.DataFrame(self.memory_score).to_csv("/home/ayehoshu/Calculator Work/memory_score.csv")
 
     # def analysis(self):
     #     self.calculateCorrelations()
@@ -113,7 +112,6 @@ class GetPriceFromAWS:
                 price['Price_per_CPU'] = float(SpotPriceValue / float(price['cpu']))
                 price['Price_per_memory'] = float(SpotPriceValue / float(price['memory']))
                 self.spotPrice.append(SpotPriceValue)
-        # print('Calculates CPU and Memory normalized Scores')
         # ec2 = self.addScores(ec2)
         # self.analysis()
         return ec2

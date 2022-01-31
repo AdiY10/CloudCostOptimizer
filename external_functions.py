@@ -1,7 +1,9 @@
-"""this file has functions that modifying them will give the user an easy way to change the behaviour of the calculations and sorting"""
+"""
+This script has functions that modifying them will give the user an easy way to change the behaviour of the calculations and sorting.
+currently- not in use
+"""
 
 from itertools import groupby
-
 
 def calculate_group_score(params, app_sizes):
     apps = {i: len(list(j)) for i, j in groupby(sorted(params, key=lambda k: k.app_index), key=lambda k: k.app_index)}

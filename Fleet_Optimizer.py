@@ -4,6 +4,9 @@ from fleet_classes import Offer, ComponentOffer
 from fleet_offers import Component
 from get_spot import SpotCalculator
 
+'''
+This script is for the non-web-based optimizer
+'''
 calc = SpotCalculator()
 
 def serialize_group(group:Offer):

@@ -2,7 +2,7 @@ import copy
 from external_functions import calculate_group_score, calculate_offer_score
 
 '''
-this file contains the data classes that are used in the fleet offer search
+This script contains the data classes that are used in the fleet offer search
 '''
 
 class Component(object):
