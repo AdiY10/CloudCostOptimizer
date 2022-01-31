@@ -4,10 +4,10 @@ The Optimizer first gets from the user application(s) requirements such as OS, r
 After calculating All the options, the Optimizer suggests the user the cheapest configuration of spot instances to run their app.
 
 ## Getting Started 
-#### prerequisite
+#### Prerequisite
 The Cloud Cost Optimizer requires Python3
 
-#### installation:
+#### Installation:
 ```
 $ python -m pip install requests
 $ pip3 install urllib3
