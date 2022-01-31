@@ -27,7 +27,7 @@ class GetPriceFromAWS:
 
 
     def calculatePrice(self):
-        print("Calculates spot prices")
+        print("Extracting Data from AWS")
         if not self.df.empty:
             return self.df
         ## extract callback file, and clean it
@@ -91,7 +91,7 @@ class GetPriceFromAWS:
 
     def calculateSpotPrice(self,ec2):
         AWSData = self.calculatePrice()
-        print('Join spot prices')
+        # print('Join spot prices')
         for k, v in ec2.items():
             for price in v:
                 # ##boto3
