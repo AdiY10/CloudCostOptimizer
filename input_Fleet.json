@@ -39,7 +39,7 @@
         },
         {
             "app": "App2",
-            "share": true,
+            "share": false,
             "components": [
                 {
                     "memory": 10,
@@ -55,6 +55,7 @@
         },
         {
             "app": "App3",
+	    "share": false,
             "components": [
                 {
                     "memory": 16,
