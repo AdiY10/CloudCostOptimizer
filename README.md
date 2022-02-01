@@ -12,23 +12,24 @@ git clone https://github.com/AdiY10/SpotCalculator.git
 * The Cloud Cost Optimizer requires Python3- Python 3.4 or newer installed. You can check the version by typing ```python3 --version``` in your command line. 
 * You can download the latest Python version from [here](https://www.python.org/downloads/).
 
-### Installation:
+### Installation
 ```
 $ python -m pip install requests
 $ pip3 install urllib3
+$ pip3 install pandas
 $ pip install grequests
 ```
 
 ### Usage
 ```
-$ python Fleet_Optimizer.py
+$ python Fleet_Optimizer.py [json_input_file]
 ```
 Where the following command activate the Optimizer
 
-## Parameters:
-The json file **input_fleet.json**- is an example of an appropriate input (see input_fleet_instructions.json for more explanations).
+## Parameters
+The file **input_fleet.json** is an example of an input (see input_fleet_instructions.json for more explanations).
 The user's workload should be in the **input_fleet.json** file- don't forget to change it.
-#### Example of an appropriate input json file:
+#### Example of an input json file:
 ```
 {
     "selectedOs": "linux",
