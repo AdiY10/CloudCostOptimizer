@@ -1,11 +1,9 @@
 # Cloud Cost Optimizer
-***
 The goal of the project to provide the user an api for getting [AWS spot](https://aws.amazon.com/ec2/spot/) (on-demand in the future, stay tuned) best (cheapest) offers based on a given configuration.
 The Optimizer first gets from the user application(s) requirements such as OS, region, cpu, memory, storage, network, etc.. 
 After calculating All the options, the Optimizer suggests the user the cheapest configuration of spot instances to run their app.
 
-## Getting Started 
-****
+## Getting Started
 To start using The Cloud Cost Optimizer, please clone this git repository:
 ```
 git clone https://github.com/AdiY10/SpotCalculator.git
