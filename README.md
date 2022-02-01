@@ -8,7 +8,7 @@ To start using The Cloud Cost Optimizer, please clone this git repository:
 ```
 git clone https://github.com/AdiY10/SpotCalculator.git
 ```
-### Prerequisite
+### Prerequisites
 * The Cloud Cost Optimizer requires Python3- Python 3.4 or newer installed. You can check the version by typing ```python3 --version``` in your command line. 
 * You can download the latest Python version from [here](https://www.python.org/downloads/).
 
