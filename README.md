@@ -6,7 +6,7 @@ After calculating All the options, the Optimizer suggests the user the cheapest 
 ## Getting Started
 To start using The Cloud Cost Optimizer, please clone this git repository:
 ```
-git clone https://github.com/AdiY10/SpotCalculator.git
+git clone https://github.com/AdiY10/CloudCostOptimizer.git
 ```
 ### Prerequisites
 * The Cloud Cost Optimizer requires Python3- Python 3.4 or newer installed. You can check the version by typing ```python3 --version``` in your command line. 
