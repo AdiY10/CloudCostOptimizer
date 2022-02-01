@@ -9,8 +9,7 @@ To start using The Cloud Cost Optimizer, please clone this git repository:
 git clone https://github.com/AdiY10/SpotCalculator.git
 ```
 ### Prerequisite
-* The Cloud Cost Optimizer requires Python3
-* Python 3.4 or newer installed. You can check the version by typing ```python3 --version``` in your command line. 
+* The Cloud Cost Optimizer requires Python3- Python 3.4 or newer installed. You can check the version by typing ```python3 --version``` in your command line. 
 * You can download the latest Python version from [here](https://www.python.org/downloads/).
 
 ### Installation:
@@ -108,8 +107,8 @@ has different resource requirements, which describes by the memory, vCPUs etc...
 * Throughput (MiB/s)- max throughput per volume. 
 
 ## Results
-The optimizer provides an API (.json file- *FleetResults.json*) which present the best configurations (limited to 10) for the current workload.
-****The API consists of a list of items, where each item represents a result of the Optimizer, with the first item being the best result, and so on.**** 
+The output of the Optimizer is a json file containing  a list of configurations. Each configuration represents an assignment of all application components to AWS instances.
+
 ### Example of the API- Best Result Only:
 ```
 [
