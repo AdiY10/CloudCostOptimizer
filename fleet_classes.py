@@ -58,12 +58,16 @@ class ComponentOffer(object):
 
 
 class GroupedInstance(object):
-    def __init__(self, instance, components): ## Offer for each combination
+    def __init__(self, instance, components, pricing): ## Offer for each combination
         self.spot_price = round(instance['spot_price'],5)
         self.components = components
         self.instance = instance
         # self.region = instance['region'] ##cross region option
-        self.total_price = self.spot_price ##+ sum(map(lambda c: c.storage_price,components)) in case EBS should be calculated
+        self.onDemand = round(instance['onDemandPrice'],5)
+        if pricing == 'spot':
+            self.total_price = self.spot_price  ##+ sum(map(lambda c: c.storage_price,components)) in case EBS should be calculated
+        else:
+            self.total_price = self.onDemand ##+ sum(map(lambda c: c.storage_price,components)) in case EBS should be calculated
 
     def get_info(self):
         return(self.components)
@@ -71,7 +75,8 @@ class GroupedInstance(object):
 class Offer(object):
     def __init__(self,partitions,app_sizes):
        self.remaining_partitions = list(map(lambda p: GroupedParam(p,app_sizes), partitions))
-       self.total_price = sum(map(lambda p: p.storage_price,self.remaining_partitions))
+       # self.onDemand = sum(map(lambda p: p.storage_price,self.remaining_partitions))
+       # self.total_price = sum(map(lambda p: p.storage_price,self.remaining_partitions))
        self.instance_groups = []
        self.region = ''
        #self.score = calculate_offer_score(self.remaining_partitions) ## currently not relevant

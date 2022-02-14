@@ -9,7 +9,7 @@ This script is for the non-web-based optimizer
 '''
 calc = SpotCalculator()
 
-def serialize_group(group:Offer):
+def serialize_group(group:Offer, pricing):
     res = dict()
     res['price'] = round(group.total_price,5)
     res['instances'] = list(map(lambda i:serializeInstance(i),group.instance_groups))
@@ -32,6 +32,7 @@ def serializeComponent(component: ComponentOffer):
 def runOptimizer():
     file = open('input_Fleet.json')
     filter = json.load(file)
+    pricing = filter['spot/onDemand']
     shared_apps = []
     partitions = []
     app_size = dict()
@@ -50,8 +51,8 @@ def runOptimizer():
         partitions.append(shared_apps)
     os = filter['selectedOs']
     region = filter['region'] if 'region' in filter else 'all'
-    listOfOffers = calc.get_fleet_offers(os, region, app_size, partitions)
-    res = list(map(lambda g: serialize_group(g), listOfOffers))
+    listOfOffers = calc.get_fleet_offers(os, region, app_size, partitions, pricing)
+    res = list(map(lambda g: serialize_group(g,pricing), listOfOffers))
     with open('FleetResults.json', 'w', encoding='utf-8') as f:
         json.dump(res, f, ensure_ascii=False, indent=4)
 

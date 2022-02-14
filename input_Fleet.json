@@ -1,6 +1,7 @@
 {
     "selectedOs": "linux",
     "region": "all",
+    "spot/onDemand": "onDemand",
     "apps": [
         {
             "app": "App1",

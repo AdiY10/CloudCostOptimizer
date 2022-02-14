@@ -50,17 +50,17 @@ class SpotCalculator:
         return lst[0:30]
 
     ##fleet offers
-    def get_fleet_offers(self, os, region, app_size, params): ## params- list of all components
-        ec2_data = self.get_ec2_from_cache(region, os)
-        # if os == 'linux':
-        #     file = open('ec2_data_Linux.json')
-        # else:
-        #     file = open('ec2_data_Windows.json')
-        # ec2_data = json.load(file)
+    def get_fleet_offers(self, os, region, app_size, params, pricing): ## params- list of all components
+        # ec2_data = self.get_ec2_from_cache(region, os)
+        if os == 'linux':
+            file = open('ec2_data_Linux.json')
+        else:
+            file = open('ec2_data_Windows.json')
+        ec2_data = json.load(file)
         ec2 = SpotInstanceCalculator(ec2_data)
         # ebs_data = self.get_ebs_from_cache(region) ## get EBS volumes from AWS
         # ebs = EbsCalculator(ebs_data)
-        return get_fleet_offers(params,region,os,app_size, ec2)
+        return get_fleet_offers(params,region,os,app_size, ec2, pricing)
 
     def is_cached(self, os, region):
         if self.cached_os[os]:

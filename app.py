@@ -37,7 +37,7 @@ def get_AWS_Data_ToJson():
 def get_spot_prices():
     if(request.method == 'POST'):
         filter = request.get_json() ## In case of using the GUI
-        # file = open('input_Single_instance.json.json') ## In case of using external json file
+        # file = open('input_Single_instance.json') ## In case of using external json file
         # input = json.load(file)
         # os = input['os']
         # vCPUs = input['vCPUs']
@@ -90,7 +90,8 @@ def get_fleet_prices():
             partitions.append(shared_apps)
         os = filter['selectedOs']
         region = filter['region'] if 'region' in filter else 'all'
-        listOfOffers = calc.get_fleet_offers(os,region,app_size,partitions)
+        pricing = filter['spot/onDemand'] if 'spot/onDemand' in filter else 'spot'
+        listOfOffers = calc.get_fleet_offers(os,region,app_size,partitions, pricing)
         res = list(map(lambda g: serialize_group(g),listOfOffers))
         with open('FleetECresults.json', 'w', encoding='utf-8') as f:
             json.dump(res, f, ensure_ascii=False, indent=4)
