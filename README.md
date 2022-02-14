@@ -1,5 +1,5 @@
 # Cloud Cost Optimizer
-The goal of the project to provide the user an api for getting [AWS spot](https://aws.amazon.com/ec2/spot/) (on-demand in the future, stay tuned) best (cheapest) offers based on a given configuration.
+The goal of the project is to provide the user an api for getting [AWS spot instances](https://aws.amazon.com/ec2/spot/) (or on-demand) best (cheapest) offers based on a given configuration.
 The Optimizer first gets from the user application(s) requirements such as OS, region, cpu, memory, storage, network, etc.. 
 After calculating All the options, the Optimizer suggests the user the cheapest configuration of spot instances to run their app.
 
@@ -34,6 +34,7 @@ The user's workload should be in the **input_fleet.json** file- don't forget to 
 {
     "selectedOs": "linux",
     "region": "all",
+    "spot/onDemand": "spot",
     "apps": [
         {
             "app": "App1",
@@ -98,6 +99,7 @@ has different resource requirements, which describes by the memory, vCPUs etc...
 * vCPUs - min number of vCPUs in the instance 
 * Memory (GB) - min memory (RAM) size in the instance 
 * OS - operating system for the instance 
+* spot/onDemand - choose AWS instances pricing option- **spot / on-Demand**
 #### Optional parameters:
 * Region - used if a specific region is required, otherwise, searches in all regions 
 * Category - specifies the instance category- General Purpose, Compute Optimized, Memory Optimized, Media Accelerator Instance, Storage Optimized, GPU instance.
