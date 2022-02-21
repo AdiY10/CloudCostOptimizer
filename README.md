@@ -1,7 +1,7 @@
 # Cloud Cost Optimizer
-The goal of the project is to provide the user an api for getting [AWS spot instances](https://aws.amazon.com/ec2/spot/) (or on-demand) best (cheapest) offers based on a given configuration.
+The goal of the project is to provide the user an api for getting [AWS spot instances](https://aws.amazon.com/ec2/spot/) (or on-demand) best offers based on a given configuration.
 The Optimizer first gets from the user application(s) requirements such as OS, region, cpu, memory, storage, network, etc.. 
-After calculating All the options, the Optimizer suggests the user the cheapest configuration of spot instances to run their app.
+After calculating All the options, the Optimizer suggests the user the cheapest configuration of EC2 instances to run their app.
 
 ## Getting Started
 To start using The Cloud Cost Optimizer, please clone this git repository:

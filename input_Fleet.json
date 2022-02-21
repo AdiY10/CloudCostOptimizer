@@ -1,7 +1,7 @@
 {
     "selectedOs": "linux",
     "region": "all",
-    "spot/onDemand": "onDemand",
+    "spot/onDemand": "spot",
     "apps": [
         {
             "app": "App1",
@@ -9,7 +9,7 @@
             "components": [
                 {
                     "memory": 8,
-                    "vCPUs": 4,
+                    "vCPUs": 8,
                     "network": 5,
                     "behavior": "terminate",
                     "frequency": "2",
