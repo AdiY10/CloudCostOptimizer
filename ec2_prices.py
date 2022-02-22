@@ -24,7 +24,7 @@ class Ec2Parser:
     def get_ec2(self, os):
         regions = constants.regions.copy()
         res = grequests.map(self.get_ec2_region(region, os) for region in regions)
-        res = [i for i in res if i]
+        # res = [i for i in res if i]
         res = list(map(self.parse_ec2_response, res))
         return {res[i][0]['region']: res[i] for i in range(0, len(res))}
 

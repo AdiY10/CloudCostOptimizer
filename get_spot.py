@@ -57,6 +57,7 @@ class SpotCalculator:
         # else:
         #     file = open('ec2_data_Windows.json')
         # ec2_data = json.load(file)
+        print('calculating best configuration')
         ec2 = SpotInstanceCalculator(ec2_data)
         # ebs_data = self.get_ebs_from_cache(region) ## get EBS volumes from AWS
         # ebs = EbsCalculator(ebs_data)

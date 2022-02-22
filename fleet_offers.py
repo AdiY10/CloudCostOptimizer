@@ -20,12 +20,12 @@ class FleetCalculator:
 
     def calculate_limits_cpu(self,region):
         maxCPU = max(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
-        minCPU = min(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
+        # minCPU = min(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
         return float(maxCPU)
 
     def calculate_limits_memory(self,region):
         maxMemory = max(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
-        minMemory = min(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
+        # minMemory = min(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
         return float(maxMemory)
 
     def createComponentOffer(self,component: Component,region):
