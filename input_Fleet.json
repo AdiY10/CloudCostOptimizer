@@ -1,7 +1,8 @@
 {
     "selectedOs": "linux",
-    "region": "all",
+    "region": ["us-east-2", "us-east-1","eu-west-1","sa-east-1"],
     "spot/onDemand": "spot",
+    "AvailabilityZone": "all",
     "apps": [
         {
             "app": "App1",

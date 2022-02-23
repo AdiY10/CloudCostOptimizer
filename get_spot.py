@@ -88,7 +88,7 @@ class SpotCalculator:
             return self.ec2_cache[os]
         else:
             ec2 = Ec2Parser()
-            if region != 'all':
+            if region != 'all' and not isinstance(region, list):
                 ec2_data = ec2.get_ec2_for_region(os, region)
                 ec2_data = self.AWSPrice.calculateSpotPrice(ec2_data)
                 # with open('ec2_data.json', 'w', encoding='utf-8') as f:
@@ -98,7 +98,7 @@ class SpotCalculator:
                 self.ec2_cache[os][region] = ec2_data[region]
                 return ec2_data
             else:
-                ec2_data = ec2.get_ec2(os)
+                ec2_data = ec2.get_ec2(os,region)
                 ec2_data = self.AWSPrice.calculateSpotPrice(ec2_data)
                 # with open('ec2_data.json', 'w', encoding='utf-8') as f:
                 #     json.dump(ec2_data, f, ensure_ascii=False, indent=4)

@@ -138,7 +138,9 @@ class FleetCalculator:
 
 def get_fleet_offers(params,region,os,app_size,ec2, pricing):
     res = []
-    regions = [region]
+    regions = region
+    if not isinstance(region, list):
+        regions = [region]
     calculator = FleetCalculator(ec2)
     if region == 'all':
         regions = constants.regions.copy()

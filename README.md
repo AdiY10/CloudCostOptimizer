@@ -22,19 +22,20 @@ $ pip install grequests
 
 ### Usage
 ```
-$ python Fleet_Optimizer.py [json_input_file]
+$ python Fleet_Optimizer.py
 ```
 Where the following command activate the Optimizer
 
 ## Parameters
 The file **input_fleet.json** is an example of an input (see input_fleet_instructions.json for more explanations).
-The user's workload should be in the **input_fleet.json** file- don't forget to change it.
+The user's workload should be in the **input_fleet.json** file- **don't forget to change it according to your needs.**
 #### Example of an input json file:
 ```
 {
     "selectedOs": "linux",
-    "region": "all",
+    "region": ["eu-south-1", "eu-west-3", "us-east-2","us-east-1"],
     "spot/onDemand": "spot",
+    "AvailabilityZone": "all",
     "apps": [
         {
             "app": "App1",
@@ -101,7 +102,11 @@ has different resource requirements, which describes by the memory, vCPUs etc...
 * OS - operating system for the instance 
 * spot/onDemand - choose AWS instances pricing option- **spot / on-Demand**
 #### Optional parameters:
-* Region - used if a specific region is required, otherwise, searches in all regions 
+* Region - used if a specific region is required, otherwise, searches in all regions.
+  * region defined as "all"- to look for the best configuration, in all regions
+  * region defined as specific region, for example "us-east-2"- to look for the best configuration only in us-east-2
+  * region defined as list of multiple regions- ["eu-west-1","eu-east-2","sa-east-1"]- to look for the best configuration in these regions
+* AvailabilityZone - used if specific AZ is required
 * Category - specifies the instance category- General Purpose, Compute Optimized, Memory Optimized, Media Accelerator Instance, Storage Optimized, GPU instance.
 * Interruption Behavior- display only instances meeting a specific interruption behavior criteria (stop / hibernate / terminate) - in case of using Spot instances.
 * Interruption frequency- Represents the rate at which Spot will be reclaimed capacity (0- *< 5%*,1- *5-10%*,2- *10-15%*,3- *15-20%*, 4- *>20%*)

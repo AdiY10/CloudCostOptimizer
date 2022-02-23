@@ -9,11 +9,14 @@ This script is for the non-web-based optimizer
 '''
 calc = SpotCalculator()
 
-def serialize_group(group:Offer, pricing):
+def serialize_group(group:Offer, pricing, AvailabilityZone):
     res = dict()
     res['price'] = round(group.total_price,5)
-    res['instances'] = list(map(lambda i:serializeInstance(i),group.instance_groups))
+    res['EC2 Type'] = pricing
     res['region'] = group.region
+    if AvailabilityZone != 'NA':
+        res['AvailabilityZone'] = AvailabilityZone
+    res['instances'] = list(map(lambda i:serializeInstance(i),group.instance_groups))
     return res
 
 def serializeInstance(instance):
@@ -51,8 +54,9 @@ def runOptimizer():
         partitions.append(shared_apps)
     os = filter['selectedOs']
     region = filter['region'] if 'region' in filter else 'all'
+    AvailabilityZone = filter['AvailabilityZone'] if 'AvailabilityZone' in filter else 'NA'
     listOfOffers = calc.get_fleet_offers(os, region, app_size, partitions, pricing)
-    res = list(map(lambda g: serialize_group(g,pricing), listOfOffers))
+    res = list(map(lambda g: serialize_group(g,pricing,AvailabilityZone), listOfOffers))
     print('Optimizer has found you the optimal configuration. check it out')
     with open('FleetResults.json', 'w', encoding='utf-8') as f:
         json.dump(res, f, ensure_ascii=False, indent=4)

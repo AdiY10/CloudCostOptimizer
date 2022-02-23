@@ -21,8 +21,11 @@ class Ec2Parser:
     def get_ec2_for_region(self, os, region):
         return {region: list(self.parse_ec2_response(requests.get('https://calculator.aws/pricing/1.0/ec2/region/' + region + '/ondemand/' + os + '/index.json')))}
 
-    def get_ec2(self, os):
-        regions = constants.regions.copy()
+    def get_ec2(self, os, region):
+        if isinstance(region, list):
+            regions = region
+        else:
+            regions = constants.regions.copy()
         res = grequests.map(self.get_ec2_region(region, os) for region in regions)
         # res = [i for i in res if i]
         res = list(map(self.parse_ec2_response, res))
