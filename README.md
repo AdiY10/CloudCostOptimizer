@@ -22,13 +22,13 @@ $ pip install grequests
 
 ### Usage
 ```
-$ python Fleet_Optimizer.py [json_input_file]
+$ python Fleet_Optimizer.py
 ```
 Where the following command activate the Optimizer
 
 ## Parameters
 The file **input_fleet.json** is an example of an input (see input_fleet_instructions.json for more explanations).
-The user's workload should be in the **input_fleet.json** file- don't forget to change it.
+The user's workload should be in the **input_fleet.json** file- **don't forget to change it.**
 #### Example of an input json file:
 ```
 {
