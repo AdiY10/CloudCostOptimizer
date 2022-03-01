@@ -19,13 +19,13 @@ class FleetCalculator:
         self.count = 0
 
     def calculate_limits_cpu(self,region):
-        maxCPU = max(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
+        maxCPU =  max(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
         # minCPU = min(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
         return float(maxCPU)
 
     def calculate_limits_memory(self,region):
-        maxMemory = max(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
-        # minMemory = min(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
+        maxMemory = max(d['memory'] for d in self.ec2_calculator.ec2.get(region))
+        # minMemory = min(d['memory'] for d in self.ec2_calculator.ec2.get(region))
         return float(maxMemory)
 
     def createComponentOffer(self,component: Component,region):
@@ -46,7 +46,7 @@ class FleetCalculator:
     #     return [[GroupedInstance(instances[i],components, pricing)] for i in range(min(len(instances),2))]
 
 
-    def match_group(self,grouped_param:GroupedParam,region, pricing): ## finds best configuration for each combination
+    def match_group(self,grouped_param:GroupedParam,region, pricing, Architecture): ## finds best configuration for each combination
         sub_combination = []
         for singleComponent in grouped_param.params:
             sub_combination.append(singleComponent.get_component_name())
@@ -62,8 +62,9 @@ class FleetCalculator:
             limitsMemory = self.calculate_limits_memory(region)
             if(grouped_param.total_vcpus <= limitsCPU and grouped_param.total_memory <= limitsMemory):
                 instances = self.ec2_calculator.get_spot_estimations(grouped_param.total_vcpus, grouped_param.total_memory,
-                                                                         region, 'all', grouped_param.behavior,
-                                                                         grouped_param.interruption_frequency, grouped_param.network,grouped_param.burstable)
+                                                                         Architecture, region, 'all', grouped_param.behavior,
+                                                                         grouped_param.interruption_frequency, grouped_param.network,
+                                                                         grouped_param.burstable)
                 combination = []
                 for singleComponent in grouped_param.params:
                     combination.append(singleComponent.get_component_name())
@@ -110,10 +111,10 @@ class FleetCalculator:
         return result  ## result is a list of Offer objects
 
 
-    def get_offers(self, group: Offer, region, pricing):
+    def get_offers(self, group: Offer, region, pricing, Architecture):
         instances = []
         for i in group.remaining_partitions:
-            instances.append(self.match_group(i,region, pricing)) ## finds best configuration for each combination
+            instances.append(self.match_group(i,region, pricing, Architecture)) ## finds best configuration for each combination
             # for i in instances:
             #     print('i',i)
             #     for j in i:
@@ -136,7 +137,7 @@ class FleetCalculator:
         return result ## result is a list of Offer objects
 
 
-def get_fleet_offers(params,region,os,app_size,ec2, pricing):
+def get_fleet_offers(params,region,os,app_size,ec2, pricing, Architecture):
     res = []
     regions = region
     if not isinstance(region, list):
@@ -161,22 +162,22 @@ def get_fleet_offers(params,region,os,app_size,ec2, pricing):
         ## Brute-Force Algorithm- optimal results / more complex
         groups = create_groups(updated_params, app_size) ## creates all the possible combinations
         for group in groups: ## for each combination (group) find N (=3) best offers ##Algorithm for optimal results
-            res += calculator.get_offers(group,regionToCheck, pricing)
+            res += calculator.get_offers(group,regionToCheck, pricing, Architecture)
 
         # ## First Step- match an instance for every component
         # firstBranch = simplestComb(updated_params, app_size)
         # for combination in firstBranch:
-        #     res += calculator.get_offers(combination, regionToCheck, pricing)
+        #     res += calculator.get_offers(combination, regionToCheck, pricing, Architecture)
 
         # ## onePair Algorithm
         # pairs = OnePair(updated_params, app_size)
         # for combination in pairs:
-        #     res += calculator.get_offers(combination, regionToCheck, pricing)
+        #     res += calculator.get_offers(combination, regionToCheck, pricing, Architecture)
 
         # ## AllPairs Algorithm
         # pairs = AllPairs(updated_params, app_size)
         # for combination in pairs:
-        #     res += calculator.get_offers(combination, regionToCheck, pricing)
+        #     res += calculator.get_offers(combination, regionToCheck, pricing, Architecture)
 
         # ## B&B Algorithm- first step- cross region
         # print(updated_params)
@@ -188,10 +189,10 @@ def get_fleet_offers(params,region,os,app_size,ec2, pricing):
         # else:
         #     firstBranch = simplestComb(updated_params, app_size)
         #     for combination in firstBranch:
-        #         res += calculator.get_offers(combination, regionToCheck, pricing)
+        #         res += calculator.get_offers(combination, regionToCheck, pricing, Architecture)
         # secondBranch = branchStep(firstBranch)
         # for combination in secondBranch:
-        #     res += calculator.get_offers(combination, regionToCheck, pricing)
+        #     res += calculator.get_offers(combination, regionToCheck, pricing, Architecture)
 
 
         ## Full B&B Algorithm
@@ -200,6 +201,8 @@ def get_fleet_offers(params,region,os,app_size,ec2, pricing):
     res = list(filter(lambda g: g is not None, res))
     if not res:
         print('Couldnt find any match')
+    else:
+        print('Optimizer has found you the optimal configuration. check it out')
     return sort_fleet_offers(res)
 
 

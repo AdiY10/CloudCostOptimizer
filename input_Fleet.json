@@ -1,8 +1,9 @@
 {
     "selectedOs": "linux",
-    "region": ["us-east-2", "us-east-1","eu-west-1","sa-east-1","ap-south-1"],
+    "region": "all",
     "spot/onDemand": "spot",
     "AvailabilityZone": "all",
+    "Architecture": "all",
     "apps": [
         {
             "app": "App1",
@@ -57,15 +58,11 @@
         },
         {
             "app": "App3",
-	    "share": false,
+	        "share": false,
             "components": [
                 {
-                    "memory": 16,
-                    "vCPUs": 6,
-                    "behavior": "stop",
-                    "frequency": "0",
-                    "storageType": null,
-                    "burstable": true,
+                    "memory": 2,
+                    "vCPUs": 2,
                     "name": "Comp4"
                 }
             ]

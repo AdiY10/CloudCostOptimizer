@@ -55,9 +55,9 @@ def runOptimizer():
     os = filter['selectedOs']
     region = filter['region'] if 'region' in filter else 'all'
     AvailabilityZone = filter['AvailabilityZone'] if 'AvailabilityZone' in filter else 'NA'
-    listOfOffers = calc.get_fleet_offers(os, region, app_size, partitions, pricing)
+    Architecture = filter['Architecture'] if 'Architecture' in filter else 'all'
+    listOfOffers = calc.get_fleet_offers(os, region, app_size, partitions, pricing,Architecture) ## add Architecture
     res = list(map(lambda g: serialize_group(g,pricing,AvailabilityZone), listOfOffers))
-    print('Optimizer has found you the optimal configuration. check it out')
     with open('FleetResults.json', 'w', encoding='utf-8') as f:
         json.dump(res, f, ensure_ascii=False, indent=4)
 

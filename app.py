@@ -91,7 +91,7 @@ def get_fleet_prices():
         os = filter['selectedOs']
         region = filter['region'] if 'region' in filter else 'all'
         pricing = filter['spot/onDemand'] if 'spot/onDemand' in filter else 'spot'
-        listOfOffers = calc.get_fleet_offers(os,region,app_size,partitions, pricing)
+        listOfOffers = calc.get_fleet_offers(os,region,app_size,partitions, pricing,'all')
         res = list(map(lambda g: serialize_group(g),listOfOffers))
         with open('FleetECresults.json', 'w', encoding='utf-8') as f:
             json.dump(res, f, ensure_ascii=False, indent=4)
