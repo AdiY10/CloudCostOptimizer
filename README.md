@@ -116,6 +116,7 @@ has different resource requirements, which describes by the memory, vCPUs etc...
 * Network - required network capacity
 * IOPS (MiB I/O) - max IOPS per volume.
 * Throughput (MiB/s)- max throughput per volume. 
+* bla bla bla
 
 ## Results
 The output of the Optimizer is a json file containing  a list of configurations. Each configuration represents an assignment of all application components to AWS instances.
