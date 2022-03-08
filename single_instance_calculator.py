@@ -21,8 +21,8 @@ class SpotInstanceCalculator:
         ec2 = self.get_spot_filter(vCPUs, memory, region, type, behavior, frequency, network, burstable)
         return sorted(ec2, key=lambda p: p['spot_price'])
 
-    def get_spot_estimations(self, vCPUs, memory, Architecture ,region='all', type='all', behavior='terminate', frequency=4, network=0,burstable = True):
-        ec2 = self.get_spot_filter( vCPUs, memory, Architecture, region, type, behavior, frequency, network, burstable)
+    def get_spot_estimations(self, vCPUs, memory, Architecture, typeMajor, region='all', type='all', behavior='terminate', frequency=4, network=0,burstable = True):
+        ec2 = self.get_spot_filter( vCPUs, memory, Architecture, typeMajor, region, type, behavior, frequency, network, burstable)
         # lst = []
         # for price in ec2:
         #     lst.append(price)
@@ -42,7 +42,7 @@ class SpotInstanceCalculator:
     #         print('min', (min(details['SpotPriceHistory'], key=lambda x: x['SpotPrice']))['SpotPrice'])
 
 
-    def get_spot_filter(self, vCPUs, memory, Architecture ,region='all', type='all', behavior='terminate', frequency = 4, network = 0,burstable = True):
+    def get_spot_filter(self, vCPUs, memory, Architecture, typeMajor,region='all', type='all', behavior='terminate', frequency = 4, network = 0,burstable = True):
         ec2_data = self.ec2
         result = []
         if region == 'all':
@@ -53,6 +53,8 @@ class SpotInstanceCalculator:
         fi = filter(lambda price: float(price['cpu']) >= vCPUs and float(price['memory']) >= memory and price['interruption_frequency_filter'] <= frequency, result)
         if Architecture != 'all':
             fi = filter(lambda price: price['Architecture'] in (Architecture), result)
+        if typeMajor != 'all':
+            fi = filter(lambda price: price['typeMajor'] in (typeMajor), result)
         fi = filter(self.networkFilter(network,burstable), fi)
         fi = filter(self.interruptionFilter(behavior), fi)
         fi = filter(set_string_filter(type, 'family'), fi)

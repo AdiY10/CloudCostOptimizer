@@ -109,6 +109,7 @@ has different resource requirements, which describes by the memory, vCPUs etc...
   * region defined as list of multiple regions- ["eu-west-1","eu-east-2","sa-east-1"]- to look for the best configuration in these regions
 * AvailabilityZone - used if specific AZ is required
 * Architecture - processor architecture, can be selected as- 'all' / 'x86_64' (64-bit x86) / 'arm64' (64-bit arm) / 'i386' (32-bit) / 'x86_64_mac' (64-bit mac)
+* typeMajor - used when there only specific instance types are required. for example, when only C5,R5,A1 are supported-  "typeMajor": ["c5","r5","a1"]
 * Category - specifies the instance category- General Purpose, Compute Optimized, Memory Optimized, Media Accelerator Instance, Storage Optimized, GPU instance.
 * Interruption Behavior- display only instances meeting a specific interruption behavior criteria (stop / hibernate / terminate) - in case of using Spot instances.
 * Interruption frequency- Represents the rate at which Spot will be reclaimed capacity (0- *< 5%*,1- *5-10%*,2- *10-15%*,3- *15-20%*, 4- *>20%*)

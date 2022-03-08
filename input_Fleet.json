@@ -1,9 +1,10 @@
 {
     "selectedOs": "linux",
     "region": "all",
-    "spot/onDemand": "spot",
+    "spot/onDemand": "onDemand",
     "AvailabilityZone": "all",
     "Architecture": "all",
+    "typeMajor": ["c5","r5","m5","a1"],
     "apps": [
         {
             "app": "App1",
