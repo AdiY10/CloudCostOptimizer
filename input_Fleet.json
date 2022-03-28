@@ -59,7 +59,7 @@
         },
         {
             "app": "App3",
-	        "share": false,
+            "share": false,
             "components": [
                 {
                     "memory": 2,

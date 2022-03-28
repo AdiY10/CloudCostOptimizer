@@ -1,6 +1,6 @@
 # Cloud Cost Optimizer
 The goal of the project is to provide the user an api for getting [AWS spot instances](https://aws.amazon.com/ec2/spot/) (or on-demand) best offers based on a given configuration.
-The Optimizer first gets from the user application(s) requirements such as OS, region, cpu, memory, storage, network, etc.. 
+The Optimizer first gets from the user application(s) requirements such as OS, region, cpu, memory, storage, network, etc..
 After calculating All the options, the Optimizer suggests the user the cheapest configuration of EC2 instances to run their app.
 
 ## Getting Started
@@ -9,7 +9,7 @@ To start using The Cloud Cost Optimizer, please clone this git repository:
 git clone https://github.com/AdiY10/CloudCostOptimizer.git
 ```
 ### Prerequisites
-* The Cloud Cost Optimizer requires Python3- Python 3.4 or newer installed. You can check the version by typing ```python3 --version``` in your command line. 
+* The Cloud Cost Optimizer requires Python3- Python 3.4 or newer installed. You can check the version by typing ```python3 --version``` in your command line.
 * You can download the latest Python version from [here](https://www.python.org/downloads/).
 
 ### Installation
@@ -98,9 +98,9 @@ App1 includes three components (Comp1, Comp2, Comp5), and App2 includes one comp
 has different resource requirements, which describes by the memory, vCPUs etc...
 
 #### Required parameters:
-* vCPUs - min number of vCPUs in the instance 
-* Memory (GB) - min memory (RAM) size in the instance 
-* OS - operating system for the instance 
+* vCPUs - min number of vCPUs in the instance
+* Memory (GB) - min memory (RAM) size in the instance
+* OS - operating system for the instance
 * spot/onDemand - choose AWS instances pricing option- **spot / on-Demand**
 #### Optional parameters:
 * Region - used if a specific region is required, otherwise, searches in all regions.
@@ -115,7 +115,7 @@ has different resource requirements, which describes by the memory, vCPUs etc...
 * Interruption frequency- Represents the rate at which Spot will be reclaimed capacity (0- *< 5%*,1- *5-10%*,2- *10-15%*,3- *15-20%*, 4- *>20%*)
 * Network - required network capacity
 * IOPS (MiB I/O) - max IOPS per volume.
-* Throughput (MiB/s)- max throughput per volume. 
+* Throughput (MiB/s)- max throughput per volume.
 
 ## Results
 The output of the Optimizer is a json file containing  a list of configurations. Each configuration represents an assignment of all application components to AWS instances.
