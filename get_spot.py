@@ -10,7 +10,7 @@ from single_instance_calculator import SpotInstanceCalculator
 from FindPrice import GetPriceFromAWS
 
 # from ebs_prices import get_ebs_for_region, get_ebs
-# import json
+import json
 
 
 class SpotCalculator:
@@ -83,21 +83,40 @@ class SpotCalculator:
 
     ##fleet offers
     def get_fleet_offers(
-        self, os, region, app_size, params, pricing, architecture, type_major
+        self, user_os, region, app_size, params, pricing, architecture, type_major
     ):  ## params- list of all components
         """Get_fleet_offers function."""
-        ec2_data = self.get_ec2_from_cache(region, os)
-        # if os == 'linux':
-        #     file = open('ec2_data_Linux.json')
-        # else:
-        #     file = open('ec2_data_Windows.json')
-        # ec2_data = json.load(file)
+        import os.path
+        import datetime
+
+        if user_os == "linux":
+            if (
+                datetime.datetime.now()
+                - datetime.datetime.fromtimestamp(
+                    os.path.getmtime("ec2_data_Linux.json")
+                )
+            ).days != 0:  ## if the file hasn't modified today
+                ec2_data = self.get_ec2_from_cache(region, user_os)
+            else:
+                file = open("ec2_data_Linux.json")
+                ec2_data = json.load(file)
+        else:
+            if (
+                datetime.datetime.now()
+                - datetime.datetime.fromtimestamp(
+                    os.path.getmtime("ec2_data_Linux.json")
+                )
+            ).days != 0:  ## if the file hasn't modified today
+                ec2_data = self.get_ec2_from_cache(region, user_os)
+            else:
+                file = open("ec2_data_Windows.json")
+                ec2_data = json.load(file)
         print("calculating best configuration")
         ec2 = SpotInstanceCalculator(ec2_data)
         # ebs_data = self.get_ebs_from_cache(region) ## get EBS volumes from AWS
         # ebs = EbsCalculator(ebs_data)
         return get_fleet_offers(
-            params, region, os, app_size, ec2, pricing, architecture, type_major
+            params, region, user_os, app_size, ec2, pricing, architecture, type_major
         )
 
     def is_cached(self, os, region):
