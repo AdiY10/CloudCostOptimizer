@@ -146,20 +146,28 @@ class SpotCalculator:
             return self.ec2_cache[os]
         else:
             ec2 = Ec2Parser()
-            if region != "all" and not isinstance(region, list):
+            if region != 'all' and not isinstance(region, list):
                 ec2_data = ec2.get_ec2_for_region(os, region)
-                ec2_data = self.aws_price.calculate_spot_price(ec2_data)
-                # with open('ec2_data.json', 'w', encoding='utf-8') as f:
-                #     json.dump(ec2_data, f, ensure_ascii=False, indent=4)
+                ec2_data = self.AWSPrice.calculateSpotPrice(ec2_data)
+                if os == "linux":
+                    with open("ec2_data_Linux.json", "w", encoding="utf-8") as f:
+                        json.dump(ec2_data, f, ensure_ascii=False, indent=4)
+                else:
+                    with open("ec2_data_Windows.json", "w", encoding="utf-8") as f:
+                        json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 if os not in self.ec2_cache:
                     self.ec2_cache[os] = {}
                 self.ec2_cache[os][region] = ec2_data[region]
                 return ec2_data
             else:
-                ec2_data = ec2.get_ec2(os, region)
-                ec2_data = self.aws_price.calculate_spot_price(ec2_data)
-                # with open('ec2_data.json', 'w', encoding='utf-8') as f:
-                #     json.dump(ec2_data, f, ensure_ascii=False, indent=4)
+                ec2_data = ec2.get_ec2(os,region)
+                ec2_data = self.AWSPrice.calculateSpotPrice(ec2_data)
+                if os == "linux":
+                    with open("ec2_data_Linux.json", "w", encoding="utf-8") as f:
+                        json.dump(ec2_data, f, ensure_ascii=False, indent=4)
+                else:
+                    with open("ec2_data_Windows.json", "w", encoding="utf-8") as f:
+                        json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 self.ec2_cache[os] = ec2_data
                 self.cached_os[os] = True
                 return ec2_data
