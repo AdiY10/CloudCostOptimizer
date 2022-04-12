@@ -42,7 +42,7 @@ def get_spot_prices():
         # os = input['os']
         # v_cpus = input['v_cpus']
         os = filter["selectedOs"]
-        v_cpus = float(filter["v_cpus"])
+        v_cpus = float(filter["vCPUs"])
         memory = float(filter["memory"])
         storage_size = float(filter["size"]) if "size" in filter else 0
         region = filter["selectedRegion"] if "selectedRegion" in filter else "all"

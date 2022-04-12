@@ -197,7 +197,15 @@ class GetPriceFromAWS:
                                         if os_name == os_type:
                                             index = data_region.index(item)
                                             # updating the item details with spot price
-                                            item["spot_price"] = float(value["prices"]["USD"])
+                                            if isinstance(value["prices"]["USD"], str):  ## check if string
+                                                item["spot_price"] = "N/A"
+                                                item["Price_per_CPU"] = "N/A"
+                                                item["Price_per_memory"] = "N/A"
+                                            else:
+                                                item["spot_price"] = float(value["prices"]["USD"])
+                                                item["Price_per_CPU"] = float(item["spot_price"] / float(item["cpu"]))
+                                                item["Price_per_memory"] = float(
+                                                    item["spot_price"] / float(item["memory"]))
                                             ec2[region][index] = item
         else: ##case of multiple regions
             if isinstance(region, list):
@@ -226,7 +234,15 @@ class GetPriceFromAWS:
                                             if os_name == os_type:
                                                 index = data_region.index(item)
                                                 # updating the item details with spot price
-                                                item["spot_price"] = float(value["prices"]["USD"])
+                                                try:
+                                                    item["spot_price"] = float(value["prices"]["USD"])
+                                                    item["Price_per_CPU"] = float(item["spot_price"] / float(item["cpu"]))
+                                                    item["Price_per_memory"] = float(
+                                                        item["spot_price"] / float(item["memory"]))
+                                                except:
+                                                    item["spot_price"] = "N/A"
+                                                    item["Price_per_CPU"] = "N/A"
+                                                    item["Price_per_memory"] ="N/A"
                                                 ec2[region][index] = item
         return ec2
 
