@@ -3,6 +3,7 @@
 from urllib.request import urlopen
 import json
 import pandas as pd
+import constants
 
 # import numpy as np
 # import boto3
@@ -114,10 +115,7 @@ class GetPriceFromAWS:
     #     self.calculateCorrelations()
     #     self.exportArraysToCsv()
 
-    def calculate_spot_price(self, ec2):
-        """Calculate spot price function."""
-        aws_data = self.calculate_price()
-        # print('Join spot prices')
+    def join_spot_prices(self, ec2, aws_data):
         for k, v in ec2.items():
             for price in v:
                 # ##boto3
@@ -146,6 +144,98 @@ class GetPriceFromAWS:
                     spot_price_value / float(price["memory"])
                 )
                 self.spot_price.append(spot_price_value)
+        return ec2
+
+    def correct_region(self,region):
+        if region == "us-east":
+            region = "us-east-1"
+        elif region == "us-west":
+            region = "us-west-1"
+        elif region == "apac-sin":
+            region = "ap-southeast-1"
+        elif region == "apac-syd":
+            region = "ap-southeast-2"
+        elif region == "apac-tokyo":
+            region = "ap-northeast-1"
+        elif region == "eu-ireland":
+            region = "eu-west-1"
+        return region
+
+    def correct_os(self,os):
+        if os == "linux":
+            os = "Linux"
+        elif os == "mswin":
+            os = "Windows"
+        else:
+            print('the os is wrong')
+        return os
+
+    def aws_data_extraction(self,ec2, region):
+        file_to_read = urlopen(self.url)
+        raw_data = file_to_read.read()
+        raw_data = raw_data.lstrip(b"callback(").rstrip(b");")
+        ## create json file
+        prices = json.loads(raw_data)
+        if region != "all" and not isinstance(region, list): ##case of one region
+            data_region = ec2[region]
+            for item in data_region:
+                # selecting searching criteria form ec2 file
+                os_type = item["os"]
+                type_name = item["typeName"]
+                # looping through the Prices JSON to find a match
+                for ec2_region in prices["config"]["regions"]:
+                    # check if the region is matching
+                    prices_region = self.correct_region(ec2_region["region"])
+                    if prices_region == region:
+                        for instance_type in ec2_region["instanceTypes"]:
+                            for size in instance_type["sizes"]:
+                                # check if the instance type is matching
+                                if size["size"].lower() == type_name.lower():
+                                    for value in size["valueColumns"]:
+                                        # check if the os is matching
+                                        os_name = self.correct_os(value["name"])
+                                        if os_name == os_type:
+                                            index = data_region.index(item)
+                                            # updating the item details with spot price
+                                            item["spot_price"] = float(value["prices"]["USD"])
+                                            ec2[region][index] = item
+        else: ##case of multiple regions
+            if isinstance(region, list):
+                regions = region
+            else:
+                regions = constants.regions.copy()
+            for region in regions:
+                region = self.correct_region(region)
+                data_region = ec2[region]
+                for item in data_region:
+                    # selecting searching criteria form ec2 file
+                    os_type = item["os"]
+                    type_name = item["typeName"]
+                    # looping through the Prices JSON to find a match
+                    for ec2_region in prices["config"]["regions"]:
+                        # check if the region is matching
+                        prices_region = self.correct_region(ec2_region["region"])
+                        if prices_region == region:
+                            for instance_type in ec2_region["instanceTypes"]:
+                                for size in instance_type["sizes"]:
+                                    # check if the instance type is matching
+                                    if size["size"].lower() == type_name.lower():
+                                        for value in size["valueColumns"]:
+                                            # check if the os is matching
+                                            os_name = self.correct_os(value["name"])
+                                            if os_name == os_type:
+                                                index = data_region.index(item)
+                                                # updating the item details with spot price
+                                                item["spot_price"] = float(value["prices"]["USD"])
+                                                ec2[region][index] = item
+        return ec2
+
+    def calculate_spot_price(self, ec2, region):
+        """Calculate spot price function."""
+        # aws_data = self.calculate_price()
+        # ec2 = self.join_spot_prices(ec2, aws_data)
+        print("Extracting Data from AWS")
+        ec2 = self.aws_data_extraction(ec2, region)
         # ec2 = self.add_scores(ec2)
         # self.analysis()
         return ec2
