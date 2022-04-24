@@ -116,6 +116,7 @@ class GetPriceFromAWS:
     #     self.exportArraysToCsv()
 
     def join_spot_prices(self, ec2, aws_data):
+        """Join spot prices function."""
         for k, v in ec2.items():
             for price in v:
                 # ##boto3
@@ -146,7 +147,8 @@ class GetPriceFromAWS:
                 self.spot_price.append(spot_price_value)
         return ec2
 
-    def correct_region(self,region):
+    def correct_region(self, region):
+        """Correct region function."""
         if region == "us-east":
             region = "us-east-1"
         elif region == "us-west":
@@ -161,22 +163,24 @@ class GetPriceFromAWS:
             region = "eu-west-1"
         return region
 
-    def correct_os(self,os):
+    def correct_os(self, os):
+        """Correct os function."""
         if os == "linux":
             os = "Linux"
         elif os == "mswin":
             os = "Windows"
         else:
-            print('the os is wrong')
+            print("the os is wrong")
         return os
 
-    def aws_data_extraction(self,ec2, region):
+    def aws_data_extraction(self, ec2, region):
+        """Aws_data_extraction function."""
         file_to_read = urlopen(self.url)
         raw_data = file_to_read.read()
         raw_data = raw_data.lstrip(b"callback(").rstrip(b");")
         ## create json file
         prices = json.loads(raw_data)
-        if region != "all" and not isinstance(region, list): ##case of one region
+        if region != "all" and not isinstance(region, list):  ##case of one region
             data_region = ec2[region]
             for item in data_region:
                 # selecting searching criteria form ec2 file
@@ -197,17 +201,26 @@ class GetPriceFromAWS:
                                         if os_name == os_type:
                                             index = data_region.index(item)
                                             # updating the item details with spot price
-                                            if isinstance(value["prices"]["USD"], str):  ## check if string
+                                            if isinstance(
+                                                value["prices"]["USD"], str
+                                            ):  ## check if string
                                                 item["spot_price"] = "N/A"
                                                 item["Price_per_CPU"] = "N/A"
                                                 item["Price_per_memory"] = "N/A"
                                             else:
-                                                item["spot_price"] = float(value["prices"]["USD"])
-                                                item["Price_per_CPU"] = float(item["spot_price"] / float(item["cpu"]))
+                                                item["spot_price"] = float(
+                                                    value["prices"]["USD"]
+                                                )
+                                                item["Price_per_CPU"] = float(
+                                                    item["spot_price"]
+                                                    / float(item["cpu"])
+                                                )
                                                 item["Price_per_memory"] = float(
-                                                    item["spot_price"] / float(item["memory"]))
+                                                    item["spot_price"]
+                                                    / float(item["memory"])
+                                                )
                                             ec2[region][index] = item
-        else: ##case of multiple regions
+        else:  ##case of multiple regions
             if isinstance(region, list):
                 regions = region
             else:
@@ -235,14 +248,22 @@ class GetPriceFromAWS:
                                                 index = data_region.index(item)
                                                 # updating the item details with spot price
                                                 try:
-                                                    item["spot_price"] = float(value["prices"]["USD"])
-                                                    item["Price_per_CPU"] = float(item["spot_price"] / float(item["cpu"]))
+                                                    item["spot_price"] = float(
+                                                        value["prices"]["USD"]
+                                                    )
+                                                    item["Price_per_CPU"] = float(
+                                                        item["spot_price"]
+                                                        / float(item["cpu"])
+                                                    )
                                                     item["Price_per_memory"] = float(
-                                                        item["spot_price"] / float(item["memory"]))
-                                                except:
+                                                        item["spot_price"]
+                                                        / float(item["memory"])
+                                                    )
+                                                except Exception as e:
+                                                    print(e)
                                                     item["spot_price"] = "N/A"
                                                     item["Price_per_CPU"] = "N/A"
-                                                    item["Price_per_memory"] ="N/A"
+                                                    item["Price_per_memory"] = "N/A"
                                                 ec2[region][index] = item
         return ec2
 
@@ -255,3 +276,4 @@ class GetPriceFromAWS:
         # ec2 = self.add_scores(ec2)
         # self.analysis()
         return ec2
+
