@@ -255,3 +255,4 @@ def get_fleet_offers(
     else:
         print("Optimizer has found you the optimal configuration. check it out")
     return sort_fleet_offers(res)
+

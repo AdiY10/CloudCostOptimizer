@@ -155,3 +155,4 @@ class Offer(object):
     def copy_group(self):
         """Copy group function."""
         return copy.deepcopy(self)
+

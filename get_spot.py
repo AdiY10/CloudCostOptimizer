@@ -176,3 +176,4 @@ class SpotCalculator:
                 self.ec2_cache[os] = ec2_data
                 self.cached_os[os] = True
                 return ec2_data
+

@@ -1,7 +1,7 @@
 """This class handles calls and parses data from EC2 and the SpotAdvisor."""
 
 import grequests
-import requests
+import requests  # type: ignore
 import constants
 
 
@@ -169,3 +169,4 @@ class Ec2Parser:
     def interruption_frequency(self, index):
         """Interruption_frequency function."""
         return {0: "<5%", 1: "5%-10%", 2: "10%-15%", 3: "15%-20%", 4: "<20%"}[index]
+

@@ -1,7 +1,8 @@
 """This script is for the non-web-based optimizer."""
 
 import json
-from fleet_classes import Offer, ComponentOffer, Component
+from fleet_classes import Offer, ComponentOffer
+from fleet_offers import Component
 from get_spot import SpotCalculator
 
 
@@ -78,3 +79,4 @@ def run_optimizer():
 
 if __name__ == "__main__":
     run_optimizer()
+
