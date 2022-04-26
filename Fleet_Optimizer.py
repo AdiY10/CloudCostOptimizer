@@ -4,26 +4,50 @@ import json
 from fleet_classes import Offer, ComponentOffer
 from fleet_offers import Component
 from get_spot import SpotCalculator
+import boto3
 
 
 calc = SpotCalculator()
 
+def use_boto3(instance_type, region, os):
+    client = boto3.client('ec2', region)
+    filters = [{'Name': 'instance-type', 'Values': [instance_type]}]
+    details = client.describe_spot_price_history(Filters=filters)
+    if details['SpotPriceHistory']:
+        # print(min(details['SpotPriceHistory'], key=lambda x: x['SpotPrice']))
+        details['SpotPriceHistory'] = [d for d in details['SpotPriceHistory'] if os in d['ProductDescription']]
+        if details['SpotPriceHistory']:
+            min_instance = min(details['SpotPriceHistory'], key=lambda x: x['SpotPrice'])
+            if 'Timestamp' in min_instance:
+                del min_instance['Timestamp']
+                min_instance['SpotPrice'] = float(min_instance['SpotPrice'])
+            return min_instance
+    return {'region': region, 'InstanceType': instance_type, 'SpotPrice': 'N/A'}
+        # for i in range(len(details['SpotPriceHistory'])):
+            # print(details['SpotPriceHistory'][i])
 
-def serialize_group(group: Offer, pricing, availability_zone):
+def serialize_group(group: Offer, pricing, availability_zone, os):
     """Serialize group in fleet option."""
     res = dict()
     res["price"] = round(group.total_price, 5)
     res["EC2 Type"] = pricing
     res["region"] = group.region
-    if availability_zone != "NA":
-        res["availability_zone"] = availability_zone
-    res["instances"] = list(map(lambda i: serialize_instance(i), group.instance_groups))
+    res["instances"] = list(map(lambda i: serialize_instance(i, os), group.instance_groups))
     return res
 
 
-def serialize_instance(instance):
+def serialize_instance(instance, os):
     """Lower level of serialize group in fleet option."""
     result = instance.instance.copy()
+    if os == 'linux':
+        os = 'Linux'
+    if os == 'windows':
+        os = 'Windows'
+    # boto3_data = use_boto3(instance.instance["typeName"],instance.instance["region"], os)
+    # if isinstance(boto3_data["SpotPrice"], float):
+    #     result["boto3_AZ"] = boto3_data["AvailabilityZone"]
+    #     result["boto3_ProductDescription"] = boto3_data["ProductDescription"]
+    # result["boto3_spot_price"] = boto3_data["SpotPrice"]
     result["spot_price"] = instance.instance["spot_price"]
     result["components"] = list(
         map(lambda param: serialize_component(param), instance.components)
@@ -69,10 +93,15 @@ def run_optimizer():
     type_major = filter["type_major"] if "type_major" in filter else "all"
     offers_list = calc.get_fleet_offers(
         os, region, app_size, partitions, pricing, architecture, type_major
-    )  ## add architecture
-    res = list(
-        map(lambda g: serialize_group(g, pricing, availability_zone), offers_list)
     )
+    # print('Connecting to boto3')
+    res = list(
+        map(lambda g: serialize_group(g, pricing, availability_zone, os), offers_list)
+    )
+    if not res:
+        print("Couldnt find any match")
+    else:
+        print("Optimizer has found you the optimal configuration. check it out")
     with open("FleetResults.json", "w", encoding="utf-8") as f:
         json.dump(res, f, ensure_ascii=False, indent=4)
 
