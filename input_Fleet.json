@@ -1,5 +1,5 @@
 {
-    "selectedOs": "windows",
+    "selectedOs": "linux",
     "region": "all",
     "spot/onDemand": "onDemand",
     "AvailabilityZone": "all",
