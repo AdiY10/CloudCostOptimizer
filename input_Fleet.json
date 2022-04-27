@@ -4,6 +4,7 @@
     "spot/onDemand": "onDemand",
     "AvailabilityZone": "all",
     "Architecture": "all",
+    "filterInstances": ["a1", "t4g","i3","t3a","c5a.xlarge"],
     "apps": [
         {
             "app": "App1",
@@ -11,7 +12,7 @@
             "components": [
                 {
                     "memory": 8,
-                    "vCPUs": 8,
+                    "vCPUs": 2,
                     "network": 5,
                     "behavior": "terminate",
                     "frequency": "2",
@@ -20,7 +21,7 @@
                 },
                 {
                     "memory": 8,
-                    "vCPUs": 3,
+                    "vCPUs": 4,
                     "network": 0,
                     "behavior": "hibernate",
                     "frequency": "3",
@@ -30,7 +31,7 @@
                 },
                                 {
                     "memory": 8,
-                    "vCPUs": 3,
+                    "vCPUs": 4,
                     "network": 0,
                     "behavior": "hibernate",
                     "frequency": "3",
@@ -42,7 +43,7 @@
         },
         {
             "app": "App2",
-            "share": false,
+            "share": true,
             "components": [
                 {
                     "memory": 10,
@@ -58,7 +59,7 @@
         },
         {
             "app": "App3",
-            "share": false,
+            "share": true,
             "components": [
                 {
                     "memory": 2,

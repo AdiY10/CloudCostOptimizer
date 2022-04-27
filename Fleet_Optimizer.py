@@ -68,6 +68,7 @@ def run_optimizer():
     file = open("input_Fleet.json")
     filter = json.load(file)
     pricing = filter["spot/onDemand"]
+    filter_instances = filter["filterInstances"]
     shared_apps = []
     partitions = []
     app_size = dict()
@@ -92,7 +93,7 @@ def run_optimizer():
     architecture = filter["architecture"] if "architecture" in filter else "all"
     type_major = filter["type_major"] if "type_major" in filter else "all"
     offers_list = calc.get_fleet_offers(
-        os, region, app_size, partitions, pricing, architecture, type_major
+        os, region, app_size, partitions, pricing, architecture, type_major, filter_instances
     )
     # print('Connecting to boto3')
     res = list(
