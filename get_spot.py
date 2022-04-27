@@ -88,7 +88,7 @@ class SpotCalculator:
 
     ##fleet offers
     def get_fleet_offers(
-        self, user_os, region, app_size, params, pricing, architecture, type_major
+        self, user_os, region, app_size, params, pricing, architecture, type_major, filter_instances
     ):  ## params- list of all components
         """Get_fleet_offers function."""
         import os.path
@@ -117,6 +117,12 @@ class SpotCalculator:
                 file = open("ec2_data_Windows.json")
                 ec2_data = json.load(file)
         print("calculating best configuration")
+        for k,v in ec2_data.items():
+            list_of_relevant_instances = []
+            for i in v:
+                if i['typeMajor'] not in filter_instances and i['typeMinor'] not in filter_instances and i['typeName'] not in filter_instances:
+                    list_of_relevant_instances.append(i)
+            ec2_data[k] = list_of_relevant_instances
         ec2 = SpotInstanceCalculator(ec2_data)
         # ebs_data = self.get_ebs_from_cache(region) ## get EBS volumes from AWS
         # ebs = EbsCalculator(ebs_data)
