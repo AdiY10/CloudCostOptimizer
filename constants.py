@@ -1,63 +1,138 @@
-regions = ['us-east-2', 'us-east-1', 'us-west-1', 'us-west-2', 'af-south-1',
-                   'ap-east-1', 'ap-south-1', 'ap-northeast-3', 'ap-northeast-2',
-                   'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'ca-central-1',
-                   'eu-central-1', 'eu-west-1', 'eu-west-2', 'eu-south-1',
-                   'eu-west-3', 'eu-north-1', 'me-south-1', 'sa-east-1']
+"""Constants Values- all regions / architecture / physicalProcessor / hardware."""
 
-'''
-regionsSpotPrices = ['us-east-2', 'us-east', 'us-west', 'us-west-2', 'af-south-1','us-west-2-lax-1a',
-                   'ap-east-1', 'ap-south-1', 'ap-northeast-3', 'ap-northeast-2',
-                   'apac-sin', 'apac-syd', 'apac-tokyo', 'ca-central-1',
-                   'eu-central-1', 'eu-ireland', 'eu-west-2', 'eu-south-1',
-                   'eu-west-3', 'eu-north-1', 'me-south-1', 'sa-east-1']
+regions = [
+    "us-east-2",
+    "us-east-1",
+    "us-west-1",
+    "us-west-2",
+    "af-south-1",
+    "ap-east-1",
+    "ap-south-1",
+    "ap-northeast-3",
+    "ap-northeast-2",
+    "ap-southeast-1",
+    "ap-southeast-2",
+    "ap-northeast-1",
+    "ca-central-1",
+    "eu-central-1",
+    "eu-west-1",
+    "eu-west-2",
+    "eu-south-1",
+    "eu-west-3",
+    "eu-north-1",
+    "me-south-1",
+    "sa-east-1",
+]
+### regionsSpotPrices = ['us-east-2', 'us-east', 'us-west', 'us-west-2', 'af-south-1','us-west-2-lax-1a',
+###                   'ap-east-1', 'ap-south-1', 'ap-northeast-3', 'ap-northeast-2',
+###                   'apac-sin', 'apac-syd', 'apac-tokyo', 'ca-central-1',
+###                   'eu-central-1', 'eu-ireland', 'eu-west-2', 'eu-south-1',
+###                   'eu-west-3', 'eu-north-1', 'me-south-1', 'sa-east-1']
 
-'''
-architecture = ['arm64','i386','x86_64','x86_64_mac'] ##All possible Architectures
-
-physicalProcessor = ['AMD EPYC 7571', 'Intel Xeon Platinum 8151', 'Intel Xeon Platinum 8252',
-                         'AMD EPYC 7R13 Processor', 'Intel Xeon Family', 'Intel Xeon E5-2676 v3 (Haswell)',
-                         'Intel Xeon E5-2686 v4 (Broadwell)', 'Intel Skylake E5 2686 v5',
-                         'Intel Xeon Scalable (Skylake)', 'High Frequency Intel Xeon E7-8880 v3 (Haswell)',
-                         'Intel Xeon Platinum 8175 (Skylake)', 'AMD EPYC 7R32', 'Intel Xeon Platinum 8259CL',
-                         'Intel Xeon Platinum 8259 (Cascade Lake)', 'Intel Xeon E5-2666 v3 (Haswell)',
-                         'Intel Xeon Platinum 8124M', 'Intel Xeon Platinum 8275L', 'AWS Graviton Processor',
-                         'Intel Xeon 8375C (Ice Lake)', 'Intel Xeon Platinum 8275CL (Cascade Lake)',
-                         'AWS Graviton2 Processor'] ##All possible physicalProcessor
-
+architecture = ["arm64", "i386", "x86_64", "x86_64_mac"]
+physical_processor = [
+    "AMD EPYC 7571",
+    "Intel Xeon Platinum 8151",
+    "Intel Xeon Platinum 8252",
+    "AMD EPYC 7R13 Processor",
+    "Intel Xeon Family",
+    "Intel Xeon E5-2676 v3 (Haswell)",
+    "Intel Xeon E5-2686 v4 (Broadwell)",
+    "Intel Skylake E5 2686 v5",
+    "Intel Xeon Scalable (Skylake)",
+    "High Frequency Intel Xeon E7-8880 v3 (Haswell)",
+    "Intel Xeon Platinum 8175 (Skylake)",
+    "AMD EPYC 7R32",
+    "Intel Xeon Platinum 8259CL",
+    "Intel Xeon Platinum 8259 (Cascade Lake)",
+    "Intel Xeon E5-2666 v3 (Haswell)",
+    "Intel Xeon Platinum 8124M",
+    "Intel Xeon Platinum 8275L",
+    "AWS Graviton Processor",
+    "Intel Xeon 8375C (Ice Lake)",
+    "Intel Xeon Platinum 8275CL (Cascade Lake)",
+    "AWS Graviton2 Processor",
+]
 hardware = {
-        'gp2': {
-            'IOPS': 250,
-            'throughput': 250,
-            'type': 'gp2'
-        },
-        'gp3': {
-            'IOPS': 250,
-            'throughput': 1000,
-            'type': 'gp3'
-        },
-        'piops': {
-            'IOPS': 1000,
-            'throughput': 1000,
-            'type': 'piops'
-        },
-        'io2': {
-            'IOPS': 1000,
-            'throughput': 1000,
-            'type': 'io2'
-        },
-        'st1': {
-            'IOPS': 500,
-            'throughput': 500,
-            'type': 'st1'
-        },
-        'sc1': {
-            'IOPS': 250,
-            'throughput': 250,
-            'type': 'sc1'
-        },
-        'previous generation': {
-            'IOPS': 200,
-            'throughput': 90,
-            'type': 'magnetic'
-        }
-    }
+    "gp2": {"IOPS": 250, "throughput": 250, "type": "gp2"},
+    "gp3": {"IOPS": 250, "throughput": 1000, "type": "gp3"},
+    "piops": {"IOPS": 1000, "throughput": 1000, "type": "piops"},
+    "io2": {"IOPS": 1000, "throughput": 1000, "type": "io2"},
+    "st1": {"IOPS": 500, "throughput": 500, "type": "st1"},
+    "sc1": {"IOPS": 250, "throughput": 250, "type": "sc1"},
+    "previous generation": {"IOPS": 200, "throughput": 90, "type": "magnetic"},
+}
+instances = [
+            'm4.2xlarge', 'g5g.2xlarge', 'm4.4xlarge', 'm6g.8xlarge', 'c4.xlarge', 'm5zn.large', 'r6i.32xlarge',
+            'x2iezn.12xlarge', 'c5d.large', 'm1.small', 'r6i.2xlarge', 'r5n.24xlarge', 'm6i.32xlarge', 'im4gn.8xlarge',
+            'g5g.16xlarge', 'm2.xlarge', 'm6gd.xlarge', 'c5a.8xlarge', 'c5n.9xlarge', 'g3.4xlarge', 'c5.metal',
+            'm5a.24xlarge', 'r5b.metal', 'h1.2xlarge', 'g2.8xlarge', 'c6gn.large', 'x2iedn.32xlarge', 'x2iedn.xlarge',
+            'r6g.medium', 'c6a.12xlarge', 't3a.large', 'd3.8xlarge', 'c6g.metal', 'r6gd.4xlarge', 'z1d.3xlarge',
+            'c6gd.metal', 'c6g.medium', 'h1.4xlarge', 'm6a.large', 'x2iezn.metal', 'm5n.24xlarge', 'c5n.xlarge',
+            'im4gn.xlarge', 'r6gd.metal', 'c6a.4xlarge', 'r4.4xlarge', 'c6i.xlarge', 'c5.2xlarge', 'r5dn.4xlarge',
+            'i3.xlarge', 'inf1.xlarge', 'p3.8xlarge', 't4g.medium', 'm1.xlarge', 'x1e.32xlarge', 'r5dn.12xlarge',
+            'c6gn.4xlarge', 'r5b.24xlarge', 'c6g.2xlarge', 'm6a.24xlarge', 'c5.24xlarge', 'm5dn.24xlarge', 'c6i.large',
+            'c6gn.xlarge', 'c6a.32xlarge', 'm5a.8xlarge', 'm5.16xlarge', 'm5d.xlarge', 'm5d.24xlarge', 'm1.large',
+            'r6gd.2xlarge', 'r5n.12xlarge', 'r5a.8xlarge', 'x2idn.24xlarge', 'm6g.4xlarge', 'c3.2xlarge', 'r5b.xlarge',
+            'u-6tb1.112xlarge', 'd3en.12xlarge', 'r3.xlarge', 'm5ad.4xlarge', 'x2gd.4xlarge', 'c6gn.12xlarge',
+            'g4ad.8xlarge', 'r6i.24xlarge', 'i3.large', 'r5n.4xlarge', 'cr1.8xlarge', 'm5d.metal', 'm4.10xlarge',
+            'z1d.metal', 'c6a.2xlarge', 'x2iedn.16xlarge', 'r6g.xlarge', 'x1.16xlarge', 'c3.large', 'm6gd.metal',
+            'g5.4xlarge', 't3a.small', 'm5zn.12xlarge', 'r5d.metal', 'r5d.8xlarge', 'r5dn.16xlarge', 'r5.metal',
+            't3a.xlarge', 'r5.xlarge', 'm5dn.2xlarge', 'd2.4xlarge', 'd3en.xlarge', 'r5.2xlarge', 'c5ad.12xlarge',
+            'im4gn.large', 'm6gd.16xlarge', 'm6i.metal', 'hpc6a.48xlarge', 'd3en.4xlarge', 'g3.8xlarge',
+            'm6gd.12xlarge', 'p2.8xlarge', 'c5a.xlarge', 'r5ad.2xlarge', 'r3.2xlarge', 'm6gd.medium', 'c6gn.2xlarge',
+            'c6i.8xlarge', 'r5dn.large', 'i2.8xlarge', 'r5a.24xlarge', 'im4gn.2xlarge', 'm5dn.12xlarge', 'm3.large',
+            'g4dn.xlarge', 'c6gd.4xlarge', 'd3.2xlarge', 'r5b.4xlarge', 'm5a.4xlarge', 'x2iezn.6xlarge', 'dl1.24xlarge',
+            'x2gd.metal', 'r6i.12xlarge', 'r6gd.medium', 'm6i.24xlarge', 'vt1.24xlarge', 'i2.2xlarge', 'is4gen.large',
+            'r6g.4xlarge', 'c5ad.8xlarge', 'm5.2xlarge', 'c6gd.xlarge', 'm5n.large', 'c6gn.medium', 'm6i.12xlarge',
+            'm5ad.16xlarge', 'r5b.large', 'r6gd.8xlarge', 'r4.2xlarge', 'g5g.8xlarge', 'i3en.2xlarge', 'r5a.large',
+            'p3.2xlarge', 'd3en.6xlarge', 'c6a.48xlarge', 'r5ad.4xlarge', 'm6gd.8xlarge', 'm5d.4xlarge', 'c4.4xlarge',
+            'm6i.2xlarge', 'c5d.xlarge', 'd2.xlarge', 'g4ad.xlarge', 'r5n.2xlarge', 'i3en.6xlarge', 'c6gn.metal',
+            'x2iedn.24xlarge', 'r6i.4xlarge', 't1.micro', 'm6a.12xlarge', 'i3en.large', 'r5dn.24xlarge', 't4g.small',
+            'g5.xlarge', 'm5a.16xlarge', 'c5a.2xlarge', 'i3en.24xlarge', 'm5.large', 'g3.16xlarge', 'r5ad.24xlarge',
+            'c5.4xlarge', 't4g.xlarge', 'g5.48xlarge', 'is4gen.xlarge', 't3.nano', 'r5d.4xlarge', 'x2gd.16xlarge',
+            'm5ad.2xlarge', 'c5a.4xlarge', 'r5n.xlarge', 'm4.16xlarge', 'r5b.16xlarge', 'r5d.24xlarge', 'im4gn.4xlarge',
+            'm5ad.24xlarge', 'p3.16xlarge', 'g2.2xlarge', 'is4gen.8xlarge', 'a1.4xlarge', 'm5d.2xlarge', 'x2gd.medium',
+            'm6g.xlarge', 'm6gd.2xlarge', 'i3.metal', 't3.xlarge', 'r5n.metal', 'a1.metal', 'r6gd.12xlarge',
+            'm5.8xlarge', 'f1.16xlarge', 'u-6tb1.56xlarge', 'c5d.24xlarge', 'm6i.16xlarge', 'r5ad.xlarge',
+            'r5ad.8xlarge', 'm5dn.large', 'x1e.16xlarge', 'r6gd.large', 'r4.8xlarge', 't4g.2xlarge', 'x1e.4xlarge',
+            'c3.8xlarge', 'm5n.xlarge', 'c5ad.xlarge', 'm5zn.3xlarge', 'm5.xlarge', 'r5dn.metal', 'c5d.metal',
+            'm5n.2xlarge', 'u-3tb1.56xlarge', 'g5g.metal', 't4g.nano', 'm6i.4xlarge', 'z1d.12xlarge', 'r6g.8xlarge',
+            'm3.2xlarge', 'i3.8xlarge', 'm5d.large', 't2.medium', 't3a.nano', 'm5a.2xlarge', 'c4.large',
+            'c6gd.16xlarge', 'm5dn.metal', 'r5a.16xlarge', 't2.micro', 't2.nano', 'u-12tb1.112xlarge', 'c5ad.16xlarge',
+            'c5ad.large', 'r6g.12xlarge', 'g4ad.16xlarge', 'x1.32xlarge', 'x2gd.12xlarge', 't3a.medium', 'c6a.xlarge',
+            'm5ad.xlarge', 'c5.xlarge', 'g4dn.12xlarge', 'm5.24xlarge', 'i3.4xlarge', 'm6i.large', 'g3s.xlarge',
+            'c6a.large', 'x2iezn.4xlarge', 'i3en.12xlarge', 'r3.4xlarge', 'r5.24xlarge', 'r4.large', 'm5n.8xlarge',
+            'm5d.12xlarge', 'x2iedn.4xlarge', 't3a.micro', 'd3en.8xlarge', 'c6i.32xlarge', 'c5d.12xlarge', 'c5.9xlarge',
+            'm2.2xlarge', 'c6a.8xlarge', 'g5.24xlarge', 'm6i.xlarge', 'f1.2xlarge', 'm6a.16xlarge', 't4g.micro',
+            'g5.8xlarge', 'a1.large', 'm5a.12xlarge', 't3.micro', 'c6g.12xlarge', 'c6gn.16xlarge', 'r6i.large',
+            'p4d.24xlarge', 'vt1.3xlarge', 'd2.2xlarge', 'm5dn.4xlarge', 'g5g.4xlarge', 'g4dn.16xlarge', 'r5d.large',
+            'c5n.18xlarge', 'is4gen.2xlarge', 'm6a.8xlarge', 'x2gd.2xlarge', 'z1d.xlarge', 'm6g.16xlarge',
+            'inf1.6xlarge', 'c5ad.24xlarge', 'r4.xlarge', 'c1.xlarge', 'r6gd.16xlarge', 'z1d.2xlarge', 'm5d.16xlarge',
+            'c6g.8xlarge', 't3.small', 'r5d.16xlarge', 'r5a.4xlarge', 'i3.2xlarge', 'm5n.12xlarge', 'd3en.2xlarge',
+            'm5n.4xlarge', 'x2idn.16xlarge', 'm6a.xlarge', 'r5ad.16xlarge', 'c5ad.4xlarge', 't2.large', 'c6i.4xlarge',
+            'd3.4xlarge', 'c6gd.12xlarge', 'm5zn.xlarge', 'g5.2xlarge', 'm5.4xlarge', 'g4ad.2xlarge', 'i3.16xlarge',
+            'm6g.medium', 'm5dn.16xlarge', 't3.medium', 'x2gd.xlarge', 'x2gd.large', 'c5d.18xlarge', 'm5d.8xlarge',
+            'g4dn.2xlarge', 'c6i.16xlarge', 'c5n.metal', 'hs1.8xlarge', 'x2iezn.8xlarge', 'i3en.metal', 'c6gd.8xlarge',
+            'r6g.metal', 'c4.2xlarge', 'r5n.large', 'm6g.2xlarge', 'c6g.large', 'c5d.9xlarge', 'm5a.large',
+            'm5zn.2xlarge', 'm3.medium', 'm6a.32xlarge', 'm5n.16xlarge', 'm5zn.metal', 'r5.16xlarge', 'r6i.8xlarge',
+            'g4dn.metal', 'r3.8xlarge', 'm5dn.xlarge', 'r4.16xlarge', 'm2.4xlarge', 'd3.xlarge', 'f1.4xlarge',
+            'r6i.xlarge', 'm6a.2xlarge', 'm5ad.8xlarge', 'c5.large', 'm5a.xlarge', 'c5.18xlarge', 'c6g.16xlarge',
+            'r5a.2xlarge', 'g4dn.4xlarge', 'm4.large', 'c6gd.medium', 'g4ad.4xlarge', 'z1d.large', 'z1d.6xlarge',
+            'c5d.2xlarge', 'a1.medium', 'im4gn.16xlarge', 'i2.4xlarge', 'h1.16xlarge', 'a1.2xlarge', 'r6g.large',
+            'vt1.6xlarge', 'c6gd.2xlarge', 'r5n.16xlarge', 'm6gd.4xlarge', 'm6a.metal', 'g5.12xlarge', 't2.2xlarge',
+            'a1.xlarge', 'c6a.16xlarge', 'x2iedn.8xlarge', 'c5n.large', 'c6a.metal', 'm6g.12xlarge', 'g5g.xlarge',
+            'r5.large', 'c5n.4xlarge', 'c5d.4xlarge', 'p2.xlarge', 'c6i.24xlarge', 'c1.medium', 'c5n.2xlarge',
+            'p3dn.24xlarge', 'r6g.2xlarge', 't4g.large', 'r5.12xlarge', 'r5n.8xlarge', 'g5.16xlarge', 'r5.8xlarge',
+            'c4.8xlarge', 'c6i.metal', 'is4gen.4xlarge', 'm5.12xlarge', 'h1.8xlarge', 'c3.4xlarge', 'm5zn.6xlarge',
+            't3.large', 't2.small', 'r3.large', 'm6i.8xlarge', 'r6i.16xlarge', 'r5a.xlarge', 'c5a.24xlarge',
+            'm6g.large', 't3.2xlarge', 'm1.medium', 'r5dn.xlarge', 'r5dn.2xlarge', 'x2gd.8xlarge', 'r5.4xlarge',
+            'r5a.12xlarge', 'x2iedn.2xlarge', 'r5d.2xlarge', 'x2idn.32xlarge', 'u-9tb1.112xlarge', 'c6g.4xlarge',
+            'm5dn.8xlarge', 'i3en.3xlarge', 'r6g.16xlarge', 'm5n.metal', 'x1e.xlarge', 'x2iezn.2xlarge', 'p2.16xlarge',
+            'm6gd.large', 'r6gd.xlarge', 'r5b.2xlarge', 'inf1.24xlarge', 'c6a.24xlarge', 'd2.8xlarge', 'c6i.2xlarge',
+            'm5.metal', 'c5a.16xlarge', 'm4.xlarge', 'm3.xlarge', 'c3.xlarge', 'c5ad.2xlarge', 'x1e.2xlarge',
+            'm6g.metal', 'r5ad.large', 'inf1.2xlarge', 'c6gd.large', 'm5ad.large', 'c6g.xlarge', 'c5a.12xlarge',
+            'r5d.xlarge', 'r5dn.8xlarge', 'x1e.8xlarge', 'c6gn.8xlarge', 'r5b.12xlarge', 'r5d.12xlarge', 'i2.xlarge',
+            't2.xlarge', 'r5ad.12xlarge', 'm6a.48xlarge', 'r6i.metal', 'r5b.8xlarge', 'm6a.4xlarge', 'i3en.xlarge',
+            'c6i.12xlarge', 'c5a.large', 'g4dn.8xlarge', 't3a.2xlarge', 'is4gen.medium', 'c5.12xlarge', 'm5ad.12xlarge'
+            ]
