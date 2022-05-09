@@ -20,13 +20,13 @@ git clone https://github.com/AdiY10/CloudCostOptimizer.git
 ```
 $ python -m pip install requests
 $ pip3 install urllib3
-$ pip3 install pandas
 $ pip install grequests
+$ pip3 install pandas
 ```
 
 ### Usage
 ```
-$ python Fleet_Optimizer.py
+$ python3 Fleet_Optimizer.py
 ```
 Where the following command activate the Optimizer
 
@@ -122,7 +122,8 @@ has different resource requirements, which describes by the memory, vCPUs etc...
 * Network - required network capacity
 * IOPS (MiB I/O) - max IOPS per volume.
 * Throughput (MiB/s)- max throughput per volume.
-
+#### Configuration file:
+A configuration file with advanced settings is provided to the user, which allows him to edit default settings according to his preferences, such as data extraction methodology, boto3 usage parameters, search algorithm parameters, etc..
 ## Results
 The output of the Optimizer is a json file containing  a list of configurations. Each configuration represents an assignment of all application components to AWS instances.
 

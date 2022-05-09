@@ -1,6 +1,6 @@
 """This file handles and parses data from EBS."""
 import grequests
-import requests # type: ignore
+import requests  # type: ignore
 import constants
 
 

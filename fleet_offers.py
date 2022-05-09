@@ -251,4 +251,3 @@ def get_fleet_offers(
 
     res = list(filter(lambda g: g is not None, res))
     return sort_fleet_offers(res)
-
