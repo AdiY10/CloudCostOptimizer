@@ -3,11 +3,11 @@
 from flask import Flask, jsonify, request
 import json
 from flask_cors import CORS, cross_origin
-from gevent import monkey
 from fleet_classes import Offer, ComponentOffer
 from fleet_offers import Component
 from get_spot import SpotCalculator
 
+# from gevent import monkey
 # monkey.patch_all()  ##internal use- Prevent an Error "greenlet.error: cannot switch to a different thread"
 
 calc = SpotCalculator()

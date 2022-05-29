@@ -1,7 +1,7 @@
 {
     "selectedOs": "linux",
     "region": "all",
-    "spot/onDemand": "onDemand",
+    "spot/onDemand": "spot",
     "filterInstances": ["i3","a1","t3a","c5a.xlarge"],
     "AvailabilityZone": "all",
     "Architecture": "all",

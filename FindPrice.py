@@ -2,6 +2,7 @@
 
 from urllib.request import urlopen
 import json
+
 # import pandas as pd
 import constants
 
@@ -277,4 +278,3 @@ class GetPriceFromAWS:
         # ec2 = self.add_scores(ec2)
         # self.analysis()
         return ec2
-
