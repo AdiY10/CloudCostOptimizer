@@ -21,7 +21,6 @@ git clone https://github.com/AdiY10/CloudCostOptimizer.git
 $ python -m pip install requests
 $ pip3 install urllib3
 $ pip install grequests
-$ pip3 install pandas
 ```
 
 ### Usage
@@ -39,7 +38,7 @@ The user's workload should be in the **input_fleet.json** file- **don't forget t
     "selectedOs": "linux",
     "region": ["eu-south-1", "eu-west-3", "us-east-2","us-east-1"],
     "spot/onDemand": "spot",
-    "filterInstances": ["i3","t3a","c5a.xlarge"],
+    "filterInstances": ["a1","t3a","c5a.xlarge"],
     "AvailabilityZone": "all",
     "Architecture": "all",
     "apps": [

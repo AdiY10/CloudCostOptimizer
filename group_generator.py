@@ -3,17 +3,17 @@
 from fleet_classes import Offer
 
 
-def partition2(collection):
+def partition2(collection, region):
     """Partition2 function."""
     if not collection:
-        print("There are no relevant configurations right now.")
+        print("Could not find a match in ", region, " region")
     else:
         if len(collection) == 1:
             for c in collection[0]:
                 yield c
             return
         for c in collection[0]:
-            for smaller in partition2(collection[1:]):
+            for smaller in partition2(collection[1:], region):
                 yield c + smaller
 
 
@@ -37,10 +37,10 @@ def create_partitions(comp):
 
 
 def create_groups(
-    comp, app_size
+    comp, app_size, region
 ):  ## comp- list of the groups (shared/non-shared), which includes groups' components
     """Create groups function."""
     partitions = list(
         map(lambda i: create_partitions(i), comp)
     )  ## list of all components in each combination
-    return [Offer(p, app_size) for p in partition2(partitions)]
+    return [Offer(p, app_size) for p in partition2(partitions, region)]

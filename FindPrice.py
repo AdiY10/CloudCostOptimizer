@@ -2,7 +2,7 @@
 
 from urllib.request import urlopen
 import json
-import pandas as pd
+# import pandas as pd
 import constants
 
 # import numpy as np
@@ -15,7 +15,7 @@ class GetPriceFromAWS:
     def __init__(self):
         """Initialize class."""
         self.url = "http://spot-price.s3.amazonaws.com/spot.js"
-        self.df = pd.DataFrame()
+        # self.df = pd.DataFrame()
         self.cpu = []
         self.cpu_score = []
         self.memory = []
@@ -31,48 +31,49 @@ class GetPriceFromAWS:
     #         return(float((min(details['SpotPriceHistory'], key=lambda x:x['spot_price']))['spot_price']))
     #     return None
 
-    def calculate_price(self):
-        """Calculate price function."""
-        print("Extracting Data from AWS")
-        if not self.df.empty:
-            return self.df
-        ## extract callback file, and clean it
-        file_to_read = urlopen(self.url)
-        raw_data = file_to_read.read()
-        raw_data = raw_data.lstrip(b"callback(").rstrip(b");")
-        ## create json file
-        data = json.loads(raw_data)
-        ##normalize json into dataframe
-        self.df = pd.json_normalize(
-            data["config"]["regions"],
-            record_path=["instanceTypes", "sizes", "valueColumns"],
-            meta=[
-                "region",
-                ["instanceTypes", "type"],
-                ["instanceTypes", "sizes", "size"],
-            ],
-        )
-        ## rename df columns
-        self.df.rename(
-            columns={
-                "name": "OS",
-                "prices.USD": "Price",
-                "region": "Region",
-                "instanceTypes.type": "Family",
-                "instanceTypes.sizes.size": "TypeName",
-            },
-            inplace=True,
-        )
-        self.df.loc[(self.df["OS"] == "linux"), "OS"] = "Linux"
-        self.df.loc[(self.df["OS"] == "mswin"), "OS"] = "Windows"
-        self.df.loc[(self.df["Region"] == "us-east"), "Region"] = "us-east-1"
-        self.df.loc[(self.df["Region"] == "us-west"), "Region"] = "us-west-1"
-        self.df.loc[(self.df["Region"] == "apac-sin"), "Region"] = "ap-southeast-1"
-        self.df.loc[(self.df["Region"] == "apac-syd"), "Region"] = "ap-southeast-2"
-        self.df.loc[(self.df["Region"] == "apac-tokyo"), "Region"] = "ap-northeast-1"
-        self.df.loc[(self.df["Region"] == "eu-ireland"), "Region"] = "eu-west-1"
-        self.PricesExtracted = True
-        return self.df
+    ## latest version of data extraction
+    # def calculate_price(self):
+    #     """Calculate price function."""
+    #     print("Extracting Data from AWS")
+    #     if not self.df.empty:
+    #         return self.df
+    #     ## extract callback file, and clean it
+    #     file_to_read = urlopen(self.url)
+    #     raw_data = file_to_read.read()
+    #     raw_data = raw_data.lstrip(b"callback(").rstrip(b");")
+    #     ## create json file
+    #     data = json.loads(raw_data)
+    #     ##normalize json into dataframe
+    #     self.df = pd.json_normalize(
+    #         data["config"]["regions"],
+    #         record_path=["instanceTypes", "sizes", "valueColumns"],
+    #         meta=[
+    #             "region",
+    #             ["instanceTypes", "type"],
+    #             ["instanceTypes", "sizes", "size"],
+    #         ],
+    #     )
+    #     ## rename df columns
+    #     self.df.rename(
+    #         columns={
+    #             "name": "OS",
+    #             "prices.USD": "Price",
+    #             "region": "Region",
+    #             "instanceTypes.type": "Family",
+    #             "instanceTypes.sizes.size": "TypeName",
+    #         },
+    #         inplace=True,
+    #     )
+    #     self.df.loc[(self.df["OS"] == "linux"), "OS"] = "Linux"
+    #     self.df.loc[(self.df["OS"] == "mswin"), "OS"] = "Windows"
+    #     self.df.loc[(self.df["Region"] == "us-east"), "Region"] = "us-east-1"
+    #     self.df.loc[(self.df["Region"] == "us-west"), "Region"] = "us-west-1"
+    #     self.df.loc[(self.df["Region"] == "apac-sin"), "Region"] = "ap-southeast-1"
+    #     self.df.loc[(self.df["Region"] == "apac-syd"), "Region"] = "ap-southeast-2"
+    #     self.df.loc[(self.df["Region"] == "apac-tokyo"), "Region"] = "ap-northeast-1"
+    #     self.df.loc[(self.df["Region"] == "eu-ireland"), "Region"] = "eu-west-1"
+    #     self.PricesExtracted = True
+    #     return self.df
 
     def add_scores(self, ec2):
         """Add scores function."""

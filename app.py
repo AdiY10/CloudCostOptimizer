@@ -8,7 +8,7 @@ from fleet_classes import Offer, ComponentOffer
 from fleet_offers import Component
 from get_spot import SpotCalculator
 
-monkey.patch_all()  ##internal use- Prevent an Error "greenlet.error: cannot switch to a different thread"
+# monkey.patch_all()  ##internal use- Prevent an Error "greenlet.error: cannot switch to a different thread"
 
 calc = SpotCalculator()
 app = Flask(__name__)
