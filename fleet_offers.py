@@ -75,9 +75,6 @@ class FleetCalculator:
             sub_combination_str in self.calculated_combinations
         ):  ## prevent repetitive calculations
             instances = self.calculated_combinations[sub_combination_str]
-            # self.rep = self.rep + 1 ## check number of repetitive calculation
-            # print('repetition: ', self.rep)
-            # print(sub_combination_str)
         else:
             limits_cpu = self.calculate_limits_cpu(region)
             limits_memory = self.calculate_limits_memory(region)
@@ -103,19 +100,11 @@ class FleetCalculator:
                 combination.append(region)
                 combination_str = str(combination)
                 self.calculated_combinations[combination_str] = instances
-                # print(self.calculated_combinations.get(combination_str)[0].get('spot_price'))
-                # self.bestPrice[combination_str] = instances
-                # self.count = self.count + 1 ##check number of calculations
-                # print ('number of first time calculations', self.count)
-                # print(combination_str)
             else:
                 return None
         components = list(grouped_param.params)
         if len(instances) == 0:
             return None
-        # print(grouped_param.params)
-        # if (len(grouped_param.params[0].component_name) < 2):
-        #     return [[GroupedInstance(instances[i],components)] for i in range(min(len(instances),2))]
         return [
             [GroupedInstance(instances[i], components, pricing)]
             for i in range(min(len(instances), 1))
@@ -153,21 +142,11 @@ class FleetCalculator:
             instances.append(
                 self.match_group(i, region, pricing, architecture, type_major)
             )  ## finds best configuration for each combination
-            # for i in instances:
-            #     print('i',i)
-            #     for j in i:
-            #         print('j',j)
-            #         for k in j:
-            #             for z in k.get_info():
-            #                 print('i-',i,'j-', j, 'k-', k, 'k.instance-', k.instance, k.spot_price,
-        #                 'k info-', k.get_info(),'z-',z.get_component_name())
-        ### only for the First step algorithm! otherwise, don't execute the if
-        if instances == [None]:  #### check!!!!
-            print("there is no match in ", region, " region")
-            instances.clear()
         instances = list(filter(None, instances))
+        if len(instances) < len(group.remaining_partitions):
+            return []
         result = []
-        for partition in partition2(instances):
+        for partition in partition2(instances, region):
             new_group = group.copy_group()
             new_group.total_price = sum(map(lambda i: i.total_price, partition))
             new_group.instance_groups = partition
@@ -205,7 +184,7 @@ def get_fleet_offers(
 
         ## Brute-Force Algorithm- optimal results / more complex
         groups = create_groups(
-            updated_params, app_size
+            updated_params, app_size, region_to_check
         )  ## creates all the possible combinations
         for (
             group
