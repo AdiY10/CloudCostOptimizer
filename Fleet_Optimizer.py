@@ -81,10 +81,9 @@ def run_optimizer():
     """Run Optimizer- Fleet calculator."""
     file = open("input_Fleet.json")
     filter = json.load(file)
-    pricing = filter["spot/onDemand"]
-    filter_instances = (
-        filter["filterInstances"] if "filterInstances" in filter else "NA"
-    )
+    file1 = open("Config_file.json")
+    config_file = json.load(file1)
+    provider = config_file["Provider (AWS / Azure)"]
     shared_apps = []
     partitions = []
     app_size = dict()
@@ -103,6 +102,10 @@ def run_optimizer():
         partitions.append(shared_apps)
     os = filter["selectedOs"]
     region = filter["region"] if "region" in filter else "all"
+    pricing = filter["spot/onDemand"] if "spot/onDemand" in filter else "spot"
+    filter_instances = (
+        filter["filterInstances"] if "filterInstances" in filter else "NA"
+    )
     availability_zone = (
         filter["availability_zone"] if "availability_zone" in filter else "NA"
     )
@@ -117,6 +120,7 @@ def run_optimizer():
         architecture,
         type_major,
         filter_instances,
+        provider
     )
     # print('Connecting to boto3')
     res = list(
@@ -128,7 +132,6 @@ def run_optimizer():
         print("Optimizer has found you the optimal configuration. check it out")
     with open("FleetResults.json", "w", encoding="utf-8") as f:
         json.dump(res, f, ensure_ascii=False, indent=4)
-
 
 if __name__ == "__main__":
     run_optimizer()

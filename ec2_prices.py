@@ -49,7 +49,7 @@ class Ec2Parser:
         if isinstance(region, list):
             regions = region
         else:
-            regions = constants.regions.copy()
+            regions = constants.AWS_regions.copy()
         res = grequests.map(self.get_ec2_region(region, os) for region in regions)
         # res = [i for i in res if i]
         res = list(map(self.parse_ec2_response, res))

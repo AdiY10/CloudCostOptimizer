@@ -29,7 +29,6 @@ def get_aws_data_tojson():
         json.dump(aws_data_windows, f, ensure_ascii=False, indent=4)
     return jsonify()
 
-
 ## single instance
 @app.route("/getPrices", methods=["POST"])
 @cross_origin()
@@ -90,41 +89,66 @@ def get_spot_prices():
         return jsonify()
 
 
-## fleet search
-@app.route("/getFleet", methods=["POST"])
+def fleet_search(filter, provider):
+    shared_apps = []  # list of components of shared apps
+    partitions = []  ## list of ALL components
+    app_size = dict()  ##size of each app
+    for i, a in enumerate(filter["apps"]):
+        app_size[i] = len(a["components"])
+        if "share" in a and a["share"] is True:
+            for c in a["components"]:
+                shared_apps.append(Component(i, a["app"], c))
+        else:
+            app = []
+            for c in a["components"]:
+                app.append(Component(i, a["app"], c))
+            if len(app) > 0:
+                partitions.append(app)
+    if len(shared_apps) > 0:
+        partitions.append(shared_apps)
+    os = filter["selectedOs"]
+    region = filter["region"] if "region" in filter else "all"
+    pricing = "spot" if filter["payment"] == "Spot" else "onDemand"
+    filter_instances = (
+        filter["filterInstances"] if "filterInstances" in filter else "NA"
+    )
+    availability_zone = (
+        filter["availability_zone"] if "availability_zone" in filter else "NA"
+    )
+    architecture = filter["architecture"] if "architecture" in filter else "all"
+    type_major = filter["type_major"] if "type_major" in filter else "all"
+    offers_list = calc.get_fleet_offers(
+        os, region, app_size, partitions, pricing, architecture, type_major, filter_instances, provider
+    )  ##architecture and typemajor are 'all'
+    res = list(map(lambda g: serialize_group(g), offers_list))
+    with open("FleetECresults.json", "w", encoding="utf-8") as f:
+        json.dump(res, f, ensure_ascii=False, indent=4)
+    return jsonify(res)
+
+## AWS fleet search
+@app.route("/getAWSFleet", methods=["POST"])
 @cross_origin()
-def get_fleet_prices():
+def get_AWS_fleet_prices():
     """Fleet tab."""
     if request.method == "POST":
         filter = request.get_json()  ## In case of using the GUI
         # file = open('input_Fleet.json') ## In case of using external json file
         # filter = json.load(file)
-        shared_apps = []  # list of components of shared apps
-        partitions = []  ## list of ALL components
-        app_size = dict()  ##size of each app
-        for i, a in enumerate(filter["apps"]):
-            app_size[i] = len(a["components"])
-            if "share" in a and a["share"] is True:
-                for c in a["components"]:
-                    shared_apps.append(Component(i, a["app"], c))
-            else:
-                app = []
-                for c in a["components"]:
-                    app.append(Component(i, a["app"], c))
-                if len(app) > 0:
-                    partitions.append(app)
-        if len(shared_apps) > 0:
-            partitions.append(shared_apps)
-        os = filter["selectedOs"]
-        region = filter["region"] if "region" in filter else "all"
-        pricing = filter["spot/onDemand"] if "spot/onDemand" in filter else "spot"
-        offers_list = calc.get_fleet_offers(
-            os, region, app_size, partitions, pricing, "all", "all"
-        )  ##architecture and typemajor are 'all'
-        res = list(map(lambda g: serialize_group(g), offers_list))
-        with open("FleetECresults.json", "w", encoding="utf-8") as f:
-            json.dump(res, f, ensure_ascii=False, indent=4)
-        return jsonify(res)
+        return fleet_search(filter, 'AWS')
+    else:
+        return jsonify()
+
+
+# Azure fleet search
+@app.route("/getAzureFleet", methods=["POST"])
+@cross_origin()
+def get_Azure_fleet_prices():
+    """Fleet tab."""
+    if request.method == "POST":
+        filter = request.get_json()  ## In case of using the GUI
+        # file = open('input_Fleet.json') ## In case of using external json file
+        # filter = json.load(file)
+        return fleet_search(filter, 'Azure')
     else:
         return jsonify()
 
@@ -160,29 +184,3 @@ def serialize_component(component: ComponentOffer):
 
 if __name__ == "__main__":
     app.run()
-
-### POST endpoint to get spot fleet hourly price estimations
-### body: configuration for fleet, i.e apps,components and other optional configurations
-###    dto = {
-###        selectedOs: <str>             REQUIRED, requested instances os. options: linux,windows
-###        region: <str>                 OPTIONAL, region for instances. options: us-east-2 etc.
-###        apps: [                       REQUIRED, list of app specifications
-###            {
-###            name: <str>               REQUIRED, name of app
-###            share: <str>              REQUIRED, set to true if app can share instances with other apps
-###            components:[              REQUIRED, list of component specifications
-###                {
-###                    name: <str>       REQUIRED, name of component
-###                    cpu: <int>        REQUIRED, required cpu for component
-###                    memory: <int>     REQUIRED, required memory for component (GB)
-###                    network: <int>    OPTIONAL, component network consumption (GBs)
-###                    behavior: <str>   OPTIONAL, component interruption behavior, options:terminate,stop,hibernation
-###                    interruptionFrequency: <int>  OPTIONAL, limit interruption frequency. options: 0-4
-###                    storageSize: <int>OPTIONAL, component storage size (GB)
-###                    IOPS: <int>       OPTIONAL, component required IOPS (MiB I/O)
-###                    throughput: <int> OPTIONAL, component required throughput (MB/s)
-###
-###                }
-###                ]
-###            }
-###        ]

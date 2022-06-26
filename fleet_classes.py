@@ -113,11 +113,11 @@ class GroupedInstance(object):
 
     def __init__(self, instance, components, pricing):
         """Initialize class."""
-        self.spot_price = round(instance["spot_price"], 5)
+        self.spot_price = round(float(instance["spot_price"]), 5)
         self.components = components
         self.instance = instance
         # self.region = instance['region'] ##cross region option
-        self.onDemand = round(instance["onDemandPrice"], 5)
+        self.onDemand = round(float(instance["onDemandPrice"]), 5)
         if pricing == "spot":
             self.total_price = (
                 self.spot_price

@@ -226,7 +226,7 @@ class GetPriceFromAWS:
             if isinstance(region, list):
                 regions = region
             else:
-                regions = constants.regions.copy()
+                regions = constants.AWS_regions.copy()
             for region in regions:
                 region = self.correct_region(region)
                 data_region = ec2[region]

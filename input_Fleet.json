@@ -2,16 +2,13 @@
     "selectedOs": "linux",
     "region": "all",
     "spot/onDemand": "spot",
-    "filterInstances": ["i3","a1","t3a","c5a.xlarge"],
-    "AvailabilityZone": "all",
-    "Architecture": "all",
     "apps": [
         {
             "app": "App1",
             "share": true,
             "components": [
                 {
-                    "memory": 100,
+                    "memory": 10,
                     "vCPUs": 10,
                     "network": 5,
                     "behavior": "terminate",
@@ -20,37 +17,22 @@
                     "name": "Comp1"
                 },
                 {
-                    "memory": 25,
+                    "memory": 10,
                     "vCPUs": 10,
                     "network": 5,
                     "behavior": "terminate",
                     "frequency": "2",
                     "storageType": null,
                     "name": "Comp2"
-                }
-            ]
-        },
-        {
-            "app": "App2",
-            "share": false,
-            "components": [
-                {
-                    "memory": 300,
-                    "vCPUs": 10,
-                    "network": 5,
-                    "behavior": "terminate",
-                    "frequency": "2",
-                    "storageType": null,
-                    "name": "Comp3"
                 },
                 {
-                    "memory": 25,
-                    "vCPUs": 24,
+                    "memory": 1,
+                    "vCPUs": 1,
                     "network": 5,
                     "behavior": "terminate",
                     "frequency": "2",
                     "storageType": null,
-                    "name": "Comp4"
+                    "name": "Comp2"
                 }
             ]
         }

@@ -97,6 +97,7 @@ class SpotCalculator:
         architecture,
         type_major,
         filter_instances,
+        provider
     ):  ## params- list of all components
         """Get_fleet_offers function."""
         import os.path
@@ -104,51 +105,57 @@ class SpotCalculator:
 
         file = open("Config_file.json")
         config_file = json.load(file)
-        if config_file["Data Extraction (always / onceAday)"] == "onceAday":
-            if user_os == "linux":
-                if (
-                    datetime.datetime.now()
-                    - datetime.datetime.fromtimestamp(
-                        os.path.getmtime("ec2_data_Linux.json")
-                    )
-                ).days != 0:  ## if the file hasn't modified today
-                    ec2_data = self.get_ec2_from_cache(region, user_os)
-                else:
-                    file = open("ec2_data_Linux.json")
-                    ec2_data = json.load(file)
-            else:
-                if (
-                    datetime.datetime.now()
-                    - datetime.datetime.fromtimestamp(
-                        os.path.getmtime("ec2_data_Linux.json")
-                    )
-                ).days != 0:  ## if the file hasn't modified today
-                    ec2_data = self.get_ec2_from_cache(region, user_os)
-                else:
-                    file = open("ec2_data_Windows.json")
-                    ec2_data = json.load(file)
-        elif config_file["Data Extraction (always / onceAday)"] == "always":
-            ec2_data = self.get_ec2_from_cache(region, user_os)
-        else:
-            print("Data Extraction parameter in configuration file is not defined well")
-        print("calculating best configuration")
-        if filter_instances != "NA":
-            for k, v in ec2_data.items():
-                list_of_relevant_instances = []
-                for i in v:
+        if config_file["Provider (AWS / Azure)"] == "AWS":
+            if config_file["Data Extraction (always / onceAday)"] == "onceAday":
+                if user_os == "linux":
                     if (
-                        i["typeMajor"] not in filter_instances
-                        and i["typeMinor"] not in filter_instances
-                        and i["typeName"] not in filter_instances
-                    ):
-                        list_of_relevant_instances.append(i)
-                ec2_data[k] = list_of_relevant_instances
+                        datetime.datetime.now()
+                        - datetime.datetime.fromtimestamp(
+                            os.path.getmtime("ec2_data_Linux.json")
+                        )
+                    ).days != 0:  ## if the file hasn't modified today
+                        ec2_data = self.get_ec2_from_cache(region, user_os)
+                    else:
+                        file = open("ec2_data_Linux.json")
+                        ec2_data = json.load(file)
+                else:
+                    if (
+                        datetime.datetime.now()
+                        - datetime.datetime.fromtimestamp(
+                            os.path.getmtime("ec2_data_Linux.json")
+                        )
+                    ).days != 0:  ## if the file hasn't modified today
+                        ec2_data = self.get_ec2_from_cache(region, user_os)
+                    else:
+                        file = open("ec2_data_Windows.json")
+                        ec2_data = json.load(file)
+            elif config_file["Data Extraction (always / onceAday)"] == "always":
+                ec2_data = self.get_ec2_from_cache(region, user_os)
+            else:
+                print("Data Extraction parameter in configuration file is not defined well")
+            if filter_instances != "NA":
+                for k, v in ec2_data.items():
+                    list_of_relevant_instances = []
+                    for i in v:
+                        if (
+                                i["typeMajor"] not in filter_instances
+                                and i["typeMinor"] not in filter_instances
+                                and i["typeName"] not in filter_instances
+                        ):
+                            list_of_relevant_instances.append(i)
+                    ec2_data[k] = list_of_relevant_instances
+        else:
+            file = open("Azure_data_v2.json")
+            ec2_data = json.load(file)
+
+        print("calculating best configuration")
         ec2 = SpotInstanceCalculator(ec2_data)
         # ebs_data = self.get_ebs_from_cache(region) ## get EBS volumes from AWS
         # ebs = EbsCalculator(ebs_data)
         return get_fleet_offers(
-            params, region, user_os, app_size, ec2, pricing, architecture, type_major
+            params, region, user_os, app_size, ec2, pricing, architecture, type_major, config_file, provider
         )
+
 
     def is_cached(self, os, region):
         """Check if cached function."""
