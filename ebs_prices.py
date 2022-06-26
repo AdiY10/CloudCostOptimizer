@@ -25,7 +25,7 @@ def get_ebs_for_region(region):
 
 def get_ebs():
     """Get ebs function."""
-    regions = constants.regions.copy()
+    regions = constants.AWS_regions.copy()
     res = grequests.map(get_ebs_region(region) for region in regions)
     res = list(map(parse_ebs_response, res))
     return {res[i][0]["region"]: res[i] for i in range(0, len(res))}

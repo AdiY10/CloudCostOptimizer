@@ -32,13 +32,13 @@ class FleetCalculator:
 
     def calculate_limits_cpu(self, region):
         """Calculate cpu limits function."""
-        max_cpu = max(d["cpu"] for d in self.ec2_calculator.ec2.get(region))
+        max_cpu = max(float(d["cpu"]) for d in self.ec2_calculator.ec2.get(region))
         # min_cpu = min(d['cpu'] for d in self.ec2_calculator.ec2.get(region))
         return float(max_cpu)
 
     def calculate_limits_memory(self, region):
         """Calculate memory limits function."""
-        max_memory = max(d["memory"] for d in self.ec2_calculator.ec2.get(region))
+        max_memory = max(float(d["memory"]) for d in self.ec2_calculator.ec2.get(region))
         # min_memory = min(d['memory'] for d in self.ec2_calculator.ec2.get(region))
         return float(max_memory)
 
@@ -156,7 +156,7 @@ class FleetCalculator:
 
 
 def get_fleet_offers(
-    params, region, os, app_size, ec2, pricing, architecture, type_major
+    params, region, os, app_size, ec2, pricing, architecture, type_major, config_file, provider
 ):
     """Get fleet offers function."""
     res = []
@@ -165,10 +165,13 @@ def get_fleet_offers(
         regions = [region]
     calculator = FleetCalculator(ec2)
     if region == "all":
-        regions = constants.regions.copy()
+        if config_file["Provider (AWS / Azure)"] == "AWS":
+            regions = constants.AWS_regions.copy()
+        elif config_file["Provider (AWS / Azure)"] == "Azure":
+            regions = constants.Azure_regions.copy()
+        else:
+            print("Wrong Provider in Config file")
     for region_to_check in regions:
-        # res_region = []
-        # print('region: ', region)
         updated_params = params.copy()
         for pl in updated_params:
             for p in pl:

@@ -68,7 +68,7 @@ class SpotInstanceCalculator:
         # lst = []
         # for price in ec2:
         #     lst.append(price)
-        return sorted(ec2, key=lambda p: p["spot_price"])
+        return sorted(ec2, key=lambda p: float(p["spot_price"]))
 
     def advanced_filter(self, fi, v_cpus):
         """Advanced_filter function."""
@@ -96,6 +96,7 @@ class SpotInstanceCalculator:
         frequency=4,
         network=0,
         burstable=True,
+        aws_provider = False
     ):
         """Get_spot_filter function."""
         ec2_data = self.ec2
@@ -105,23 +106,30 @@ class SpotInstanceCalculator:
                 result.extend(v)
         else:
             result.extend(ec2_data[region])
-        fi = filter(
-            lambda price: float(price["cpu"]) >= v_cpus
-            and float(price["memory"]) >= memory
-            and price["interruption_frequency_filter"] <= frequency,
-            result,
-        )
-        if architecture != "all":
-            fi = filter(lambda price: price["architecture"] in (architecture), result)
-        if type_major != "all":
-            fi = filter(lambda price: price["type_major"] in (type_major), result)
-        fi = filter(self.network_filter(network, burstable), fi)
-        fi = filter(self.interruption_filter(behavior), fi)
-        fi = filter(set_string_filter(type, "family"), fi)
-        # self.botoFilter([a_dict['typeName'] for a_dict in list(fi)])
-        fi = list(fi)
-        # fi = self.advanced_filter(fi,v_cpus)
-        # print('after filtering',len(fi))
+        if aws_provider:
+            fi = filter(
+                lambda price: float(price["cpu"]) >= v_cpus
+                and float(price["memory"]) >= memory
+                and price["interruption_frequency_filter"] <= frequency,
+                result,
+            )
+            if architecture != "all":
+                fi = filter(lambda price: price["architecture"] in (architecture), result)
+            if type_major != "all":
+                fi = filter(lambda price: price["type_major"] in (type_major), result)
+            fi = filter(self.network_filter(network, burstable), fi)
+            fi = filter(self.interruption_filter(behavior), fi)
+            fi = filter(set_string_filter(type, "family"), fi)
+            # self.botoFilter([a_dict['typeName'] for a_dict in list(fi)])
+            fi = list(fi)
+            # fi = self.advanced_filter(fi,v_cpus)
+            # print('after filtering',len(fi))
+        else:
+            fi = filter(
+                lambda price: float(price["cpu"]) >= v_cpus
+                and float(price["memory"]) >= memory,
+                result,
+            )
         return fi
 
     def network_filter(self, network, burstable):
