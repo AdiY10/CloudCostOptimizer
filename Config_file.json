@@ -1,5 +1,5 @@
 {
     "Data Extraction (always / onceAday)": "onceAday",
     "boto3 (enable / disable)": "disable",
-    "Provider (AWS / Azure)": "Azure"
+    "Provider (AWS / Azure)": "AWS"
 }
