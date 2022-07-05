@@ -142,10 +142,8 @@ class GetPriceFromAWS:
                     )
                 price["spot_price"] = spot_price_value
                 # print('spot_price',spot_price_value)
-                price["Price_per_CPU"] = float(spot_price_value / float(price["cpu"]))
-                price["Price_per_memory"] = float(
-                    spot_price_value / float(price["memory"])
-                )
+                price["Price_per_CPU"] = round(float(spot_price_value / float(price["cpu"])), 4)
+                price["Price_per_memory"] = round(float(spot_price_value / float(price["memory"])), 4)
                 self.spot_price.append(spot_price_value)
         return ec2
 
@@ -180,7 +178,6 @@ class GetPriceFromAWS:
         file_to_read = urlopen(self.url)
         raw_data = file_to_read.read()
         raw_data = raw_data.lstrip(b"callback(").rstrip(b");")
-        ## create json file
         prices = json.loads(raw_data)
         if region != "all" and not isinstance(region, list):  ##case of one region
             data_region = ec2[region]
@@ -226,7 +223,7 @@ class GetPriceFromAWS:
             if isinstance(region, list):
                 regions = region
             else:
-                regions = constants.AWS_regions.copy()
+                regions = constants.AWS_REGIONS.copy()
             for region in regions:
                 region = self.correct_region(region)
                 data_region = ec2[region]

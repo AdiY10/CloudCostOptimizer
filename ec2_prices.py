@@ -49,7 +49,7 @@ class Ec2Parser:
         if isinstance(region, list):
             regions = region
         else:
-            regions = constants.AWS_regions.copy()
+            regions = constants.AWS_REGIONS.copy()
         res = grequests.map(self.get_ec2_region(region, os) for region in regions)
         # res = [i for i in res if i]
         res = list(map(self.parse_ec2_response, res))
@@ -161,7 +161,8 @@ class Ec2Parser:
             "physicalProcessor": arr["aws:ec2:physicalProcessor"],
             "processorArchitecture": arr["aws:ec2:processorArchitecture"],
             "Architecture": architecute,
-            "discount": current_spot["s"],
+            # "discount": current_spot["s"], ##spot discount
+            "discount": 0, ## personal discount
             "interruption_frequency": self.interruption_frequency(current_spot["r"]),
             "interruption_frequency_filter": float(current_spot["r"]),
         }

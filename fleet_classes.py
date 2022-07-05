@@ -114,18 +114,15 @@ class GroupedInstance(object):
     def __init__(self, instance, components, pricing):
         """Initialize class."""
         self.spot_price = round(float(instance["spot_price"]), 5)
+        self.discount = instance["discount"]
         self.components = components
         self.instance = instance
         # self.region = instance['region'] ##cross region option
         self.onDemand = round(float(instance["onDemandPrice"]), 5)
         if pricing == "spot":
-            self.total_price = (
-                self.spot_price
-            )  ##+ sum(map(lambda c: c.storage_price,components)) in case EBS should be calculated
+            self.total_price = self.spot_price * (1-(self.discount)/100) ##+ sum(map(lambda c: c.storage_price,components)) in case EBS should be calculated
         else:
-            self.total_price = (
-                self.onDemand
-            )  ##+ sum(map(lambda c: c.storage_price,components)) in case EBS should be calculated
+            self.total_price = self.onDemand * (1-(self.discount)/100) ##+ sum(map(lambda c: c.storage_price,components)) in case EBS should be calculated
 
     def get_info(self):
         """Get Component function."""

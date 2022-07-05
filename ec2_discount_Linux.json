@@ -1,0 +1,122 @@
+{
+    "us-east-2": [
+        {
+            "region": "us-east-2",
+            "os": "Linux",
+            "typeName": "r5dn.metal",
+            "discount": 50
+        },
+        {
+            "region": "us-east-2",
+            "os": "Linux",
+            "typeName": "c5n.18xlarge",
+            "discount": 60
+        },
+        {
+            "region": "us-east-2",
+            "os": "Linux",
+            "typeName": "t4g.micro",
+            "discount": 55
+        },
+        {
+            "region": "us-east-2",
+            "os": "Linux",
+            "typeName": "a1.metal",
+            "discount": 10
+        }
+    ],
+    "us-east-1": [
+        {
+            "region": "us-east-1",
+            "os": "Linux",
+            "typeName": "c6gn.16xlarge",
+            "discount": 70
+        },
+        {
+            "region": "us-east-1",
+            "os": "Linux",
+            "typeName": "t4g.2xlarge",
+            "discount": 15
+        }
+    ],
+    "us-west-1": [
+        {
+            "region": "us-west-1",
+            "os": "Linux",
+            "typeName": "m5a.xlarge",
+            "discount": 80
+        },
+        {
+            "region": "us-west-1",
+            "os": "Linux",
+            "typeName": "m6i.8xlarge",
+            "discount": 60
+        },
+        {
+            "region": "us-west-1",
+            "os": "Linux",
+            "typeName": "z1d.2xlarge",
+            "discount": 50
+        }
+    ],
+    "us-west-2": [
+        {
+            "region": "us-west-2",
+            "os": "Linux",
+            "typeName": "x2gd.metal",
+            "discount": 50
+        }
+    ],
+    "af-south-1": [
+        {
+            "region": "af-south-1",
+            "os": "Linux",
+            "typeName": "r5d.4xlarge",
+            "discount": 40
+        }
+    ],
+    "ap-east-1": [
+        {
+            "region": "ap-east-1",
+            "os": "Linux",
+            "typeName": "r6g.12xlarge",
+            "discount": 50
+        }
+    ],
+    "ap-south-1": [
+        {
+            "region": "ap-south-1",
+            "os": "Linux",
+            "typeName": "c5d.9xlarge",
+            "discount": 50
+        },
+        {
+            "region": "ap-south-1",
+            "os": "Linux",
+            "typeName": "t4g.micro",
+            "discount": 60
+        },
+        {
+            "region": "ap-south-1",
+            "os": "Linux",
+            "typeName": "t3a.2xlarge",
+            "discount": 50
+        },
+        {
+            "region": "ap-south-1",
+            "os": "Linux",
+            "typeName": "t3a.micro",
+            "discount": 40
+        }
+    ],
+    "ap-northeast-3": [
+        {
+            "region": "ap-northeast-3",
+            "os": "Linux",
+            "typeName": "m5d.12xlarge",
+            "discount": 50
+        }
+    ]
+}
+
+
