@@ -61,10 +61,10 @@ class FleetCalculator:
     #     components = list(grouped_param.params)
     #     if len(instances) == 0:
     #         return None
-    #     return [[GroupedInstance(instances[i],components, pricing)] for i in range(min(len(instances),2))]
+    #     return [[GroupedInstance(instances[i],components, payment)] for i in range(min(len(instances),2))]
 
     def match_group(
-        self, grouped_param: GroupedParam, region, pricing, architecture, type_major
+        self, grouped_param: GroupedParam, region, payment, architecture, type_major
     ):  ## finds best configuration for each combination
         """Match instance to group of components function."""
         sub_combination = []
@@ -118,7 +118,7 @@ class FleetCalculator:
         # if (len(grouped_param.params[0].component_name) < 2):
         #     return [[GroupedInstance(instances[i],components)] for i in range(min(len(instances),2))]
         return [
-            [GroupedInstance(instances[i], components, pricing)]
+            [GroupedInstance(instances[i], components, payment)]
             for i in range(min(len(instances), 1))
         ]
 
@@ -147,12 +147,12 @@ class FleetCalculator:
     #        result.append(new_group)
     #    return result  ## result is a list of Offer objects
 
-    def get_offers(self, group: Offer, region, pricing, architecture, type_major):
+    def get_offers(self, group: Offer, region, payment, architecture, type_major):
         """Get offers function."""
         instances = []
         for i in group.remaining_partitions:
             instances.append(
-                self.match_group(i, region, pricing, architecture, type_major)
+                self.match_group(i, region, payment, architecture, type_major)
             )  ## finds best configuration for each combination
         instances = list(filter(None, instances))
         if len(instances) < len(group.remaining_partitions):
@@ -190,7 +190,7 @@ class FleetCalculator:
 
 
 def get_fleet_offers(
-    params, region, os, app_size, ec2, pricing, architecture, type_major, config_file, provider, bruteforce , **kw
+    params, region, os, app_size, ec2, payment, architecture, type_major, config_file, provider, bruteforce , **kw
 ):
     """Get fleet offers function."""
     res = []
@@ -199,10 +199,10 @@ def get_fleet_offers(
         regions = [region]
     calculator = FleetCalculator(ec2)
     if region == "all":
-        if config_file["Provider (AWS / Azure)"] == "AWS":
-            regions = constants.AWS_regions.copy()
-        elif config_file["Provider (AWS / Azure)"] == "Azure":
-            regions = constants.Azure_regions.copy()
+        if provider == "AWS":
+            regions = constants.AWS_REGIONS.copy()
+        elif provider == "Azure":
+            regions = constants.AZURE_REGIONS.copy()
         else:
             print("Wrong Provider in Config file")
     
@@ -283,16 +283,15 @@ def get_fleet_offers(
         # firstBranch = simplest_comb(updated_params, app_size)
         # for combination in firstBranch:
         # 	res += calculator.get_offers(combination, region_to_check, pricing, architecture, type_major)
-
         # ## one_pair Algorithm
         # pairs = one_pair(updated_params, app_size)
         # for combination in pairs:
-        #     res += calculator.get_offers(combination, region_to_check, pricing, architecture, type_major)
+        #     res += calculator.get_offers(combination, region_to_check, payment, architecture, type_major)
 
         # ## AllPairs Algorithm
         # pairs = find_all_poss_pairs(updated_params, app_size)
         # for combination in pairs:
-        #     res += calculator.get_offers(combination, region_to_check, pricing, architecture, type_major)
+        #     res += calculator.get_offers(combination, region_to_check, payment, architecture, type_major)
 
         # ## B&B Algorithm- first step- cross region
         # print(updated_params)
@@ -304,10 +303,15 @@ def get_fleet_offers(
         # else:
         #     firstBranch = simplest_comb(updated_params, app_size)
         #     for combination in firstBranch:
-        #         res += calculator.get_offers(combination, region_to_check, pricing, architecture, type_major)
+        #         res += calculator.get_offers(combination, region_to_check, payment, architecture, type_major)
         # secondBranch = branchStep(firstBranch)
         # for combination in secondBranch:
-        #     res += calculator.get_offers(combination, region_to_check, pricing, architecture, type_major)
-    
+
+        #     res += calculator.get_offers(combination, region_to_check, payment, architecture, type_major)
+
+        ## Full B&B Algorithm
+        # Coming Soon
+
+
     res = list(filter(lambda g: g is not None, res))
     return sort_fleet_offers(res)

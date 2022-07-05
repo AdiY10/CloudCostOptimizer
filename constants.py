@@ -1,6 +1,6 @@
 """Constants Values- all regions / architecture / physicalProcessor / hardware."""
 
-AWS_regions = [
+AWS_REGIONS = [
     "us-east-2",
     "us-east-1",
     "us-west-1",
@@ -24,7 +24,7 @@ AWS_regions = [
     "sa-east-1",
 ]
 
-Azure_regions = [
+AZURE_REGIONS = [
     "Central US",
     "East US",
     "East US 2",
@@ -77,8 +77,8 @@ Azure_regions = [
 ###                   "eu-central-1", "eu-ireland", "eu-west-2", "eu-south-1",
 ###                   "eu-west-3", "eu-north-1", "me-south-1", "sa-east-1"]
 
-architecture = ["arm64", "i386", "x86_64", "x86_64_mac"]
-physical_processor = [
+AWS_ARCHITECTURE = ["arm64", "i386", "x86_64", "x86_64_mac"]
+AWS_PHYSICAL_PROCESSOR = [
     "AMD EPYC 7571",
     "Intel Xeon Platinum 8151",
     "Intel Xeon Platinum 8252",
@@ -101,7 +101,8 @@ physical_processor = [
     "Intel Xeon Platinum 8275CL (Cascade Lake)",
     "AWS Graviton2 Processor",
 ]
-hardware = {
+
+AWS_HARDWARE = {
     "gp2": {"IOPS": 250, "throughput": 250, "type": "gp2"},
     "gp3": {"IOPS": 250, "throughput": 1000, "type": "gp3"},
     "piops": {"IOPS": 1000, "throughput": 1000, "type": "piops"},
@@ -110,7 +111,8 @@ hardware = {
     "sc1": {"IOPS": 250, "throughput": 250, "type": "sc1"},
     "previous generation": {"IOPS": 200, "throughput": 90, "type": "magnetic"},
 }
-instances = [
+
+AWS_INSTANCE_TYPES = [
     "m4.2xlarge",
     "g5g.2xlarge",
     "m4.4xlarge",

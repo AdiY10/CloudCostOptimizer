@@ -7,6 +7,7 @@ from get_spot import SpotCalculator
 import boto3
 from comb_optimizer import DevelopMode,GetNextMode,GetStartNodeMode
 
+
 calc = SpotCalculator()
 
 
@@ -33,11 +34,11 @@ def use_boto3(instance_type, region, os):
     # print(details['SpotPriceHistory'][i])
 
 
-def serialize_group(group: Offer, pricing, availability_zone, os):
+def serialize_group(group: Offer, payment, availability_zone, os):
     """Serialize group in fleet option."""
     res = dict()
     res["price"] = round(group.total_price, 5)
-    res["EC2 Type"] = pricing
+    res["EC2 Type"] = payment
     res["region"] = group.region
     res["instances"] = list(
         map(lambda i: serialize_instance(i, os), group.instance_groups)
@@ -85,13 +86,13 @@ def run_optimizer(
 ):
     """Run Optimizer- Fleet calculator."""
     file = open(input_file_name)
-    filter = json.load(file)
-    file1 = open("Config_file.json")
-    config_file = json.load(file1)
-    provider = config_file["Provider (AWS / Azure)"]
     shared_apps = []
     partitions = []
     app_size = dict()
+    filter = json.load(file)
+    file1 = open("Config_file.json")
+    config_file = json.load(file1)
+    provider = config_file["Provider (AWS / Azure / Hybrid)"]
     for i, a in enumerate(filter["apps"]):
         app_size[i] = len(a["components"])
         if "share" in a and a["share"] is True:
@@ -106,8 +107,12 @@ def run_optimizer(
     if len(shared_apps) > 0:
         partitions.append(shared_apps)
     os = filter["selectedOs"]
-    region = filter["region"] if "region" in filter else "all"
-    pricing = filter["spot/onDemand"] if "spot/onDemand" in filter else "spot"
+    if provider != "Hybrid":
+        region = filter["region"] if "region" in filter else "all"
+
+    else:
+        region = "hybrid"
+    payment = filter["spot/onDemand"] if "spot/onDemand" in filter else "spot"
     filter_instances = (
         filter["filterInstances"] if "filterInstances" in filter else "NA"
     )
@@ -116,23 +121,11 @@ def run_optimizer(
     )
     architecture = filter["architecture"] if "architecture" in filter else "all"
     type_major = filter["type_major"] if "type_major" in filter else "all"
-    offers_list = calc.get_fleet_offers(
-        os,
-        region,
-        app_size,
-        partitions,
-        pricing,
-        architecture,
-        type_major,
-        filter_instances,
-        provider,
-        bruteforce,
-        **kw
-
-    )
+    offers_list = calc.get_fleet_offers(os, region, app_size, partitions, payment,
+                                        architecture, type_major, filter_instances, provider, bruteforce, **kw)
     # print('Connecting to boto3')
     res = list(
-        map(lambda g: serialize_group(g, pricing, availability_zone, os), offers_list)
+        map(lambda g: serialize_group(g, payment, availability_zone, os), offers_list)
     )
     if not res:
         print("Couldnt find any match")
@@ -144,9 +137,8 @@ def run_optimizer(
 
 
 if __name__ == "__main__":
-
-    input_file_name = "input_Fleet.json"
-    output_file_name = "FleetResults.json"
+    INPUT_FILE = "input_Fleet.json"
+    OUTPUT_FILE = "FleetResults.json"
 
     alg_parameters = {
         'candidate_list_size' : 350,
@@ -164,8 +156,9 @@ if __name__ == "__main__":
 
 
     run_optimizer(
-        input_file_name,
-        output_file_name,
+        INPUT_FILE,
+        OUTPUT_FILE,
         bruteforce=False,
         **alg_parameters
     )
+

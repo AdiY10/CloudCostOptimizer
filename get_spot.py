@@ -26,23 +26,51 @@ class SpotCalculator:
 
     ##single instance
     def get_spot_estimations(
-        self,
-        os,
-        v_cpus,
-        memory,
-        storage_size,
-        region="all",
-        type="all",
-        behavior="terminate",
-        storage_type="all",
-        iops=250,
-        throughput=250,
-        frequency=4,
-        network=0,
-        burstable=True,
+            self,
+            payment,
+            provider,
+            os,
+            v_cpus,
+            memory,
+            storage_size,
+            region="all",
+            type="all",
+            behavior="terminate",
+            storage_type="all",
+            iops=250,
+            throughput=250,
+            frequency=4,
+            network=0,
+            burstable=True,
     ):
         """Get_spot_estimations function."""
-        ec2_data = self.get_ec2_from_cache(region, os)
+        if provider == "AWS":
+            ec2_data = self.get_ec2_from_cache(region, os)
+        elif provider == "Azure":
+            file = open("Azure_data_v2.json")
+            ec2_data = json.load(file)
+        elif provider == "Hybrid":
+            if os == "linux":
+                file_aws = open("ec2_data_Linux.json")
+            else:
+                file_aws = open("ec2_data_Windows.json")
+            file_azure = open("Azure_data_v2.json")
+            aws_data = json.load(file_aws)
+            azure_data = json.load(file_azure)
+            ec2_data = dict()
+            ec2_data["hybrid"] = []
+            for k, v in aws_data.items():
+                for instance in v:
+                    if os.lower() in instance["os"].lower():
+                        ec2_data["hybrid"].append(instance)
+            for k, v in azure_data.items():
+                for instance in v:
+                    if os.lower() in instance["os"].lower():
+                        ec2_data["hybrid"].append(instance)
+        else:
+            print("Provider error")
+        if provider != "Hybrid":
+            ec2_data = self.calculate_discount(ec2_data, provider, os)
         # if os == 'linux':
         #     file = open('ec2_data_Linux.json')
         # else:
@@ -76,12 +104,23 @@ class SpotCalculator:
             # price['storagePrice'] = ebs[price['region']]['price']
             if isinstance(price["spot_price"], str):
                 price["total_price"] = "N/A"
-                price["CPU_Score"] = "N/A"
-                price["Memory_Score"] = "N/A"
+                # price["CPU_Score"] = "N/A"
+                # price["Memory_Score"] = "N/A"
+            if isinstance(price["onDemandPrice"], str):
+                price["total_price"] = "N/A"
+                # price["CPU_Score"] = "N/A"
+                # price["Memory_Score"] = "N/A"
             else:
-                price["total_price"] = price["spot_price"]
-                price["CPU_Score"] = round(price["Price_per_CPU"], 5)
-                price["Memory_Score"] = round(price["Price_per_memory"], 5)
+                if payment == "spot":
+                    price["total_price"] = round(price["spot_price"] * (100 - price["discount"]) / 100, 6)
+                    if price["onDemandPrice"] == 1000000:
+                        price["onDemandPrice"] = "N/A"
+                else:
+                    price["total_price"] = round(price["onDemandPrice"] * (100 - price["discount"]) / 100, 6)
+                    if price["spot_price"] == 1000000:
+                        price["spot_price"] = "N/A"
+                # price["CPU_Score"] = round(price["Price_per_CPU"], 5)
+                # price["Memory_Score"] = round(price["Price_per_memory"], 5)
                 lst.append(price)
         lst = sorted(lst, key=lambda p: p["total_price"])
         return lst[0:30]
@@ -93,27 +132,27 @@ class SpotCalculator:
         region,
         app_size,
         params,
-        pricing,
+        payment,
         architecture,
         type_major,
         filter_instances,
         provider,
         bruteforce,
         **kw
-    ):  ## params- list of all components        """Get_fleet_offers function."""
+    ):  ## params- list of all components        
+        """Get_fleet_offers function."""
         import os.path
         import datetime
-
         file = open("Config_file.json")
         config_file = json.load(file)
-        if config_file["Provider (AWS / Azure)"] == "AWS":
+        if provider == "AWS":
             if config_file["Data Extraction (always / onceAday)"] == "onceAday":
                 if user_os == "linux":
                     if (
-                        datetime.datetime.now()
-                        - datetime.datetime.fromtimestamp(
-                            os.path.getmtime("ec2_data_Linux.json")
-                        )
+                            datetime.datetime.now()
+                            - datetime.datetime.fromtimestamp(
+                        os.path.getmtime("ec2_data_Linux.json")
+                    )
                     ).days != 0:  ## if the file hasn't modified today
                         ec2_data = self.get_ec2_from_cache(region, user_os)
                     else:
@@ -121,10 +160,10 @@ class SpotCalculator:
                         ec2_data = json.load(file)
                 else:
                     if (
-                        datetime.datetime.now()
-                        - datetime.datetime.fromtimestamp(
-                            os.path.getmtime("ec2_data_Linux.json")
-                        )
+                            datetime.datetime.now()
+                            - datetime.datetime.fromtimestamp(
+                        os.path.getmtime("ec2_data_Linux.json")
+                    )
                     ).days != 0:  ## if the file hasn't modified today
                         ec2_data = self.get_ec2_from_cache(region, user_os)
                     else:
@@ -145,19 +184,86 @@ class SpotCalculator:
                         ):
                             list_of_relevant_instances.append(i)
                     ec2_data[k] = list_of_relevant_instances
-        else:
+        elif provider == "Azure":
             file = open("Azure_data_v2.json")
-            ec2_data = json.load(file)
-
+            all_vms = json.load(file)
+            ec2_data = dict()
+            for k, v in all_vms.items():
+                ec2_data[k] = []
+                for instance in v:
+                    if user_os.lower() in instance["os"].lower():
+                        ec2_data[k].append(instance)
+        else:
+            if user_os == "linux":
+                file_aws = open("ec2_data_Linux.json")
+            else:
+                file_aws = open("ec2_data_Windows.json")
+            file_azure = open("Azure_data_v2.json")
+            aws_data = json.load(file_aws)
+            azure_data = json.load(file_azure)
+            ec2_data = dict()
+            ec2_data["hybrid"] = []
+            for k, v in aws_data.items():
+                for instance in v:
+                    if user_os.lower() in instance["os"].lower():
+                        ec2_data["hybrid"].append(instance)
+            for k, v in azure_data.items():
+                for instance in v:
+                    if user_os.lower() in instance["os"].lower():
+                        ec2_data["hybrid"].append(instance)
+        if provider != "Hybrid":
+            ec2_data = self.calculate_discount(ec2_data, provider, user_os)
         print("calculating best configuration")
         ec2 = SpotInstanceCalculator(ec2_data)
         # ebs_data = self.get_ebs_from_cache(region) ## get EBS volumes from AWS
         # ebs = EbsCalculator(ebs_data)
         return get_fleet_offers(
-            params, region, user_os, app_size, ec2, pricing, architecture, type_major, config_file, provider, bruteforce , **kw
-        )
+            params, region, user_os, app_size, ec2, payment, architecture, type_major, config_file, provider, bruteforce , **kw)
 
         
+
+    def calculate_discount(self, ec2_data, provider, user_os):
+        if provider == "AWS":
+            if user_os == "linux":
+                file = open("ec2_discount_Linux.json")
+            else:
+                file = open("ec2_discount_Windows.json")
+            discount = json.load(file)
+        elif provider == "Azure":
+            file = open("vm_discount.json")
+            discount = json.load(file)
+        else:  ##Hybrid
+            if user_os == "linux":
+                file_aws = open("ec2_data_Linux.json")
+            else:
+                file_aws = open("ec2_data_Windows.json")
+            file_azure = open("Azure_data_v2.json")
+            aws_data = json.load(file_aws)
+            azure_data = json.load(file_azure)
+            discount = dict()
+            discount["hybrid"] = []
+            for k, v in aws_data.items():
+                for instance in v:
+                    if user_os.lower() in instance["os"].lower():
+                        discount["hybrid"].append(instance)
+            for k, v in azure_data.items():
+                for instance in v:
+                    if user_os.lower() in instance["os"].lower():
+                        discount["hybrid"].append(instance)
+        if provider != "Hybrid":
+            for k, v in discount.items():
+                for single_discount in v:
+                    d = next(item for item in ec2_data[k] if item["typeName"] == single_discount["typeName"])
+                    d["discount"] = single_discount["discount"]
+        else:
+            for k, v in discount.items():
+                for single_discount in v:
+                    d = next(item for item in ec2_data["hybrid"] if item["typeName"] == single_discount["typeName"] and
+                             item["region"] == single_discount["region"])
+                    d["discount"] = single_discount["discount"]
+        return ec2_data
+
+
     def is_cached(self, os, region):
         """Check if cached function."""
         if self.cached_os[os]:
