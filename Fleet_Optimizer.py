@@ -5,6 +5,8 @@ from fleet_classes import Offer, ComponentOffer
 from fleet_offers import Component
 from get_spot import SpotCalculator
 import boto3
+from comb_optimizer import DevelopMode,GetNextMode,GetStartNodeMode
+
 
 calc = SpotCalculator()
 
@@ -76,12 +78,17 @@ def serialize_component(component: ComponentOffer):
     return result
 
 
-def run_optimizer():
+def run_optimizer(
+    input_file_name = "input_Fleet.json",
+    output_file_name="FleetResults.json",
+    bruteforce = False,
+    **kw
+):
     """Run Optimizer- Fleet calculator."""
+    file = open(input_file_name)
     shared_apps = []
     partitions = []
     app_size = dict()
-    file = open("input_Fleet.json")
     filter = json.load(file)
     file1 = open("Config_file.json")
     config_file = json.load(file1)
@@ -115,7 +122,7 @@ def run_optimizer():
     architecture = filter["architecture"] if "architecture" in filter else "all"
     type_major = filter["type_major"] if "type_major" in filter else "all"
     offers_list = calc.get_fleet_offers(os, region, app_size, partitions, payment,
-                                        architecture, type_major, filter_instances, provider)
+                                        architecture, type_major, filter_instances, provider, bruteforce, **kw)
     # print('Connecting to boto3')
     res = list(
         map(lambda g: serialize_group(g, payment, availability_zone, os), offers_list)
@@ -123,10 +130,35 @@ def run_optimizer():
     if not res:
         print("Couldnt find any match")
     else:
-        print("Optimizer has found you the optimal configuration. check it out")
-    with open("FleetResults.json", "w", encoding="utf-8") as f:
+        pass
+        # print("Optimizer has found you the optimal configuration. check it out")
+    with open(output_file_name, "w", encoding="utf-8") as f:
         json.dump(res, f, ensure_ascii=False, indent=4)
 
 
 if __name__ == "__main__":
-    run_optimizer()
+    INPUT_FILE = "input_Fleet.json"
+    OUTPUT_FILE = "FleetResults.json"
+
+    alg_parameters = {
+        'candidate_list_size' : 350,
+        'time_per_region' : 0.1,
+        'exploitation_score_price_bias' : 0.5,
+        'exploration_score_depth_bias' : 1.0,
+        'exploitation_bias' : 0.2,
+        'sql_path' : "Run_Statistic.sqlite3",
+        'verbose' : True,
+        'develop_mode' : DevelopMode.ALL,
+        'proportion_amount_node_sons_to_develop' : 0.5,
+        'get_next_mode' : GetNextMode.STOCHASTIC_ANNEALING,
+        'get_starting_node_mode' : GetStartNodeMode.RESET_SELECTOR
+    }
+
+
+    run_optimizer(
+        INPUT_FILE,
+        OUTPUT_FILE,
+        bruteforce=False,
+        **alg_parameters
+    )
+
