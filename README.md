@@ -122,7 +122,7 @@ has different resource requirements, which describes by the memory, vCPUs etc...
 * IOPS (MiB I/O) - max IOPS per volume.
 * Throughput (MiB/s)- max throughput per volume.
 #### Configuration file:
-A configuration file with advanced settings is provided to the user, which allows him to edit default settings according to his preferences, such as data extraction methodology, boto3 usage parameters, search algorithm parameters, etc..
+A configuration file with advanced settings is provided to the user, which allows him to edit default settings according to his preferences, such as data extraction methodology, cloud provider, boto3 usage parameters, search algorithm parameters, etc..
 ## Results
 The output of the Optimizer is a json file containing  a list of configurations. Each configuration represents an assignment of all application components to AWS instances.
 
