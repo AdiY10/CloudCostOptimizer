@@ -8,7 +8,7 @@ The Optimizer first gets from the user application(s) requirements such as OS, r
 After calculating All the options, the Optimizer suggests the user the cheapest configuration of EC2 instances to run their app.
 
 ## Getting Started
-To start using The Cloud Cost Optimizer, please clone this git repository:
+To start using The Cloud Cost Optimizer, please *clone* this git repository:i
 ```
 git clone https://github.com/AdiY10/CloudCostOptimizer.git
 ```

@@ -174,18 +174,18 @@ class CombOptim:
             print("CombOptim.run: infinite price for root, returning empty result.")
             return []
         # print("comb optimizer starting run.")
-        self.create_stats_table()
+        self.create_stats_table() # in order to save stat info
         i = 1
-        while not self.isDone():
-            start_node = self.get_start_node()
-            path = self.search_algo.run(start_node)
+        while not self.isDone(): # got more time to run
+            start_node = self.get_start_node() # get start node
+            path = self.search_algo.run(start_node) # run search from start node
             if len(path) != 0:
-                self.optim_set.update(path)
+                self.optim_set.update(path) # update the final solution
 
                 if self.get_starting_node_mode == GetStartNodeMode.RESET_SELECTOR:
-                    self.reset_sel.update(path)
+                    self.reset_sel.update(path) # update the selector
 
-            self.insert_stats(i)
+            self.insert_stats(i) # save stat info
             i += 1
             if self.get_next_mode == GetNextMode.GREEDY:
                 break
@@ -389,8 +389,7 @@ class ResetSelector:
         except:
             print("sample from weighted raised err, scores list: ", scores_list)
             return self.top_candidates[0]
-            #tmp fix, retun random node instead of exit...
-            # exit(1)
+
         selected_candidate = self.top_candidates[selected_node_idx]
         if self.verbose:
             print(f"ResetSelector.getStartNode;\
@@ -572,7 +571,7 @@ class SearchAlgorithm:
             if next_node.getPrice() == np.inf:
                 return path
             path.append(next_node)
-            next_node = self.get_next(next_node)
+            next_node = self.get_next(next_node) # implement the search alg
             if next_node is None:
                 return path
 
@@ -585,11 +584,10 @@ class SearchAlgorithm:
         return best
 
     def __get_next_alg(self, node: Node , sons):
-        flag = self.is_choosing_downgrades()
+        flag = self.is_choosing_downgrades() # annealing part
         improves, downgrades = SearchAlgorithm.split_sons_to_improves_and_downgrades(sons, node.getPrice())
         # if any(map(lambda x: x.getPrice()!=np.inf, downgrades)):
         #     print(f"FOUND WORST SON")
-        #temp fix, if got exception, return None:
         try:
             if (downgrades.shape[0] != 0) and flag:
                 return SearchAlgorithm.get_son_by_weights(downgrades)
