@@ -8,7 +8,7 @@ The Optimizer first gets from the user application(s) requirements such as OS, r
 After calculating All the options, the Optimizer suggests the user the cheapest configuration of EC2 instances to run their app.
 
 ## Getting Started
-To start using The Cloud Cost Optimizer, please clone this git repository:
+To start using The Cloud Cost Optimizer, please *clone* this git repository:i
 ```
 git clone https://github.com/AdiY10/CloudCostOptimizer.git
 ```
@@ -21,6 +21,7 @@ git clone https://github.com/AdiY10/CloudCostOptimizer.git
 $ python -m pip install requests
 $ pip3 install urllib3
 $ pip install grequests
+$ pip install numpy
 ```
 
 ### Usage
@@ -227,3 +228,59 @@ The output of the Optimizer is a json file containing  a list of configurations.
     }
 ]
 ```
+
+## Algorithm Description
+
+### General Description
+The algorithm Is split into epochs.
+each epoch is a combination of 2 phases:
+  - **searching** - search for combiniation with minimal price. the search is based on Simulated Annealing and Stochastic Hill Climbing. 
+  - **selecting the next node to start searching from** -
+    -  can use Reset Selector (based on heuristic) 
+    -  can select randomly.
+
+
+#### Search Algorithm
+the search is based on Simulated Annealing and Stochastic Hill Climbing.
+```mermaid
+flowchart TD
+    O[initial node]
+    A[decide proportion of sons to develop]
+    B[develop proportion node sons]
+    C[Split the group of sons:\n ones that improve start node price  \n ones that lower start node price]
+    D{decide to improve?}
+    E[select one of the bad nodes stochastically,\n weighted by diff]
+    F[select one of the good nodes stochastically,\n weighted by diff]
+    G{selected?}
+    H[finish search]
+    I[continue search from selected node]
+
+    O --> A -->B --> C -->D
+    D -- no --> E --> G
+    D -- yes --> F --> G
+
+    G -- no --> H
+    G -- yes --> I -->A
+```
+
+#### Reset Selector
+The Reset Selector is based on Random Restart and Exploration & Exploitation.
+Keep an array of “good” nodes that we have already visited, always select starting nodes from it.
+After each decent iteration (epoch), give the reset selector the list of nodes visited during the seach; the best of them will be saved in the array.
+
+### HyperParameter 
+
+- **candidate list size** - The maximum capacity of the array of Reset Selector.
+
+- **time per region** - The amount of time [seconds] the algorithm is allowed to run on each of the regions .
+
+- **proportion amount node sons to develop** - Initial proportion to develop at each epoch.
+
+- **exploitation score price bias** - Proportion between price score and subtree score.
+
+- **exploration score depth bias** - Proportion between depth score and uniqueness score.
+
+- **exploitation bias** -  Proportion between exploitation score and exploration score.
+
+
+
