@@ -248,7 +248,7 @@ def get_fleet_offers(
             ):  ## for each combination (group) find N (=3) best offers ##Algorithm for optimal results
 
                 cur_results = calculator.get_offers(
-                    combination, region_to_check, pricing, architecture, type_major
+                    combination, region_to_check, payment, architecture, type_major
                 )
                 region_res += cur_results
                 best_result = min(list(map(lambda g: g.total_price, cur_results))+[best_result])
@@ -273,7 +273,7 @@ def get_fleet_offers(
         else:#our code
             if 'verbose' in kw and kw['verbose']:
                 print("running optimizer of region: ", region_to_check)
-            price_calc = lambda comb: calculator.get_best_price(comb, region_to_check, pricing, architecture, type_major)
+            price_calc = lambda comb: calculator.get_best_price(comb, region_to_check, payment, architecture, type_major)
             res += CombOptim(price_calc=price_calc , initial_seperated=updated_params ,  region=region_to_check , **kw ).run()
     if bruteforce:
         sql_conn.commit()
