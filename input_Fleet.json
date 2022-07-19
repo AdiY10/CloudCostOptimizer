@@ -9,7 +9,7 @@
             "components": [
                 {
                     "memory": 10,
-                    "vCPUs": 10,
+                    "vCPUs": 5,
                     "network": 5,
                     "behavior": "terminate",
                     "frequency": "2",
@@ -18,7 +18,7 @@
                 },
                 {
                     "memory": 10,
-                    "vCPUs": 10,
+                    "vCPUs": 5,
                     "network": 5,
                     "behavior": "terminate",
                     "frequency": "2",
@@ -26,13 +26,886 @@
                     "name": "Comp2"
                 },
                 {
-                    "memory": 1,
-                    "vCPUs": 1,
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp3"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp4"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp5"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp6"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp7"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp8"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp9"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp10"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp11"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp12"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp13"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp14"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp15"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp16"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp17"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp18"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp19"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp20"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp21"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp22"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp23"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp24"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp25"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp26"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp27"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp28"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp29"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp30"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp31"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp32"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp33"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp34"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp35"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp36"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp37"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp38"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp39"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp40"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp41"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp42"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp43"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp44"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp45"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp46"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp47"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp48"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp49"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp50"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp1"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
                     "network": 5,
                     "behavior": "terminate",
                     "frequency": "2",
                     "storageType": null,
                     "name": "Comp2"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp3"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp4"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp5"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp6"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp7"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp8"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp9"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp10"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp11"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp12"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp13"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp14"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp15"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp16"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp17"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp18"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp19"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp20"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp21"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp22"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp23"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp24"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp25"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp26"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp27"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp28"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp29"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp30"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp31"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp32"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp33"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp34"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp35"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp36"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp37"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp38"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp39"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp40"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp41"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp42"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp43"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp44"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp45"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp46"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp47"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp48"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp49"
+                },
+                {
+                    "memory": 10,
+                    "vCPUs": 5,
+                    "network": 5,
+                    "behavior": "terminate",
+                    "frequency": "2",
+                    "storageType": null,
+                    "name": "Comp50"
                 }
             ]
         }

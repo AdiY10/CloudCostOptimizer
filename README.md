@@ -8,7 +8,7 @@ The Optimizer first gets from the user application(s) requirements such as OS, r
 After calculating All the options, the Optimizer suggests the user the cheapest configuration of EC2 instances to run their app.
 
 ## Getting Started
-To start using The Cloud Cost Optimizer, please *clone* this git repository:i
+To start using The Cloud Cost Optimizer, please *clone* this git repository:
 ```
 git clone https://github.com/AdiY10/CloudCostOptimizer.git
 ```
@@ -123,7 +123,28 @@ has different resource requirements, which describes by the memory, vCPUs etc...
 * IOPS (MiB I/O) - max IOPS per volume.
 * Throughput (MiB/s)- max throughput per volume.
 #### Configuration file:
-A configuration file with advanced settings is provided to the user, which allows him to edit default settings according to his preferences, such as data extraction methodology, cloud provider, boto3 usage parameters, search algorithm parameters, etc..
+A configuration file with advanced settings is provided to the user, which allows him to edit default settings according to his preferences.
+#### Example of a Configuration file:
+```
+{
+    "Data Extraction (always / onceAday)": "onceAday",
+    "boto3 (enable / disable)": "disable",
+    "Provider (AWS / Azure / Hybrid)": "AWS",
+    "Brute Force": "False",
+    "Time per region": 1,
+    "Candidate list size": 100,
+    "Proportion amount node/sons": 0.0005,
+    "Verbose": "True"
+}
+```
+####Configuration Parameters
+* Data Extraction- The frequency with which the data will be extracted
+* boto3- Do the information retrieval using boto3. Note that in the case of enable, the data extraction process will be slower
+* Provider- which cloud provider should be checked
+* Brute Force- In order to find the optimal solution. Note that this algorithm suitable for less than 7 components. Otherwise, use Local Search Algorithm (explained below)
+* [Other Parameters are hyperparameters](#hyperParameter) for the [Local Search algorithm](#algorithm-description)
+
+
 ## Results
 The output of the Optimizer is a json file containing  a list of configurations. Each configuration represents an assignment of all application components to AWS instances.
 
@@ -229,15 +250,14 @@ The output of the Optimizer is a json file containing  a list of configurations.
 ]
 ```
 
-## Algorithm Description
+## Local Search Algorithm Description
 
 ### General Description
 The algorithm Is split into epochs.
 each epoch is a combination of 2 phases:
-  - **searching** - search for combiniation with minimal price. the search is based on Simulated Annealing and Stochastic Hill Climbing. 
+  - **searching** - search for combiniation with minimal price. the search is based on Simulated Annealing and Stochastic Hill Climbing.
   - **selecting the next node to start searching from** -
-    -  can use Reset Selector (based on heuristic) 
-    -  can select randomly.
+    -  selects randomly.
 
 
 #### Search Algorithm
@@ -263,24 +283,15 @@ flowchart TD
     G -- yes --> I -->A
 ```
 
-#### Reset Selector
-The Reset Selector is based on Random Restart and Exploration & Exploitation.
-Keep an array of “good” nodes that we have already visited, always select starting nodes from it.
-After each decent iteration (epoch), give the reset selector the list of nodes visited during the seach; the best of them will be saved in the array.
+### HyperParameter
+- **Candidate list size** - The maximum capacity of the Candidate list size from the Reset Selector.
 
-### HyperParameter 
+- **Time per region** - The maximum time [seconds] the algorithm is allowed to run on each of the regions.
 
-- **candidate list size** - The maximum capacity of the array of Reset Selector.
+- **Proportion amount node sons to develop** - Initial proportion to develop at each epoch.
 
-- **time per region** - The amount of time [seconds] the algorithm is allowed to run on each of the regions .
+- **Exploitation score price bias** - Proportion between price score and subtree score.
 
-- **proportion amount node sons to develop** - Initial proportion to develop at each epoch.
+- **Exploration score depth bias** - Proportion between depth score and uniqueness score.
 
-- **exploitation score price bias** - Proportion between price score and subtree score.
-
-- **exploration score depth bias** - Proportion between depth score and uniqueness score.
-
-- **exploitation bias** -  Proportion between exploitation score and exploration score.
-
-
-
+- **Exploitation bias** -  Proportion between exploitation score and exploration score.

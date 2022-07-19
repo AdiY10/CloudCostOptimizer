@@ -142,8 +142,12 @@ class GetPriceFromAWS:
                     )
                 price["spot_price"] = spot_price_value
                 # print('spot_price',spot_price_value)
-                price["Price_per_CPU"] = round(float(spot_price_value / float(price["cpu"])), 4)
-                price["Price_per_memory"] = round(float(spot_price_value / float(price["memory"])), 4)
+                price["Price_per_CPU"] = round(
+                    float(spot_price_value / float(price["cpu"])), 4
+                )
+                price["Price_per_memory"] = round(
+                    float(spot_price_value / float(price["memory"])), 4
+                )
                 self.spot_price.append(spot_price_value)
         return ec2
 

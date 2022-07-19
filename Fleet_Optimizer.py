@@ -5,8 +5,7 @@ from fleet_classes import Offer, ComponentOffer
 from fleet_offers import Component
 from get_spot import SpotCalculator
 import boto3
-from comb_optimizer import DevelopMode,GetNextMode,GetStartNodeMode
-
+from comb_optimizer import DevelopMode, GetNextMode, GetStartNodeMode
 
 calc = SpotCalculator()
 
@@ -79,9 +78,9 @@ def serialize_component(component: ComponentOffer):
 
 
 def run_optimizer(
-    input_file_name = "input_Fleet.json",
+    bruteforce,
+    input_file_name="input_Fleet.json",
     output_file_name="FleetResults.json",
-    bruteforce = False,
     **kw
 ):
     """Run Optimizer- Fleet calculator."""
@@ -109,7 +108,6 @@ def run_optimizer(
     os = filter["selectedOs"]
     if provider != "Hybrid":
         region = filter["region"] if "region" in filter else "all"
-
     else:
         region = "hybrid"
     payment = filter["spot/onDemand"] if "spot/onDemand" in filter else "spot"
@@ -121,8 +119,19 @@ def run_optimizer(
     )
     architecture = filter["architecture"] if "architecture" in filter else "all"
     type_major = filter["type_major"] if "type_major" in filter else "all"
-    offers_list = calc.get_fleet_offers(os, region, app_size, partitions, payment,
-                                        architecture, type_major, filter_instances, provider, bruteforce, **kw)
+    offers_list = calc.get_fleet_offers(
+        os,
+        region,
+        app_size,
+        partitions,
+        payment,
+        architecture,
+        type_major,
+        filter_instances,
+        provider,
+        bruteforce,
+        **kw
+    )
     # print('Connecting to boto3')
     res = list(
         map(lambda g: serialize_group(g, payment, availability_zone, os), offers_list)
@@ -137,28 +146,27 @@ def run_optimizer(
 
 
 if __name__ == "__main__":
+    file1 = open("Config_file.json")
+    config_file = json.load(file1)
+    candidate_list_size = config_file["Candidate list size"]
+    time_per_region = config_file["Time per region"]
+    proportion_amount_node_sons_to_develop = config_file["Proportion amount node/sons"]
+    verbose = True if config_file["Verbose"] == "True" else False
     INPUT_FILE = "input_Fleet.json"
     OUTPUT_FILE = "FleetResults.json"
-
-    alg_parameters = {
-        'candidate_list_size' : 350,
-        'time_per_region' : 0.1,
-        'exploitation_score_price_bias' : 0.5,
-        'exploration_score_depth_bias' : 1.0,
-        'exploitation_bias' : 0.2,
-        'sql_path' : "Run_Statistic.sqlite3",
-        'verbose' : True,
-        'develop_mode' : DevelopMode.ALL,
-        'proportion_amount_node_sons_to_develop' : 0.5,
-        'get_next_mode' : GetNextMode.STOCHASTIC_ANNEALING,
-        'get_starting_node_mode' : GetStartNodeMode.RESET_SELECTOR
+    brute_force = True if config_file["Brute Force"] == "True" else False
+    ALG_PARAMETERS = {
+        "candidate_list_size": candidate_list_size,
+        "time_per_region": time_per_region,
+        "exploitation_score_price_bias": 0.5,
+        "exploration_score_depth_bias": 1.0,
+        "exploitation_bias": 0.2,
+        "sql_path": "Run_Statistic.sqlite3",
+        "verbose": verbose,
+        "develop_mode": DevelopMode.PROPORTIONAL,
+        "proportion_amount_node_sons_to_develop": proportion_amount_node_sons_to_develop,
+        "get_next_mode": GetNextMode.STOCHASTIC_ANNEALING,
+        "get_starting_node_mode": GetStartNodeMode.RANDOM,
     }
 
-
-    run_optimizer(
-        INPUT_FILE,
-        OUTPUT_FILE,
-        bruteforce=False,
-        **alg_parameters
-    )
-
+    run_optimizer(brute_force, INPUT_FILE, OUTPUT_FILE, **ALG_PARAMETERS)

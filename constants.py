@@ -68,7 +68,7 @@ AZURE_REGIONS = [
     "East Asia",
     "Southeast Asia",
     "South Africa North",
-    "South Africa West"
+    "South Africa West",
 ]
 
 ### regionsSpotPrices = ["us-east-2", "us-east", "us-west", "us-west-2", "af-south-1","us-west-2-lax-1a",

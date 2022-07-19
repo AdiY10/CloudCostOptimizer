@@ -26,22 +26,22 @@ class SpotCalculator:
 
     ##single instance
     def get_spot_estimations(
-            self,
-            payment,
-            provider,
-            os,
-            v_cpus,
-            memory,
-            storage_size,
-            region="all",
-            type="all",
-            behavior="terminate",
-            storage_type="all",
-            iops=250,
-            throughput=250,
-            frequency=4,
-            network=0,
-            burstable=True,
+        self,
+        payment,
+        provider,
+        os,
+        v_cpus,
+        memory,
+        storage_size,
+        region="all",
+        type="all",
+        behavior="terminate",
+        storage_type="all",
+        iops=250,
+        throughput=250,
+        frequency=4,
+        network=0,
+        burstable=True,
     ):
         """Get_spot_estimations function."""
         if provider == "AWS":
@@ -112,11 +112,15 @@ class SpotCalculator:
                 # price["Memory_Score"] = "N/A"
             else:
                 if payment == "spot":
-                    price["total_price"] = round(price["spot_price"] * (100 - price["discount"]) / 100, 6)
+                    price["total_price"] = round(
+                        price["spot_price"] * (100 - price["discount"]) / 100, 6
+                    )
                     if price["onDemandPrice"] == 1000000:
                         price["onDemandPrice"] = "N/A"
                 else:
-                    price["total_price"] = round(price["onDemandPrice"] * (100 - price["discount"]) / 100, 6)
+                    price["total_price"] = round(
+                        price["onDemandPrice"] * (100 - price["discount"]) / 100, 6
+                    )
                     if price["spot_price"] == 1000000:
                         price["spot_price"] = "N/A"
                 # price["CPU_Score"] = round(price["Price_per_CPU"], 5)
@@ -139,20 +143,21 @@ class SpotCalculator:
         provider,
         bruteforce,
         **kw
-    ):  ## params- list of all components        
+    ):  ## params- list of all components
         """Get_fleet_offers function."""
         import os.path
         import datetime
+
         file = open("Config_file.json")
         config_file = json.load(file)
         if provider == "AWS":
             if config_file["Data Extraction (always / onceAday)"] == "onceAday":
                 if user_os == "linux":
                     if (
-                            datetime.datetime.now()
-                            - datetime.datetime.fromtimestamp(
-                        os.path.getmtime("ec2_data_Linux.json")
-                    )
+                        datetime.datetime.now()
+                        - datetime.datetime.fromtimestamp(
+                            os.path.getmtime("ec2_data_Linux.json")
+                        )
                     ).days != 0:  ## if the file hasn't modified today
                         ec2_data = self.get_ec2_from_cache(region, user_os)
                     else:
@@ -160,10 +165,10 @@ class SpotCalculator:
                         ec2_data = json.load(file)
                 else:
                     if (
-                            datetime.datetime.now()
-                            - datetime.datetime.fromtimestamp(
-                        os.path.getmtime("ec2_data_Linux.json")
-                    )
+                        datetime.datetime.now()
+                        - datetime.datetime.fromtimestamp(
+                            os.path.getmtime("ec2_data_Linux.json")
+                        )
                     ).days != 0:  ## if the file hasn't modified today
                         ec2_data = self.get_ec2_from_cache(region, user_os)
                     else:
@@ -172,15 +177,17 @@ class SpotCalculator:
             elif config_file["Data Extraction (always / onceAday)"] == "always":
                 ec2_data = self.get_ec2_from_cache(region, user_os)
             else:
-                print("Data Extraction parameter in configuration file is not defined well")
+                print(
+                    "Data Extraction parameter in configuration file is not defined well"
+                )
             if filter_instances != "NA":
                 for k, v in ec2_data.items():
                     list_of_relevant_instances = []
                     for i in v:
                         if (
-                                i["typeMajor"] not in filter_instances
-                                and i["typeMinor"] not in filter_instances
-                                and i["typeName"] not in filter_instances
+                            i["typeMajor"] not in filter_instances
+                            and i["typeMinor"] not in filter_instances
+                            and i["typeName"] not in filter_instances
                         ):
                             list_of_relevant_instances.append(i)
                     ec2_data[k] = list_of_relevant_instances
@@ -218,11 +225,22 @@ class SpotCalculator:
         # ebs_data = self.get_ebs_from_cache(region) ## get EBS volumes from AWS
         # ebs = EbsCalculator(ebs_data)
         return get_fleet_offers(
-            params, region, user_os, app_size, ec2, payment, architecture, type_major, config_file, provider, bruteforce , **kw)
-
-        
+            params,
+            region,
+            user_os,
+            app_size,
+            ec2,
+            payment,
+            architecture,
+            type_major,
+            config_file,
+            provider,
+            bruteforce,
+            **kw
+        )
 
     def calculate_discount(self, ec2_data, provider, user_os):
+        """Calculate discount per user."""
         if provider == "AWS":
             if user_os == "linux":
                 file = open("ec2_discount_Linux.json")
@@ -253,16 +271,23 @@ class SpotCalculator:
         if provider != "Hybrid":
             for k, v in discount.items():
                 for single_discount in v:
-                    d = next(item for item in ec2_data[k] if item["typeName"] == single_discount["typeName"])
+                    d = next(
+                        item
+                        for item in ec2_data[k]
+                        if item["typeName"] == single_discount["typeName"]
+                    )
                     d["discount"] = single_discount["discount"]
         else:
             for k, v in discount.items():
                 for single_discount in v:
-                    d = next(item for item in ec2_data["hybrid"] if item["typeName"] == single_discount["typeName"] and
-                             item["region"] == single_discount["region"])
+                    d = next(
+                        item
+                        for item in ec2_data["hybrid"]
+                        if item["typeName"] == single_discount["typeName"]
+                        and item["region"] == single_discount["region"]
+                    )
                     d["discount"] = single_discount["discount"]
         return ec2_data
-
 
     def is_cached(self, os, region):
         """Check if cached function."""

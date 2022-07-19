@@ -11,7 +11,7 @@ from fleet_classes import (
 )
 from group_generator import create_groups, partition2
 from single_instance_calculator import SpotInstanceCalculator
-from comb_optimizer import *
+from comb_optimizer import CombOptim
 
 # from single_instance_calculator import EbsCalculator
 # from BBAlgorithm import simplest_comb
@@ -39,7 +39,9 @@ class FleetCalculator:
 
     def calculate_limits_memory(self, region):
         """Calculate memory limits function."""
-        max_memory = max(float(d["memory"]) for d in self.ec2_calculator.ec2.get(region))
+        max_memory = max(
+            float(d["memory"]) for d in self.ec2_calculator.ec2.get(region)
+        )
         # min_memory = min(d['memory'] for d in self.ec2_calculator.ec2.get(region))
         return float(max_memory)
 
@@ -168,7 +170,6 @@ class FleetCalculator:
 
     def get_best_price(self, group: Offer, region, pricing, architecture, type_major):
         """Get offers function."""
-        
         instances = []
         for i in group.remaining_partitions:
             instances.append(
@@ -179,7 +180,7 @@ class FleetCalculator:
             return None
 
         best_group = None
-        for partition in partition2(instances , region):
+        for partition in partition2(instances, region):
             new_group = group.copy_group()
             new_group.total_price = sum(map(lambda i: i.total_price, partition))
             new_group.instance_groups = partition
@@ -189,8 +190,26 @@ class FleetCalculator:
         return best_group
 
 
+def price_calc_lambda(calculator, region_to_check, payment, architecture, type_major):
+    """Price calc with lambda usage."""
+    return lambda comb: calculator.get_best_price(
+        comb, region_to_check, payment, architecture, type_major
+    )
+
+
 def get_fleet_offers(
-    params, region, os, app_size, ec2, payment, architecture, type_major, config_file, provider, bruteforce , **kw
+    params,
+    region,
+    os,
+    app_size,
+    ec2,
+    payment,
+    architecture,
+    type_major,
+    config_file,
+    provider,
+    bruteforce,
+    **kw
 ):
     """Get fleet offers function."""
     res = []
@@ -205,19 +224,7 @@ def get_fleet_offers(
             regions = constants.AZURE_REGIONS.copy()
         else:
             print("Wrong Provider in Config file")
-    
-    if bruteforce:
-        sql_conn = sqlite3.connect(kw["sql_path"])
-        sql_conn.execute('''
-            CREATE TABLE IF NOT EXISTS STATS
-            (INSERT_TIME    REAL     NOT NULL,
-            NODES_COUNT   INT     NOT NULL,
-            BEST_PRICE  REAL    NOT NULL,
-            DEPTH_BEST  INT NOT NULL,
-            ITERATION  INT NOT NULL,
-            REGION_SOLUTION TEXT    NOT NULL);
-        ''')
-        
+
     for region_to_check in regions:
         updated_params = params.copy()
         for pl in updated_params:
@@ -231,58 +238,36 @@ def get_fleet_offers(
                         p, region_to_check
                     )
                 p.storage_offer = storage_offer
-        
-        if bruteforce:# Brute-Force Algorithm-optimal results / more complex
-            start_time = time.time()
+
+        if bruteforce:  # Brute-Force Algorithm-optimal results / more complex
             groups = create_groups(
                 updated_params, app_size, region_to_check
             )  ## creates all the possible combinations
-            best_result = np.inf
-            LOG_EVERY = 5
-            iteration = 0
-            region_res = []
-            for (
-                combination
-            ) in (
-                groups
-            ):  ## for each combination (group) find N (=3) best offers ##Algorithm for optimal results
-
-                cur_results = calculator.get_offers(
+            for combination in groups:  ## for each combination (group) find best offer
+                res += calculator.get_offers(
                     combination, region_to_check, payment, architecture, type_major
                 )
-                region_res += cur_results
-                best_result = min(list(map(lambda g: g.total_price, cur_results))+[best_result])
-                runtime = time.time() - start_time
-                
-                if iteration%LOG_EVERY == 0:	
-                    query = f"INSERT INTO STATS (INSERT_TIME, NODES_COUNT, BEST_PRICE, DEPTH_BEST, ITERATION, REGION_SOLUTION)\
-                        VALUES ({runtime}, {len(region_res)}, {best_result}, {0}, {0}, '{region_to_check}')"
-                    if best_result != np.inf:
-                        sql_conn.execute(query)
-                iteration += 1
+                # if runtime > kw["time_per_region"]: ## in case of time limit per region- then stops the brute force
+                #     break
 
-                if runtime > kw["time_per_region"]:
-                    break
-
-            query = f"INSERT INTO STATS (INSERT_TIME, NODES_COUNT, BEST_PRICE, DEPTH_BEST, ITERATION, REGION_SOLUTION)\
-                VALUES ({runtime}, {len(region_res)}, {best_result}, {0}, {0}, '{region_to_check}')"
-            if best_result != np.inf:
-                sql_conn.execute(query)
-            res += region_res
-            
-        else:#our code
-            if 'verbose' in kw and kw['verbose']:
+        else:  ## Local Search Algorithm
+            if "verbose" in kw and kw["verbose"]:
                 print("running optimizer of region: ", region_to_check)
-            price_calc = lambda comb: calculator.get_best_price(comb, region_to_check, payment, architecture, type_major)
-            res += CombOptim(price_calc=price_calc , initial_seperated=updated_params ,  region=region_to_check , **kw ).run()
-    if bruteforce:
-        sql_conn.commit()
-        sql_conn.close()
+            print("Searching in region", region_to_check)
+            price_calc = price_calc_lambda(
+                calculator, region_to_check, payment, architecture, type_major
+            )
+            res += CombOptim(
+                price_calc=price_calc,
+                initial_seperated=updated_params,
+                region=region_to_check,
+                **kw
+            ).run()
 
         # First Step- match an instance for every component
         # firstBranch = simplest_comb(updated_params, app_size)
         # for combination in firstBranch:
-        # 	res += calculator.get_offers(combination, region_to_check, pricing, architecture, type_major)
+        #     res += calculator.get_offers(combination, region_to_check, pricing, architecture, type_major)
         # ## one_pair Algorithm
         # pairs = one_pair(updated_params, app_size)
         # for combination in pairs:
@@ -311,7 +296,6 @@ def get_fleet_offers(
 
         ## Full B&B Algorithm
         # Coming Soon
-
 
     res = list(filter(lambda g: g is not None, res))
     return sort_fleet_offers(res)

@@ -1,5 +1,10 @@
 {
-    "Data Extraction (always / onceAday)": "always",
+    "Data Extraction (always / onceAday)": "onceAday",
     "boto3 (enable / disable)": "disable",
-    "Provider (AWS / Azure / Hybrid)": "Hybrid"
+    "Provider (AWS / Azure / Hybrid)": "AWS",
+    "Brute Force": "False",
+    "Time per region": 1,
+    "Candidate list size": 100,
+    "Proportion amount node/sons": 0.0005,
+    "Verbose": "True"
 }

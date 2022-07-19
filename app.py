@@ -33,7 +33,7 @@ def get_aws_data_tojson():
 ## AWS Single Instance
 @app.route("/getAWSPrices", methods=["POST"])
 @cross_origin()
-def get_AWS_prices():
+def get_aws_prices():
     """Single instance tab."""
     if request.method == "POST":
         filter = request.get_json()
@@ -45,7 +45,7 @@ def get_AWS_prices():
 ## Azure Single Instance
 @app.route("/getAzurePrices", methods=["POST"])
 @cross_origin()
-def get_Azure_prices():
+def get_azure_prices():
     """AWS Single instance tab."""
     if request.method == "POST":
         filter = request.get_json()
@@ -57,7 +57,7 @@ def get_Azure_prices():
 ## Hybrid Single Instance
 @app.route("/getHybridPrices", methods=["POST"])
 @cross_origin()
-def get_Hybrid_prices():
+def get_hybrid_prices():
     """AWS Single instance tab."""
     if request.method == "POST":
         filter = request.get_json()
@@ -69,7 +69,7 @@ def get_Hybrid_prices():
 ## AWS fleet search
 @app.route("/getAWSFleet", methods=["POST"])
 @cross_origin()
-def get_AWS_fleet_prices():
+def get_aws_fleet_prices():
     """AWS Fleet search tab."""
     if request.method == "POST":
         filter = request.get_json()
@@ -81,7 +81,7 @@ def get_AWS_fleet_prices():
 ## Azure fleet search
 @app.route("/getAzureFleet", methods=["POST"])
 @cross_origin()
-def get_Azure_fleet_prices():
+def get_azure_fleet_prices():
     """Azure Fleet search tab."""
     if request.method == "POST":
         filter = request.get_json()
@@ -115,8 +115,14 @@ def serialize_instance(instance):
     """Lower level of serialize group in fleet option."""
     result = instance.instance.copy()
     result["spot_price"] = round(instance.instance["spot_price"], 5)
-    result["priceAfterDiscount"] = round(instance.instance["spot_price"] * (1 - instance.instance["discount"] / 100), 5) if \
-        instance.instance["discount"] != 0 else round(instance.instance["spot_price"],5)
+    result["priceAfterDiscount"] = (
+        round(
+            instance.instance["spot_price"] * (1 - instance.instance["discount"] / 100),
+            5,
+        )
+        if instance.instance["discount"] != 0
+        else round(instance.instance["spot_price"], 5)
+    )
     # result['CPU/Price_Score'] = round(instance.instance['score_cpu_price'],5)
     # result['Memory/Price_Score'] = round(instance.instance['score_memory_price'],5)
     result["components"] = list(
@@ -134,6 +140,7 @@ def serialize_component(component: ComponentOffer):
 
 
 def fleet_search(filter, provider):
+    """Fleet search for all providers."""
     shared_apps = []  # list of components of shared apps
     partitions = []  ## list of ALL components
     app_size = dict()  ##size of each app
@@ -159,13 +166,18 @@ def fleet_search(filter, provider):
     filter_instances = (
         filter["filterInstances"] if "filterInstances" in filter else "NA"
     )
-    availability_zone = (
-        filter["availability_zone"] if "availability_zone" in filter else "NA"
-    )
     architecture = filter["architecture"] if "architecture" in filter else "all"
     type_major = filter["type_major"] if "type_major" in filter else "all"
     offers_list = calc.get_fleet_offers(
-        os, region, app_size, partitions, payment, architecture, type_major, filter_instances, provider
+        os,
+        region,
+        app_size,
+        partitions,
+        payment,
+        architecture,
+        type_major,
+        filter_instances,
+        provider,
     )  ##architecture and typemajor are 'all'
     res = list(map(lambda g: serialize_group(g), offers_list))
     with open("FleetECresults.json", "w", encoding="utf-8") as f:
@@ -174,6 +186,7 @@ def fleet_search(filter, provider):
 
 
 def single_instance_search(filter, provider):
+    """Single instance search for all providers."""
     os = filter["selectedOs"]
     v_cpus = float(filter["vCPUs"])
     memory = float(filter["memory"])
@@ -191,9 +204,7 @@ def single_instance_search(filter, provider):
         else "all"
     )
     iops = (
-        float(filter["iops"])
-        if "iops" in filter and filter["iops"] is not None
-        else 0
+        float(filter["iops"]) if "iops" in filter and filter["iops"] is not None else 0
     )
     throughput = (
         float(filter["throughput"])
@@ -205,8 +216,23 @@ def single_instance_search(filter, provider):
     burstable = True
     if network > 0:
         burstable = filter["burstable"] is True if "burstable" in filter else False
-    res = calc.get_spot_estimations(payment, provider, os, v_cpus, memory, storage_size, region, type, behavior,
-                                    storage_type, iops, throughput, frequency, network, burstable)
+    res = calc.get_spot_estimations(
+        payment,
+        provider,
+        os,
+        v_cpus,
+        memory,
+        storage_size,
+        region,
+        type,
+        behavior,
+        storage_type,
+        iops,
+        throughput,
+        frequency,
+        network,
+        burstable,
+    )
     with open("SingleInstanceECresults.json", "w", encoding="utf-8") as f:
         json.dump(res, f, ensure_ascii=False, indent=4)
     return jsonify(res)

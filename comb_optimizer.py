@@ -1,31 +1,28 @@
-# from msilib.schema import Component
-# from importlib_metadata import Pair
-from functools import total_ordering
-from msilib.schema import Component
 import sqlite3
-
 import numpy as np
 from numpy import average, ndarray, ones_like
-# from urllib3 import Retry
 import time
 from fleet_classes import Offer, Component
-from math import inf
 import copy
 from BBAlgorithm import separate_partitions
 from enum import IntEnum
+
 
 class DevelopMode(IntEnum):
     ALL = 1
     PROPORTIONAL = 2
 
+
 class GetNextMode(IntEnum):
     STOCHASTIC_ANNEALING = 1
     GREEDY = 2
+
 
 class GetStartNodeMode(IntEnum):
     RESET_SELECTOR = 1
     ROOT = 2
     RANDOM = 3
+
 
 class KeyMannager:
     def __init__(self, unique_identifier_func):
@@ -34,33 +31,34 @@ class KeyMannager:
         self.id_func = unique_identifier_func
         self.counter = 0
         self.key_mappings = {}
-    
-    def __call__(self, element)->int:
+
+    def __call__(self, element) -> int:
         element_id = self.id_func(element)
-        
+
         if not element_id in self.key_mappings:
             self.key_mappings[element_id] = self.counter
             self.counter += 1
 
         return self.key_mappings[element_id]
-    
+
+
 class CombOptim:
-    def __init__(self, 
-            candidate_list_size: int, 
-            price_calc, 
-            initial_seperated, 
-            time_per_region: float,
-            region: str,
-            exploitation_score_price_bias: float,
-            exploration_score_depth_bias: float,
-            exploitation_bias: float, 
-            sql_path: str, 
-            verbose: bool=True , 
-            develop_mode=DevelopMode.ALL,
-            proportion_amount_node_sons_to_develop: float=0.005, 
-            get_next_mode=GetNextMode.STOCHASTIC_ANNEALING, 
-            get_starting_node_mode=GetStartNodeMode.RESET_SELECTOR
-    ):
+    def __init__(self,
+                 candidate_list_size: int,
+                 price_calc,
+                 initial_seperated,
+                 time_per_region: float,
+                 region: str,
+                 exploitation_score_price_bias: float,
+                 exploration_score_depth_bias: float,
+                 exploitation_bias: float,
+                 sql_path: str,
+                 verbose: bool = True,
+                 develop_mode=DevelopMode.ALL,
+                 proportion_amount_node_sons_to_develop: float = 0.05,
+                 get_next_mode=GetNextMode.STOCHASTIC_ANNEALING,
+                 get_starting_node_mode=GetStartNodeMode.RESET_SELECTOR
+                 ):
         self.verbose = verbose
         Node.verbose = verbose
         Node.node_cache.clear()
@@ -83,28 +81,30 @@ class CombOptim:
         to be a diffirentiating factor) return a unique key associated with the group set.
         Note how 'group[0]' is the one (and only) combination within the group."""
 
-        """'price_calc' is a function: (Offer)-->float"""
+        """'price_calc' is a function: (Offer)-->float which calculate the price of a certain configuration"""
         CombOptim.price_calc_func = price_calc
         self.root = CombOptim.calc_root(initial_seperated)
         self.optim_set = OptimumSet(1)
         if get_starting_node_mode == GetStartNodeMode.RESET_SELECTOR:
-            self.reset_sel = ResetSelector(candidate_list_size,self.get_num_components(),self.root,exploitation_score_price_bias,  exploration_score_depth_bias,exploitation_bias,self.verbose)
+            self.reset_sel = ResetSelector(candidate_list_size, self.get_num_components(), self.root,
+                                           exploitation_score_price_bias, exploration_score_depth_bias,
+                                           exploitation_bias, self.verbose)
 
-        self.get_starting_node_mode=get_starting_node_mode
+        self.get_starting_node_mode = get_starting_node_mode
         self.search_algo = SearchAlgorithm(
-                develop_mode=develop_mode,
-                get_next_mode=get_next_mode,
-                num_components=self.get_num_components(),
-                proportion_amount_node_sons_to_develop=proportion_amount_node_sons_to_develop
+            develop_mode=develop_mode,
+            get_next_mode=get_next_mode,
+            num_components=self.get_num_components(),
+            proportion_amount_node_sons_to_develop=proportion_amount_node_sons_to_develop
         )
         self.start_time = time.time()
         self.time_per_region = time_per_region
         self.region = region
         self.exploitation_score_price_bias = exploitation_score_price_bias
         self.exploration_score_depth_bias = exploration_score_depth_bias
-        self.exploitation_bias=exploitation_bias
+        self.exploitation_bias = exploitation_bias
         self.conn = sqlite3.connect(sql_path)
-        self.get_next_mode=get_next_mode
+        self.get_next_mode = get_next_mode
 
     def finish_stats_operation(self):
         self.conn.commit()
@@ -116,8 +116,9 @@ class CombOptim:
         best_price = best_node.getPrice()
         depth_best = best_node.getDepth()
         query = "INSERT INTO STATS (INSERT_TIME, NODES_COUNT, BEST_PRICE, DEPTH_BEST, ITERATION, REGION_SOLUTION)\
-                          VALUES ({insert_time}, {NODES_COUNT}, {BEST_PRICE}, {DEPTH_BEST}, {ITERATION}, '{region}')".format(insert_time=time.time()-self.start_time, NODES_COUNT=len(Node.node_cache), BEST_PRICE=best_price, \
-                                DEPTH_BEST=depth_best, ITERATION=iteration, region=self.region)
+                          VALUES ({insert_time}, {NODES_COUNT}, {BEST_PRICE}, {DEPTH_BEST}, {ITERATION}, '{region}')".format(
+            insert_time=time.time() - self.start_time, NODES_COUNT=len(Node.node_cache), BEST_PRICE=best_price, \
+            DEPTH_BEST=depth_best, ITERATION=iteration, region=self.region)
         if self.verbose:
             print(query)
         self.conn.execute(query)
@@ -174,32 +175,38 @@ class CombOptim:
             print("CombOptim.run: infinite price for root, returning empty result.")
             return []
         # print("comb optimizer starting run.")
-        self.create_stats_table() # in order to save stat info
+        self.create_stats_table()  # in order to save stat info
         i = 1
-        while not self.isDone(): # got more time to run
-            start_node = self.get_start_node() # get start node
-            path = self.search_algo.run(start_node) # run search from start node
+        while not self.isDone() or i == 1:  # got more time to run
+            start_node = self.get_start_node()  # get start node
+            path = self.search_algo.run(start_node, self.start_time, self.time_per_region)  # run search from start node
+            if path is None:
+                break
             if len(path) != 0:
-                self.optim_set.update(path) # update the final solution
+                self.optim_set.update(path)  # update the final solution
 
                 if self.get_starting_node_mode == GetStartNodeMode.RESET_SELECTOR:
-                    self.reset_sel.update(path) # update the selector
+                    self.reset_sel.update(path)  # update the selector
 
-            self.insert_stats(i) # save stat info
+            self.insert_stats(i)  # save stat info
             i += 1
+
             if self.get_next_mode == GetNextMode.GREEDY:
                 break
-
+        if self.insert_stats is None:
+            print("No match found in ", self.region, ". Consider giving extra time per region.")
         self.finish_stats_operation()
 
         return [node.getOffer() for node in self.optim_set.returnBest()]
 
-    def isDone(self)->bool:
-        return time.time()-self.start_time > self.time_per_region
+    def isDone(self) -> bool:
+        return time.time() - self.start_time > self.time_per_region
+
 
 class Node:
     node_cache = {}
     verbose = False
+
     def __init__(self, partitions, node_depth: int):
         self.node_depth = node_depth
         self.partitions = copy.deepcopy(partitions)
@@ -235,14 +242,15 @@ class Node:
     def getOffer(self):
         return self.offer
 
-    def hashCode(self)->int:
+    def hashCode(self) -> int:
         return CombOptim.getGroupSetAsKey(self.partitions)
 
     @staticmethod
-    def hashCodeOfPartition(partition)->int:
+    def hashCodeOfPartition(partition) -> int:
         return CombOptim.getGroupSetAsKey(partition)
 
-    def __append_new_node(self,container,combination,combination_index , module1,module1_index ,module2,module2_index ):
+    def __append_new_node(self, container, combination, combination_index, module1, module1_index, module2,
+                          module2_index):
         """combine 2 modules to make new node.
 
         Args:
@@ -279,30 +287,28 @@ class Node:
             num_final_modules = np.random.choice(combination_number)
             if num_final_modules == 0:
                 continue
-            new_modules_group = np.random.choice(num_final_modules,size=combination_number)
-            num_final_modules = np.max(new_modules_group)+1
-            new_combination =  [[] for _ in range(num_final_modules)]
+            new_modules_group = np.random.choice(num_final_modules, size=combination_number)
+            num_final_modules = np.max(new_modules_group) + 1
+            new_combination = [[] for _ in range(num_final_modules)]
             for index, combination_index in enumerate(new_modules_group):
                 new_combination[combination_index] += combination[index]
 
-            new_combination  = [new_combination[i] if new_combination[i] != []  else None for i in range(num_final_modules)]
+            new_combination = [new_combination[i] if new_combination[i] != [] else None for i in
+                               range(num_final_modules)]
             new_combination = list(filter(None, new_combination))
 
             new_partition[i][0] = copy.deepcopy(new_combination)
             depth_calc += combination_number - len(new_combination)
 
-
-
         if Node.hashCodeOfPartition(new_partition) in Node.node_cache:
             new_node = Node.node_cache[Node.hashCodeOfPartition(new_partition)]
         else:
-            new_depth =  start_node.getDepth() + depth_calc
+            new_depth = start_node.getDepth() + depth_calc
             new_node = Node(new_partition, new_depth)
 
         return new_node
 
-
-    def calcProportionSons(self, proportion_amount_to_develop): # for example, 0.1
+    def calcProportionSons(self, proportion_amount_to_develop):  # for example, 0.1
         sons = []
         for i, group in enumerate(self.partitions):
             combination = group[0]  # each group has 1 combination
@@ -312,9 +318,9 @@ class Node:
                     if j < k:
                         prob = np.random.binomial(1, proportion_amount_to_develop)
                         if prob == 1:
-                            self.__append_new_node(sons,combination,i , module1,j ,module2,k )
+                            self.__append_new_node(sons, combination, i, module1, j, module2, k)
         return sons
-      
+
     def calcAllSons(self):
         if self.sons is None:
             self.sons = []
@@ -325,14 +331,15 @@ class Node:
                         if j < k:
                             self.__append_new_node(self.sons, combination, i, module1, j, module2, k)
 
+
 class OptimumSet:
     def __init__(self, k: int):
         """the table holds the best k seen so far in terms of price.
             requires that the elements inserted will have the method 'getPrice' which should
             return a float."""
         self.k = k
-        self.table = [] # contain hashcode
-    
+        self.table = []  # contain hashcode
+
     def update(self, visited_nodes: list):
         """considers the list of new nodes, such that the resulting set of nodes will be the 'k' best nodes
             seen at any update. The ordering the nodes is given by their 'getPrice()' method."""
@@ -360,7 +367,8 @@ class ResetSelector:
             self.subtree_price_penalty = -self.node.getPrice()
             self.hash = None
 
-    def __init__(self, candidate_list_size: int, num_componants: int, root: Node , exploitation_score_price_bias , exploration_score_depth_bias,exploitation_bias, verbose=True):
+    def __init__(self, candidate_list_size: int, num_componants: int, root: Node, exploitation_score_price_bias,
+                 exploration_score_depth_bias, exploitation_bias, verbose=True):
         """ The reset-selector remembers a list of the best candidates (candidate nodes) seen so far,
             list is saved at: self.top_candidates.
             The parameter 'k' is the maximum allowed size for the candidate list."""
@@ -369,17 +377,17 @@ class ResetSelector:
         self.candidate_list_size = int(candidate_list_size)
         self.num_componants = num_componants
 
-        #reachable_bonus_formula_base is calculated here so we only have to calculate it once.
-        self.penalty_base = 10**(1.0/num_componants)
-        
-        #hyperparameters:
+        # reachable_bonus_formula_base is calculated here so we only have to calculate it once.
+        self.penalty_base = 10 ** (1.0 / num_componants)
+
+        # hyperparameters:
         self.exploitation_score_price_bias = exploitation_score_price_bias
         self.exploration_score_depth_bias = exploration_score_depth_bias
-        self.exploitation_bias=exploitation_bias
+        self.exploitation_bias = exploitation_bias
 
         self.updateTotalScores()
 
-    def getStartNode(self)->Node:
+    def getStartNode(self) -> Node:
         """this method represents the main functionality of the reset-selector: based on all data seen so far
             - the reset-selector will return the the node it thinks the next run should start from."""
         scores_list = [candidate.total_score for candidate in self.top_candidates]
@@ -403,95 +411,94 @@ class ResetSelector:
             this method will update in state of the reset selector - to consider the nodes seen in last search run.
 
             The order of nodes in 'path' is exprected to be the same order as the nodes were seen in the search.
-            
-            Calling this method will also cause the reset-selector to re-calculate the total scores for each 
+
+            Calling this method will also cause the reset-selector to re-calculate the total scores for each
             of the candidates saved within it."""
-        #consider all nodes seen in last path as candidates:
-        candidate_dict = {candidate.node.hashCode():candidate for candidate in self.top_candidates}
+        # consider all nodes seen in last path as candidates:
+        candidate_dict = {candidate.node.hashCode(): candidate for candidate in self.top_candidates}
         last_candidate = None
         for node in reversed(path):
-            #add the new node to set of candidates if it's not already there:
+            # add the new node to set of candidates if it's not already there:
             node_hash = node.hashCode()
             if not node_hash in candidate_dict:
                 candidate_dict[node_hash] = ResetSelector.Candidate(node)
             candidate = candidate_dict[node_hash]
-            
-            #update the subtree penalty of the candidate base on path:
+
+            # update the subtree penalty of the candidate base on path:
             if last_candidate != None:
                 candidate.subtree_price_penalty = \
-                    max(candidate.subtree_price_penalty, last_candidate.subtree_price_penalty*self.penalty_base)
+                    max(candidate.subtree_price_penalty, last_candidate.subtree_price_penalty * self.penalty_base)
             last_candidate = candidate
-        
-        #update the list of top candidates and re-calculate total scores for all candidates currently saved:
+
+        # update the list of top candidates and re-calculate total scores for all candidates currently saved:
         self.top_candidates = [item for item in candidate_dict.values()]
         self.updateTotalScores()
         # if 0 in [c.total_score for c in self.top_candidates]:
         #     raise Exception("ResetSelector.update: error: a candidates has a total score of 0.")
-        
-        #sort the list of top candidates and throw away the candidates that are not in the top k:
+
+        # sort the list of top candidates and throw away the candidates that are not in the top k:
         self.top_candidates.sort(key=lambda candidate: candidate.total_score)
         self.top_candidates = self.top_candidates[:self.candidate_list_size]
-        
-    def updateTotalScores(self)->list:
+
+    def updateTotalScores(self) -> list:
         """updates the total scores (floats) of all candidates in 'self.top_candidates'."""
         ration_scores = self.calcRationScores()
         tation_scores = self.calcTationScores()
         tation_bias = self.getCurrentTationBias()
 
-        total_scores = tation_bias*tation_scores + (1-tation_bias)*ration_scores
+        total_scores = tation_bias * tation_scores + (1 - tation_bias) * ration_scores
         for idx in range(len(self.top_candidates)):
             self.top_candidates[idx].total_score = total_scores[idx]
         if np.all(total_scores < 1e-6):
             total_scores = np.ones_like(total_scores, dtype=np.float)
+        return []
 
-    def getCurrentTationBias(self)->float:
+    def getCurrentTationBias(self) -> float:
         """get the current exploitation bias, this represents the current preference of the algorithm for exploitation
             over exploration."""
         return self.exploitation_bias
-        #TODO: we probably want an implementation based on how much time the algorithm has to run,
-        #	 s.t. when there is little time left the exploitation bias is close to 1.
 
     @staticmethod
-    def normalizeArray(arr: ndarray)->ndarray:
-        #minmax normalization:
+    def normalizeArray(arr: ndarray) -> ndarray:
+        # minmax normalization:
         diff = arr.max() - arr.min()
         if diff == 0:
-            return ones_like(arr)/2
+            return ones_like(arr) / 2
         else:
-            return (arr-arr.min())/diff
-        
-        # return arr/np.sum(arr) #normalise according to L1
-        #return arr/np.linalg.norm(arr)#normalize according to L2
+            return (arr - arr.min()) / diff
 
-    def calcRationScores(self)->list:
+        # return arr/np.sum(arr) #normalise according to L1
+        # return arr/np.linalg.norm(arr)#normalize according to L2
+
+    def calcRationScores(self) -> list:
         """calculates the exploration scores of all candidates in 'self.top_candidates' and returns scores
             in list of floats in same order."""
         uniqueness_scores = self.calcUniquenessScores()
         depth_scores = self.calcDepthScores()
-        exploration_scores = ResetSelector.normalizeArray(self.exploration_score_depth_bias*depth_scores
-            +(1-self.exploration_score_depth_bias)*uniqueness_scores)
+        exploration_scores = ResetSelector.normalizeArray(self.exploration_score_depth_bias * depth_scores
+                                                          + (1 - self.exploration_score_depth_bias) * uniqueness_scores)
 
         return exploration_scores
 
-    def calcDepthScores(self)->ndarray:
+    def calcDepthScores(self) -> ndarray:
         """Calculate the 'depth score' for each candidate in 'self.top_candidates'.
             The deeper the candidate's node - the higher the depth score."""
         depths = np.array([c.node.getDepth() for c in self.top_candidates])
-        return ResetSelector.normalizeArray((depths-self.num_componants)*(depths-self.num_componants))
+        return ResetSelector.normalizeArray((depths - self.num_componants) * (depths - self.num_componants))
 
-    def calcUniquenessScores(self)->ndarray:
+    def calcUniquenessScores(self) -> ndarray:
         """Calculate the 'uniqueness score' for each candidate in 'self.top_candidates'.
             This score will be highest for nodes that are very different from the other nodes in 'top_candidates'."""
         nodes_list = [c.node for c in self.top_candidates]
         distances = ResetSelector.combinationDistancesFormula(nodes_list)
         return ResetSelector.normalizeArray(distances)
 
-    def getCompResources(component: Component)->ndarray:
+    def getCompResources(self, component: Component) -> ndarray:
         """given a component, return a list of resources
             that this component requires."""
         return np.array([component.vCPUs, component.memory, component.network])
 
-    def getModuleResourceVector(module: list)->ndarray:
+    def getModuleResourceVector(self, module: list) -> ndarray:
         """give a module (a list of components) return an array of total resource
             requirements of all components in the module.
             If an empty module is given, the method returns None"""
@@ -502,89 +509,95 @@ class ResetSelector:
             total_resources += ResetSelector.getCompResources(module[idx])
         return total_resources
 
-    def getResourceDistribution(node: Node)->ndarray:
+    def getResourceDistribution(self, node: Node) -> ndarray:
         """given a node that represents a combination, return a 2d array,
-            The first dimention relates to each module, 
+            The first dimention relates to each module,
             the second dimention to each resource."""
-        first_comb = node.partitions[0]#need to subscript again here?
+        first_comb = node.partitions[0]  # need to subscript again here?
         return np.stack([ResetSelector.getModuleResourceVector(ls[0]) for ls in first_comb])
 
-    def calcVectorDistributionDistatnce(distr1: ndarray, distr2: ndarray)->float:
+    def calcVectorDistributionDistatnce(distr1: ndarray, distr2: ndarray) -> float:
         """given two distributions of vectors, calculate a distance between these two distributions.
             this is currently just the difference between the average resource requirments, and not KL-Div as planned."""
         avg1 = average(distr1, axis=0)
         avg2 = average(distr2, axis=0)
-        return np.linalg.norm(avg1-avg2)
+        return np.linalg.norm(avg1 - avg2)
 
-    def combinationDistancesFormula(node_list: list)->ndarray:
+    def combinationDistancesFormula(self, node_list: list) -> ndarray:
         """Implementation of formula for calculating 'distance' for all nodes to all other nodes.
             The input is a list of combinations, and the output is an array of floats where the i'th float
             represents the average 'distance' of i'th node from the rest of the nodes in the input list.
-            
+
             Input is in the form of list<Node>."""
         all_distributions = [ResetSelector.getResourceDistribution(node) for node in node_list]
         all_distances = np.stack([
             np.array([
-                ResetSelector.calcVectorDistributionDistatnce(distr1, distr2) 
+                ResetSelector.calcVectorDistributionDistatnce(distr1, distr2)
                 for distr2 in all_distributions
-            ]) 
+            ])
             for distr1 in all_distributions
         ])
-        #the i,j cell in 'all_distances' should contain the distance between the distributions of the i'th node and the j'th node.
-        #the average distance from the i'th node will be the average value of the i'th row.
+        # the i,j cell in 'all_distances' should contain the distance between the distributions of the i'th node and the j'th node.
+        # the average distance from the i'th node will be the average value of the i'th row.
         return np.average(all_distances, axis=0)
-        
-    def calcTationScores(self)->ndarray:
+
+    def calcTationScores(self) -> ndarray:
         """calculates the explotation scores of all candidates in 'self.top_candidates' and returns scores
             in an array of floats with a corresponding order."""
         reachable_bonus_scores = ResetSelector.normalizeArray(
             np.array([c.subtree_price_penalty for c in self.top_candidates])
         )
         price_scores = ResetSelector.normalizeArray(np.array([-c.node.price for c in self.top_candidates]))
-        exploitation_scores = ResetSelector.normalizeArray(self.exploitation_score_price_bias*price_scores
-            +(1-self.exploitation_score_price_bias)*reachable_bonus_scores)
-    
+        exploitation_scores = ResetSelector.normalizeArray(self.exploitation_score_price_bias * price_scores
+                                                           + (
+                                                                   1 - self.exploitation_score_price_bias) * reachable_bonus_scores)
+
         return exploitation_scores
 
+
 class SearchAlgorithm:
-    def __init__(self, 
-                develop_mode : DevelopMode ,
-                get_next_mode : GetNextMode, 
-                num_components : int,
-                proportion_amount_node_sons_to_develop = 0.1
-    ):
+    def __init__(self,
+                 develop_mode: DevelopMode,
+                 get_next_mode: GetNextMode,
+                 num_components: int,
+                 proportion_amount_node_sons_to_develop=0.1
+                 ):
         self.temperature = 0
         self.temperature_increment_pace = 1
         self.proportion_amount_node_sons_to_develop = proportion_amount_node_sons_to_develop
         self.develop_mode = develop_mode
         self.get_next_mode = get_next_mode
         self.num_components = num_components
-        self.base = (0.9/self.proportion_amount_node_sons_to_develop)**(float(2)/self.num_components)
+        self.base = (0.9 / self.proportion_amount_node_sons_to_develop) ** (float(2) / self.num_components)
 
-    def run(self, start_node: Node) -> list:
+    def run(self, start_node: Node, start_time, time_per_region) -> list:
         """returns the list of nodes visited in the run"""
         self.update_temperature()
-        path = []
+        path: list = []
         next_node = start_node
 
-        while True:
+        while not self.isDone(start_time, time_per_region):
             if next_node.getPrice() == np.inf:
                 return path
             path.append(next_node)
-            next_node = self.get_next(next_node) # implement the search alg
+            next_node = self.get_next(next_node)  # implement the search algorithm
             if next_node is None:
                 return path
+        return path
+
+    def isDone(self, start_time, time_per_region) -> bool:
+        return time.time() - start_time > time_per_region
 
     def __get_next_greedy(self, node: Node, sons):
         best = None
         for son in sons:
-            son_price =  son.getPrice()
+            son_price = son.getPrice()
             if (best is None) or (son_price > node.price and son_price > node.price):
                 best = son
         return best
 
-    def __get_next_alg(self, node: Node , sons):
-        flag = self.is_choosing_downgrades() # annealing part
+    def __get_next_alg(self, node: Node, sons):
+        flag = self.is_choosing_downgrades()  # annealing part
         improves, downgrades = SearchAlgorithm.split_sons_to_improves_and_downgrades(sons, node.getPrice())
         # if any(map(lambda x: x.getPrice()!=np.inf, downgrades)):
         #     print(f"FOUND WORST SON")
@@ -605,23 +618,23 @@ class SearchAlgorithm:
             sons = node.sons
         elif self.develop_mode == DevelopMode.PROPORTIONAL:
             cur_proportion = min(
-                    self.proportion_amount_node_sons_to_develop*(self.base**(node.getDepth())),
-                    1
+                self.proportion_amount_node_sons_to_develop * (self.base ** (node.getDepth())),
+                1
             )
             # print(f"{cur_proportion=}, {node.getDepth()=}")
             sons = node.calcProportionSons(cur_proportion)
         return sons
-
 
     def get_next(self, node: Node) -> Node:
         """get the chosen son to continue to in the next iteration"""
         sons = self.calc_sons(node)
 
         if self.get_next_mode == GetNextMode.STOCHASTIC_ANNEALING:
-            return self.__get_next_alg(node,sons)
+            return self.__get_next_alg(node, sons)
         elif self.get_next_mode == GetNextMode.GREEDY:
-            return self.__get_next_greedy(node,sons)
-
+            return self.__get_next_greedy(node, sons)
+        else:
+            return self.__get_next_alg(node, sons)
 
     @staticmethod
     def get_son_by_weights(sons):
@@ -650,7 +663,8 @@ class SearchAlgorithm:
 
     def is_choosing_downgrades(self):
         """return if we will choose a downgrade son"""
-        prob_for_downgrade = 0.1 - 1.0 / (12 * np.exp(1.0 / (np.power(self.temperature, 0.9))))#12 is our lucky number...
+        prob_for_downgrade = 0.1 - 1.0 / (
+                12 * np.exp(1.0 / (np.power(self.temperature, 0.9))))  # 12 is our lucky number...
         return (np.random.choice([0, 1], p=[1 - prob_for_downgrade, prob_for_downgrade])) == 1
 
     def update_temperature(self):
@@ -665,7 +679,7 @@ def sampleFromWeighted(weight_arr: np.ndarray) -> int:
 
     sum_array = weight_arr.sum()
     if sum_array == 0:
-        return np.random.choice(weight_arr.shape[0], p=np.ones_like(weight_arr)/weight_arr.shape[0])
+        return np.random.choice(weight_arr.shape[0], p=np.ones_like(weight_arr) / weight_arr.shape[0])
     weight_arr1 = weight_arr / sum_array
     index = np.random.choice(weight_arr1.shape[0], p=weight_arr1)
 

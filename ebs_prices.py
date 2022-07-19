@@ -25,7 +25,7 @@ def get_ebs_for_region(region):
 
 def get_ebs():
     """Get ebs function."""
-    regions = constants.AWS_REGIONS.copy()
+    regions = constants.regions.copy()
     res = grequests.map(get_ebs_region(region) for region in regions)
     res = list(map(parse_ebs_response, res))
     return {res[i][0]["region"]: res[i] for i in range(0, len(res))}
@@ -52,7 +52,7 @@ def parse_ebs_object(object):
         if arr["aws:ec2:volumeType"] == "Magnetic"
         else arr["aws:ec2:usagetype"].split(".")[1]
     )
-    hardware = constants.AWS_HARDWARE[usage_type].copy()
+    hardware = constants.hardware[usage_type].copy()
     hardware["price"] = round(float(object["price"]["USD"]) / 760.0, 7)
     hardware["region"] = arr["aws:region"]
     hardware["usageType"] = usage_type
