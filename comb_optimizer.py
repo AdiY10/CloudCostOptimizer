@@ -12,35 +12,14 @@ class DevelopMode(IntEnum):
     ALL = 1
     PROPORTIONAL = 2
 
-
 class GetNextMode(IntEnum):
     STOCHASTIC_ANNEALING = 1
     GREEDY = 2
-
 
 class GetStartNodeMode(IntEnum):
     RESET_SELECTOR = 1
     ROOT = 2
     RANDOM = 3
-
-
-class KeyMannager:
-    def __init__(self, unique_identifier_func):
-        """an instance of this class will be able to take elements and assign each element a unique int key,
-            the 'unique_identifier_func' function is used to determin how an element differs from other elements."""
-        self.id_func = unique_identifier_func
-        self.counter = 0
-        self.key_mappings = {}
-
-    def __call__(self, element) -> int:
-        element_id = self.id_func(element)
-
-        if not element_id in self.key_mappings:
-            self.key_mappings[element_id] = self.counter
-            self.counter += 1
-
-        return self.key_mappings[element_id]
-
 
 class CombOptim:
     def __init__(self,
@@ -58,28 +37,10 @@ class CombOptim:
                  proportion_amount_node_sons_to_develop: float = 0.05,
                  get_next_mode=GetNextMode.STOCHASTIC_ANNEALING,
                  get_starting_node_mode=GetStartNodeMode.RESET_SELECTOR
-                 ):
+    ):
         self.verbose = verbose
         Node.verbose = verbose
         Node.node_cache.clear()
-
-        CombOptim.getComponentKey = KeyMannager(lambda componenet: componenet.component_name)
-        """given a component, return a unique key associated with it, based on it's name."""
-
-        CombOptim.getModuleKey = KeyMannager(
-            lambda module: tuple(sorted([self.getComponentKey(component) for component in module])))
-        """give a unique key to a module - a module is a set of components and is distinct from another
-        module if they do not have the same sets of components."""
-
-        CombOptim.getCombinationAsKey = KeyMannager(
-            lambda combination: tuple(sorted([self.getModuleKey(module) for module in combination])))
-        """given a comination - meaning a set (unordered) of modules, return a unique key associated with it."""
-
-        CombOptim.getGroupSetAsKey = KeyMannager(
-            lambda group_set: tuple(sorted([self.getCombinationAsKey(group[0]) for group in group_set])))
-        """given a set of groups (the parameter is of type list, but the order is not considered
-        to be a diffirentiating factor) return a unique key associated with the group set.
-        Note how 'group[0]' is the one (and only) combination within the group."""
 
         """'price_calc' is a function: (Offer)-->float which calculate the price of a certain configuration"""
         CombOptim.price_calc_func = price_calc
@@ -207,6 +168,21 @@ class Node:
     node_cache = {}
     verbose = False
 
+    @staticmethod
+    def getGroupHash(group_set)->int:
+        group_set_hashable_parts = []
+        for group in group_set:
+            group_hashable_parts = []
+            for module in group[0]:
+                module_hashable_parts = []
+                for component in module:
+                    module_hashable_parts.append(hash(component.component_name))
+                group_hashable_parts.append(hash(tuple(sorted(module_hashable_parts))))
+            group_set_hashable_parts.append(hash(tuple(sorted(group_hashable_parts))))
+        
+        group_set_hashable = tuple(sorted(group_set_hashable_parts))
+        return hash(group_set_hashable)
+
     def __init__(self, partitions, node_depth: int):
         self.node_depth = node_depth
         self.partitions = copy.deepcopy(partitions)
@@ -243,11 +219,11 @@ class Node:
         return self.offer
 
     def hashCode(self) -> int:
-        return CombOptim.getGroupSetAsKey(self.partitions)
+        return Node.getGroupHash(self.partitions)
 
     @staticmethod
     def hashCodeOfPartition(partition) -> int:
-        return CombOptim.getGroupSetAsKey(partition)
+        return Node.getGroupHash(partition)
 
     def __append_new_node(self, container, combination, combination_index, module1, module1_index, module2,
                           module2_index):
