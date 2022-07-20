@@ -43,8 +43,7 @@ class CombOptim:
         Node.node_cache.clear()
 
         """'price_calc' is a function: (Offer)-->float which calculate the price of a certain configuration"""
-        CombOptim.price_calc_func = price_calc
-        self.root = CombOptim.calc_root(initial_seperated)
+        self.root = self.calc_root(initial_seperated, price_calc)
         self.optim_set = OptimumSet(1)
         if get_starting_node_mode == GetStartNodeMode.RESET_SELECTOR:
             self.reset_sel = ResetSelector(candidate_list_size, self.get_num_components(), self.root,
@@ -80,8 +79,6 @@ class CombOptim:
                           VALUES ({insert_time}, {NODES_COUNT}, {BEST_PRICE}, {DEPTH_BEST}, {ITERATION}, '{region}')".format(
             insert_time=time.time() - self.start_time, NODES_COUNT=len(Node.node_cache), BEST_PRICE=best_price, \
             DEPTH_BEST=depth_best, ITERATION=iteration, region=self.region)
-        if self.verbose:
-            print(query)
         self.conn.execute(query)
 
     def create_stats_table(self):
@@ -94,10 +91,9 @@ class CombOptim:
         ITERATION  INT NOT NULL,
         REGION_SOLUTION TEXT    NOT NULL);''')
 
-    @staticmethod
-    def calc_root(initial_seperated):
+    def calc_root(self, initial_seperated, price_calc):
         partitions = list(map(lambda i: separate_partitions(i), initial_seperated))
-        return Node(partitions, 0)
+        return Node(partitions, 0, price_calc)
 
     def get_num_components(self):
         num_of_comp = 0
@@ -109,10 +105,6 @@ class CombOptim:
 
     def get_root(self):
         return self.root
-
-    @staticmethod
-    def price_calc(offer):
-        return CombOptim.price_calc_func(offer)
 
     def get_start_node(self):
         start_node = None
@@ -183,7 +175,8 @@ class Node:
         group_set_hashable = tuple(sorted(group_set_hashable_parts))
         return hash(group_set_hashable)
 
-    def __init__(self, partitions, node_depth: int):
+    def __init__(self, partitions, node_depth: int, price_calc):
+        self.price_calc = price_calc
         self.node_depth = node_depth
         self.partitions = copy.deepcopy(partitions)
         self.offer = self.__calc_offer()
@@ -207,7 +200,7 @@ class Node:
             for module in combination:
                 modules.append(module)
 
-        return CombOptim.price_calc_func(Offer(modules, None))
+        return self.price_calc(Offer(modules, None))
 
     def getDepth(self):
         return self.node_depth
@@ -250,7 +243,7 @@ class Node:
         if Node.hashCodeOfPartition(new_partition) in Node.node_cache:
             container.append(Node.node_cache[Node.hashCodeOfPartition(new_partition)])
         else:
-            container.append(Node(new_partition, self.getDepth() + 1))
+            container.append(Node(new_partition, self.getDepth() + 1, self.price_calc))
 
     @staticmethod
     def random_node_from(start_node):
@@ -280,7 +273,7 @@ class Node:
             new_node = Node.node_cache[Node.hashCodeOfPartition(new_partition)]
         else:
             new_depth = start_node.getDepth() + depth_calc
-            new_node = Node(new_partition, new_depth)
+            new_node = Node(new_partition, new_depth, start_node.price_calc)
 
         return new_node
 
@@ -466,7 +459,7 @@ class ResetSelector:
         """Calculate the 'uniqueness score' for each candidate in 'self.top_candidates'.
             This score will be highest for nodes that are very different from the other nodes in 'top_candidates'."""
         nodes_list = [c.node for c in self.top_candidates]
-        distances = ResetSelector.combinationDistancesFormula(nodes_list)
+        distances = self.combinationDistancesFormula(nodes_list)
         return ResetSelector.normalizeArray(distances)
 
     def getCompResources(self, component: Component) -> ndarray:
@@ -480,9 +473,9 @@ class ResetSelector:
             If an empty module is given, the method returns None"""
         if len(module) == 0:
             return None
-        total_resources = ResetSelector.getCompResources(module[0])
+        total_resources = self.getCompResources(module[0])
         for idx in range(1, len(module)):
-            total_resources += ResetSelector.getCompResources(module[idx])
+            total_resources += self.getCompResources(module[idx])
         return total_resources
 
     def getResourceDistribution(self, node: Node) -> ndarray:
@@ -490,7 +483,7 @@ class ResetSelector:
             The first dimention relates to each module,
             the second dimention to each resource."""
         first_comb = node.partitions[0]  # need to subscript again here?
-        return np.stack([ResetSelector.getModuleResourceVector(ls[0]) for ls in first_comb])
+        return np.stack([self.getModuleResourceVector(ls[0]) for ls in first_comb])
 
     def calcVectorDistributionDistatnce(distr1: ndarray, distr2: ndarray) -> float:
         """given two distributions of vectors, calculate a distance between these two distributions.
@@ -505,7 +498,7 @@ class ResetSelector:
             represents the average 'distance' of i'th node from the rest of the nodes in the input list.
 
             Input is in the form of list<Node>."""
-        all_distributions = [ResetSelector.getResourceDistribution(node) for node in node_list]
+        all_distributions = [self.getResourceDistribution(node) for node in node_list]
         all_distances = np.stack([
             np.array([
                 ResetSelector.calcVectorDistributionDistatnce(distr1, distr2)
