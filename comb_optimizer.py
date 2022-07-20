@@ -7,40 +7,18 @@ import copy
 from BBAlgorithm import separate_partitions
 from enum import IntEnum
 
-
 class DevelopMode(IntEnum):
     ALL = 1
     PROPORTIONAL = 2
-
 
 class GetNextMode(IntEnum):
     STOCHASTIC_ANNEALING = 1
     GREEDY = 2
 
-
 class GetStartNodeMode(IntEnum):
     RESET_SELECTOR = 1
     ROOT = 2
     RANDOM = 3
-
-
-class KeyMannager:
-    def __init__(self, unique_identifier_func):
-        """an instance of this class will be able to take elements and assign each element a unique int key,
-            the 'unique_identifier_func' function is used to determin how an element differs from other elements."""
-        self.id_func = unique_identifier_func
-        self.counter = 0
-        self.key_mappings = {}
-
-    def __call__(self, element) -> int:
-        element_id = self.id_func(element)
-
-        if not element_id in self.key_mappings:
-            self.key_mappings[element_id] = self.counter
-            self.counter += 1
-
-        return self.key_mappings[element_id]
-
 
 class CombOptim:
     def __init__(self,
@@ -58,32 +36,13 @@ class CombOptim:
                  proportion_amount_node_sons_to_develop: float = 0.05,
                  get_next_mode=GetNextMode.STOCHASTIC_ANNEALING,
                  get_starting_node_mode=GetStartNodeMode.RESET_SELECTOR
-                 ):
+    ):
         self.verbose = verbose
         Node.verbose = verbose
         Node.node_cache.clear()
 
-        CombOptim.getComponentKey = KeyMannager(lambda componenet: componenet.component_name)
-        """given a component, return a unique key associated with it, based on it's name."""
-
-        CombOptim.getModuleKey = KeyMannager(
-            lambda module: tuple(sorted([self.getComponentKey(component) for component in module])))
-        """give a unique key to a module - a module is a set of components and is distinct from another
-        module if they do not have the same sets of components."""
-
-        CombOptim.getCombinationAsKey = KeyMannager(
-            lambda combination: tuple(sorted([self.getModuleKey(module) for module in combination])))
-        """given a comination - meaning a set (unordered) of modules, return a unique key associated with it."""
-
-        CombOptim.getGroupSetAsKey = KeyMannager(
-            lambda group_set: tuple(sorted([self.getCombinationAsKey(group[0]) for group in group_set])))
-        """given a set of groups (the parameter is of type list, but the order is not considered
-        to be a diffirentiating factor) return a unique key associated with the group set.
-        Note how 'group[0]' is the one (and only) combination within the group."""
-
         """'price_calc' is a function: (Offer)-->float which calculate the price of a certain configuration"""
-        CombOptim.price_calc_func = price_calc
-        self.root = CombOptim.calc_root(initial_seperated)
+        self.root = self.calc_root(initial_seperated, price_calc)
         self.optim_set = OptimumSet(1)
         if get_starting_node_mode == GetStartNodeMode.RESET_SELECTOR:
             self.reset_sel = ResetSelector(candidate_list_size, self.get_num_components(), self.root,
@@ -119,8 +78,6 @@ class CombOptim:
                           VALUES ({insert_time}, {NODES_COUNT}, {BEST_PRICE}, {DEPTH_BEST}, {ITERATION}, '{region}')".format(
             insert_time=time.time() - self.start_time, NODES_COUNT=len(Node.node_cache), BEST_PRICE=best_price, \
             DEPTH_BEST=depth_best, ITERATION=iteration, region=self.region)
-        if self.verbose:
-            print(query)
         self.conn.execute(query)
 
     def create_stats_table(self):
@@ -133,10 +90,9 @@ class CombOptim:
         ITERATION  INT NOT NULL,
         REGION_SOLUTION TEXT    NOT NULL);''')
 
-    @staticmethod
-    def calc_root(initial_seperated):
+    def calc_root(self, initial_seperated, price_calc):
         partitions = list(map(lambda i: separate_partitions(i), initial_seperated))
-        return Node(partitions, 0)
+        return Node(partitions, 0, price_calc)
 
     def get_num_components(self):
         num_of_comp = 0
@@ -148,10 +104,6 @@ class CombOptim:
 
     def get_root(self):
         return self.root
-
-    @staticmethod
-    def price_calc(offer):
-        return CombOptim.price_calc_func(offer)
 
     def get_start_node(self):
         start_node = None
@@ -202,12 +154,28 @@ class CombOptim:
     def isDone(self) -> bool:
         return time.time() - self.start_time > self.time_per_region
 
-
 class Node:
-    node_cache = {}
+    #declare node_cache dict with type annotation
+    node_cache: dict = {}
     verbose = False
 
-    def __init__(self, partitions, node_depth: int):
+    @staticmethod
+    def getGroupHash(group_set)->int:
+        group_set_hashable_parts = []
+        for group in group_set:
+            group_hashable_parts = []
+            for module in group[0]:
+                module_hashable_parts = []
+                for component in module:
+                    module_hashable_parts.append(hash(component.component_name))
+                group_hashable_parts.append(hash(tuple(sorted(module_hashable_parts))))
+            group_set_hashable_parts.append(hash(tuple(sorted(group_hashable_parts))))
+        
+        group_set_hashable = tuple(sorted(group_set_hashable_parts))
+        return hash(group_set_hashable)
+
+    def __init__(self, partitions, node_depth: int, price_calc):
+        self.price_calc = price_calc
         self.node_depth = node_depth
         self.partitions = copy.deepcopy(partitions)
         self.offer = self.__calc_offer()
@@ -231,7 +199,7 @@ class Node:
             for module in combination:
                 modules.append(module)
 
-        return CombOptim.price_calc_func(Offer(modules, None))
+        return self.price_calc(Offer(modules, None))
 
     def getDepth(self):
         return self.node_depth
@@ -243,11 +211,11 @@ class Node:
         return self.offer
 
     def hashCode(self) -> int:
-        return CombOptim.getGroupSetAsKey(self.partitions)
+        return Node.getGroupHash(self.partitions)
 
     @staticmethod
     def hashCodeOfPartition(partition) -> int:
-        return CombOptim.getGroupSetAsKey(partition)
+        return Node.getGroupHash(partition)
 
     def __append_new_node(self, container, combination, combination_index, module1, module1_index, module2,
                           module2_index):
@@ -274,7 +242,7 @@ class Node:
         if Node.hashCodeOfPartition(new_partition) in Node.node_cache:
             container.append(Node.node_cache[Node.hashCodeOfPartition(new_partition)])
         else:
-            container.append(Node(new_partition, self.getDepth() + 1))
+            container.append(Node(new_partition, self.getDepth() + 1, self.price_calc))
 
     @staticmethod
     def random_node_from(start_node):
@@ -304,7 +272,7 @@ class Node:
             new_node = Node.node_cache[Node.hashCodeOfPartition(new_partition)]
         else:
             new_depth = start_node.getDepth() + depth_calc
-            new_node = Node(new_partition, new_depth)
+            new_node = Node(new_partition, new_depth, start_node.price_calc)
 
         return new_node
 
@@ -338,7 +306,7 @@ class OptimumSet:
             requires that the elements inserted will have the method 'getPrice' which should
             return a float."""
         self.k = k
-        self.table = []  # contain hashcode
+        self.table: list = []  # contain hashcode
 
     def update(self, visited_nodes: list):
         """considers the list of new nodes, such that the resulting set of nodes will be the 'k' best nodes
@@ -387,7 +355,7 @@ class ResetSelector:
 
         self.updateTotalScores()
 
-    def getStartNode(self) -> Node:
+    def getStartNode(self)->Node:
         """this method represents the main functionality of the reset-selector: based on all data seen so far
             - the reset-selector will return the the node it thinks the next run should start from."""
         scores_list = [candidate.total_score for candidate in self.top_candidates]
@@ -396,7 +364,7 @@ class ResetSelector:
             selected_node_idx = sampleFromWeighted(scores_arr)
         except:
             print("sample from weighted raised err, scores list: ", scores_list)
-            return self.top_candidates[0]
+            return self.top_candidates[0].node
 
         selected_candidate = self.top_candidates[selected_node_idx]
         if self.verbose:
@@ -425,9 +393,12 @@ class ResetSelector:
             candidate = candidate_dict[node_hash]
 
             # update the subtree penalty of the candidate base on path:
-            if last_candidate != None:
+            if last_candidate != None and candidate != None:
                 candidate.subtree_price_penalty = \
-                    max(candidate.subtree_price_penalty, last_candidate.subtree_price_penalty * self.penalty_base)
+                    max(
+                        candidate.subtree_price_penalty, 
+                        last_candidate.subtree_price_penalty * self.penalty_base
+                    )
             last_candidate = candidate
 
         # update the list of top candidates and re-calculate total scores for all candidates currently saved:
@@ -437,7 +408,7 @@ class ResetSelector:
         #     raise Exception("ResetSelector.update: error: a candidates has a total score of 0.")
 
         # sort the list of top candidates and throw away the candidates that are not in the top k:
-        self.top_candidates.sort(key=lambda candidate: candidate.total_score)
+        self.top_candidates = sorted(self.top_candidates, key=lambda candidate: candidate.total_score)
         self.top_candidates = self.top_candidates[:self.candidate_list_size]
 
     def updateTotalScores(self) -> list:
@@ -470,7 +441,7 @@ class ResetSelector:
         # return arr/np.sum(arr) #normalise according to L1
         # return arr/np.linalg.norm(arr)#normalize according to L2
 
-    def calcRationScores(self) -> list:
+    def calcRationScores(self) -> ndarray:
         """calculates the exploration scores of all candidates in 'self.top_candidates' and returns scores
             in list of floats in same order."""
         uniqueness_scores = self.calcUniquenessScores()
@@ -490,7 +461,7 @@ class ResetSelector:
         """Calculate the 'uniqueness score' for each candidate in 'self.top_candidates'.
             This score will be highest for nodes that are very different from the other nodes in 'top_candidates'."""
         nodes_list = [c.node for c in self.top_candidates]
-        distances = ResetSelector.combinationDistancesFormula(nodes_list)
+        distances = self.combinationDistancesFormula(nodes_list)
         return ResetSelector.normalizeArray(distances)
 
     def getCompResources(self, component: Component) -> ndarray:
@@ -504,9 +475,9 @@ class ResetSelector:
             If an empty module is given, the method returns None"""
         if len(module) == 0:
             return None
-        total_resources = ResetSelector.getCompResources(module[0])
+        total_resources = self.getCompResources(module[0])
         for idx in range(1, len(module)):
-            total_resources += ResetSelector.getCompResources(module[idx])
+            total_resources += self.getCompResources(module[idx])
         return total_resources
 
     def getResourceDistribution(self, node: Node) -> ndarray:
@@ -514,7 +485,7 @@ class ResetSelector:
             The first dimention relates to each module,
             the second dimention to each resource."""
         first_comb = node.partitions[0]  # need to subscript again here?
-        return np.stack([ResetSelector.getModuleResourceVector(ls[0]) for ls in first_comb])
+        return np.stack([self.getModuleResourceVector(ls[0]) for ls in first_comb])
 
     def calcVectorDistributionDistatnce(distr1: ndarray, distr2: ndarray) -> float:
         """given two distributions of vectors, calculate a distance between these two distributions.
@@ -529,7 +500,7 @@ class ResetSelector:
             represents the average 'distance' of i'th node from the rest of the nodes in the input list.
 
             Input is in the form of list<Node>."""
-        all_distributions = [ResetSelector.getResourceDistribution(node) for node in node_list]
+        all_distributions = [self.getResourceDistribution(node) for node in node_list]
         all_distances = np.stack([
             np.array([
                 ResetSelector.calcVectorDistributionDistatnce(distr1, distr2)
@@ -549,8 +520,7 @@ class ResetSelector:
         )
         price_scores = ResetSelector.normalizeArray(np.array([-c.node.price for c in self.top_candidates]))
         exploitation_scores = ResetSelector.normalizeArray(self.exploitation_score_price_bias * price_scores
-                                                           + (
-                                                                   1 - self.exploitation_score_price_bias) * reachable_bonus_scores)
+                                                    + (1-self.exploitation_score_price_bias) * reachable_bonus_scores)
 
         return exploitation_scores
 
