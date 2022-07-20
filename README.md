@@ -142,7 +142,7 @@ A configuration file with advanced settings is provided to the user, which allow
 * boto3- Do the information retrieval using boto3. Note that in the case of enable, the data extraction process will be slower
 * Provider- which cloud provider should be checked
 * Brute Force- In order to find the optimal solution. Note that this algorithm suitable for less than 7 components. Otherwise, use Local Search Algorithm (explained below)
-* [Other Parameters are hyperparameters](#hyperParameter) for the [Local Search algorithm](#algorithm-description)
+* [Other Parameters are hyperparameters](#hyperParameter) for the [Local Search algorithm](#local-search-algorithm-description)
 
 
 ## Results
