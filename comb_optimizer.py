@@ -7,7 +7,6 @@ import copy
 from BBAlgorithm import separate_partitions
 from enum import IntEnum
 
-
 class DevelopMode(IntEnum):
     ALL = 1
     PROPORTIONAL = 2
@@ -155,9 +154,9 @@ class CombOptim:
     def isDone(self) -> bool:
         return time.time() - self.start_time > self.time_per_region
 
-
 class Node:
-    node_cache = {}
+    #declare node_cache dict with type annotation
+    node_cache: dict = {}
     verbose = False
 
     @staticmethod
@@ -307,7 +306,7 @@ class OptimumSet:
             requires that the elements inserted will have the method 'getPrice' which should
             return a float."""
         self.k = k
-        self.table = []  # contain hashcode
+        self.table: list = []  # contain hashcode
 
     def update(self, visited_nodes: list):
         """considers the list of new nodes, such that the resulting set of nodes will be the 'k' best nodes
@@ -356,7 +355,7 @@ class ResetSelector:
 
         self.updateTotalScores()
 
-    def getStartNode(self) -> Node:
+    def getStartNode(self)->Node:
         """this method represents the main functionality of the reset-selector: based on all data seen so far
             - the reset-selector will return the the node it thinks the next run should start from."""
         scores_list = [candidate.total_score for candidate in self.top_candidates]
@@ -365,7 +364,7 @@ class ResetSelector:
             selected_node_idx = sampleFromWeighted(scores_arr)
         except:
             print("sample from weighted raised err, scores list: ", scores_list)
-            return self.top_candidates[0]
+            return self.top_candidates[0].node
 
         selected_candidate = self.top_candidates[selected_node_idx]
         if self.verbose:
@@ -394,9 +393,12 @@ class ResetSelector:
             candidate = candidate_dict[node_hash]
 
             # update the subtree penalty of the candidate base on path:
-            if last_candidate != None:
+            if last_candidate != None and candidate != None:
                 candidate.subtree_price_penalty = \
-                    max(candidate.subtree_price_penalty, last_candidate.subtree_price_penalty * self.penalty_base)
+                    max(
+                        candidate.subtree_price_penalty, 
+                        last_candidate.subtree_price_penalty * self.penalty_base
+                    )
             last_candidate = candidate
 
         # update the list of top candidates and re-calculate total scores for all candidates currently saved:
@@ -406,7 +408,7 @@ class ResetSelector:
         #     raise Exception("ResetSelector.update: error: a candidates has a total score of 0.")
 
         # sort the list of top candidates and throw away the candidates that are not in the top k:
-        self.top_candidates.sort(key=lambda candidate: candidate.total_score)
+        self.top_candidates = sorted(self.top_candidates, key=lambda candidate: candidate.total_score)
         self.top_candidates = self.top_candidates[:self.candidate_list_size]
 
     def updateTotalScores(self) -> list:
@@ -439,7 +441,7 @@ class ResetSelector:
         # return arr/np.sum(arr) #normalise according to L1
         # return arr/np.linalg.norm(arr)#normalize according to L2
 
-    def calcRationScores(self) -> list:
+    def calcRationScores(self) -> ndarray:
         """calculates the exploration scores of all candidates in 'self.top_candidates' and returns scores
             in list of floats in same order."""
         uniqueness_scores = self.calcUniquenessScores()
@@ -518,8 +520,7 @@ class ResetSelector:
         )
         price_scores = ResetSelector.normalizeArray(np.array([-c.node.price for c in self.top_candidates]))
         exploitation_scores = ResetSelector.normalizeArray(self.exploitation_score_price_bias * price_scores
-                                                           + (
-                                                                   1 - self.exploitation_score_price_bias) * reachable_bonus_scores)
+                                                    + (1-self.exploitation_score_price_bias) * reachable_bonus_scores)
 
         return exploitation_scores
 
