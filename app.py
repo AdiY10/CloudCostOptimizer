@@ -114,15 +114,9 @@ def serialize_group(group: Offer):
 def serialize_instance(instance):
     """Lower level of serialize group in fleet option."""
     result = instance.instance.copy()
-    result["spot_price"] = round(instance.instance["spot_price"], 5)
-    result["priceAfterDiscount"] = (
-        round(
-            instance.instance["spot_price"] * (1 - instance.instance["discount"] / 100),
-            5,
-        )
-        if instance.instance["discount"] != 0
-        else round(instance.instance["spot_price"], 5)
-    )
+    result["spot_price"] = round(instance.instance["spot_price"], 5) if isinstance(instance.instance["spot_price"],float) else 10000
+    result["priceAfterDiscount"] = round(instance.instance["spot_price"] * (1 - instance.instance["discount"] / 100), 5) if \
+        instance.instance["discount"] != 0 else round(instance.instance["spot_price"],5)
     # result['CPU/Price_Score'] = round(instance.instance['score_cpu_price'],5)
     # result['Memory/Price_Score'] = round(instance.instance['score_memory_price'],5)
     result["components"] = list(

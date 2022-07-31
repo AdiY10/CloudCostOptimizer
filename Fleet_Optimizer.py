@@ -119,6 +119,7 @@ def run_optimizer(
     )
     architecture = filter["architecture"] if "architecture" in filter else "all"
     type_major = filter["type_major"] if "type_major" in filter else "all"
+    # affinity_list = filter["spot/onDemand"] if "spot/onDemand" in filter else "spot"
     offers_list = calc.get_fleet_offers(
         os,
         region,

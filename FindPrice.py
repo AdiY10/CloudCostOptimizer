@@ -203,7 +203,7 @@ class GetPriceFromAWS:
                                         os_name = self.correct_os(value["name"])
                                         if os_name == os_type:
                                             index = data_region.index(item)
-                                            # updating the item details with spot price
+                                            # updating the item details with spot prices
                                             if isinstance(
                                                 value["prices"]["USD"], str
                                             ):  ## check if string
@@ -249,7 +249,7 @@ class GetPriceFromAWS:
                                             os_name = self.correct_os(value["name"])
                                             if os_name == os_type:
                                                 index = data_region.index(item)
-                                                # updating the item details with spot price
+                                                # updating the item details with spot prices
                                                 try:
                                                     item["spot_price"] = float(
                                                         value["prices"]["USD"]
@@ -272,10 +272,6 @@ class GetPriceFromAWS:
 
     def calculate_spot_price(self, ec2, region):
         """Calculate spot price function."""
-        # aws_data = self.calculate_price()
-        # ec2 = self.join_spot_prices(ec2, aws_data)
         print("Extracting Data from AWS")
         ec2 = self.aws_data_extraction(ec2, region)
-        # ec2 = self.add_scores(ec2)
-        # self.analysis()
         return ec2

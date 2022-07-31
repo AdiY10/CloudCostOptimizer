@@ -69,8 +69,8 @@ class SpotCalculator:
                         ec2_data["hybrid"].append(instance)
         else:
             print("Provider error")
-        if provider != "Hybrid":
-            ec2_data = self.calculate_discount(ec2_data, provider, os)
+        # if provider != "Hybrid":
+        #     ec2_data = self.calculate_discount(ec2_data, provider, os)
         # if os == 'linux':
         #     file = open('ec2_data_Linux.json')
         # else:
@@ -167,7 +167,7 @@ class SpotCalculator:
                     if (
                         datetime.datetime.now()
                         - datetime.datetime.fromtimestamp(
-                            os.path.getmtime("ec2_data_Linux.json")
+                            os.path.getmtime("ec2_data_Windows.json")
                         )
                     ).days != 0:  ## if the file hasn't modified today
                         ec2_data = self.get_ec2_from_cache(region, user_os)
@@ -218,8 +218,8 @@ class SpotCalculator:
                 for instance in v:
                     if user_os.lower() in instance["os"].lower():
                         ec2_data["hybrid"].append(instance)
-        if provider != "Hybrid":
-            ec2_data = self.calculate_discount(ec2_data, provider, user_os)
+        # if provider != "Hybrid":
+        #     ec2_data = self.calculate_discount(ec2_data, provider, user_os)
         print("calculating best configuration")
         ec2 = SpotInstanceCalculator(ec2_data)
         # ebs_data = self.get_ebs_from_cache(region) ## get EBS volumes from AWS

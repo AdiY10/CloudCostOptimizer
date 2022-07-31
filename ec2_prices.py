@@ -162,7 +162,8 @@ class Ec2Parser:
             "processorArchitecture": arr["aws:ec2:processorArchitecture"],
             "Architecture": architecute,
             # "discount": current_spot["s"], ##spot discount
-            "discount": 0,  ## personal discount
+            "discount": 0, ## personal discount
+            "CloudProvider": "AWS",
             "interruption_frequency": self.interruption_frequency(current_spot["r"]),
             "interruption_frequency_filter": float(current_spot["r"]),
         }

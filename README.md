@@ -103,9 +103,9 @@ App1 includes three components (Comp1, Comp2, Comp5), and App2 includes one comp
 has different resource requirements, which describes by the memory, vCPUs etc...
 
 #### Required parameters:
-* vCPUs - min number of vCPUs in the instance
-* Memory (GB) - min memory (RAM) size in the instance
-* OS - operating system for the instance
+* vCPUs - min number of vCPUs required in the instance
+* memory - min Memory (GB) size required in the instance
+* selectedOs - operating system (OS) for the workloads
 * spot/onDemand - choose AWS instances pricing option- **spot / on-Demand**
 #### Optional parameters:
 * Region - used if a specific region is required, otherwise, searches in all regions.
@@ -115,13 +115,24 @@ has different resource requirements, which describes by the memory, vCPUs etc...
 * AvailabilityZone - used if specific AZ is required
 * filterInstances - used if specific instance types (major, minor or instance type) should not be displayed by Optimizer- for example, if major type a1, and instance type c5.large are not relevant, insert- filterInstances: ["a1","c5.large"]
 * Architecture - processor architecture, can be selected as- 'all' / 'x86_64' (64-bit x86) / 'arm64' (64-bit arm) / 'i386' (32-bit) / 'x86_64_mac' (64-bit mac)
+#### Component parameters:
+##### Required parameters:
+* name - The name of the component
+* memory - Memory GiB RAM
+* vCPUs - Virtual CPUs
+##### Optional parameters:
+* affinity - An affinity rule places a group of virtual machines on a specific Instance
+* anti-affinity - An anti-affinity rule places a group of virtual machines on a specific Instance
+* type - required instance type ["General Purpose","Compute Optimized","Memory Optimized","Media Accelerator Instances","Storage Optimized","GPU Instances"]
+* behavior- Displays only instances meeting a specific Interruption Behavior criteria (stop / hibernate / terminate) - in case of using Spot instances.
+* frequency- Represents the rate at which Spot will be reclaimed capacity (0- *< 5%*,1- *5-10%*,2- *10-15%*,3- *15-20%*, 4- *>20%*) - in case of using Spot instances.
 * typeMajor - Used when specific instance types are required. For example, when only C5, R5, A1 are supported- insert "typeMajor": ["c5", "r5", "a1"]
-* Category - specifies the instance category- General Purpose, Compute Optimized, Memory Optimized, Media Accelerator Instance, Storage Optimized, GPU instance.
-* Interruption Behavior- display only instances meeting a specific interruption behavior criteria (stop / hibernate / terminate) - in case of using Spot instances.
-* Interruption frequency- Represents the rate at which Spot will be reclaimed capacity (0- *< 5%*,1- *5-10%*,2- *10-15%*,3- *15-20%*, 4- *>20%*)
-* Network - required network capacity
-* IOPS (MiB I/O) - max IOPS per volume.
-* Throughput (MiB/s)- max throughput per volume.
+* Category - Specifies the instance category- General Purpose, Compute Optimized, Memory Optimized, Media Accelerator Instance, Storage Optimized, GPU instance.
+* * network - required network capacity (Gbs)
+* size - Min storage size (GB)
+* iops - Max IOPS (MiB I/O) per volume.
+* throughput - Max throughput (MiB/s) per volume.
+
 #### Configuration file:
 A configuration file with advanced settings is provided to the user, which allows him to edit default settings according to his preferences.
 #### Example of a Configuration file:
@@ -137,6 +148,7 @@ A configuration file with advanced settings is provided to the user, which allow
     "Verbose": "True"
 }
 ```
+* When using Brute Force (marked as "True"), other parameters are irrelevant (Time per region,Candidate list size, * When using Brute Force (marked as "True"), other parameters are irrelevant (Time per region, Candidate list size, Proportion amount node/sons).
 ####Configuration Parameters
 * Data Extraction- The frequency with which the data will be extracted
 * boto3- Do the information retrieval using boto3. Note that in the case of enable, the data extraction process will be slower

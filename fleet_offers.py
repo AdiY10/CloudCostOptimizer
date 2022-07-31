@@ -13,6 +13,7 @@ from group_generator import create_groups, partition2
 from single_instance_calculator import SpotInstanceCalculator
 from comb_optimizer import CombOptim
 
+
 # from single_instance_calculator import EbsCalculator
 # from BBAlgorithm import simplest_comb
 # from BBAlgorithm import one_pair
@@ -66,7 +67,7 @@ class FleetCalculator:
     #     return [[GroupedInstance(instances[i],components, payment)] for i in range(min(len(instances),2))]
 
     def match_group(
-        self, grouped_param: GroupedParam, region, payment, architecture, type_major
+            self, grouped_param: GroupedParam, region, payment, architecture, type_major
     ):  ## finds best configuration for each combination
         """Match instance to group of components function."""
         sub_combination = []
@@ -75,7 +76,7 @@ class FleetCalculator:
         sub_combination.append(region)
         sub_combination_str = str(sub_combination)
         if (
-            sub_combination_str in self.calculated_combinations
+                sub_combination_str in self.calculated_combinations
         ):  ## prevent repetitive calculations
             instances = self.calculated_combinations[sub_combination_str]
             # self.rep = self.rep + 1 ## check number of repetitive calculation
@@ -85,8 +86,8 @@ class FleetCalculator:
             limits_cpu = self.calculate_limits_cpu(region)
             limits_memory = self.calculate_limits_memory(region)
             if (
-                grouped_param.total_vcpus <= limits_cpu
-                and grouped_param.total_memory <= limits_memory
+                    grouped_param.total_vcpus <= limits_cpu
+                    and grouped_param.total_memory <= limits_memory
             ):
                 instances = self.ec2_calculator.get_spot_estimations(
                     grouped_param.total_vcpus,
@@ -197,19 +198,78 @@ def price_calc_lambda(calculator, region_to_check, payment, architecture, type_m
     )
 
 
+def check_anti_affinity(res):
+    anti_affinity_list = []
+    for stp in res.remaining_partitions:
+        for stp1 in stp.params:
+            anti_affinity_list.append(stp1.anti_affinity) if stp1 is not None else None
+    anti_affinity_list = list(filter(None, anti_affinity_list))
+    if anti_affinity(res, anti_affinity_list):
+        return True
+    return False
+
+
+
+def check_affinity(res):
+    affinity_list = []
+    for stp in res.remaining_partitions:
+        for stp1 in stp.params:
+            affinity_list.append(stp1.affinity) if stp1 is not None else None
+    affinity_list = list(filter(None, affinity_list))
+    if affinity(res, affinity_list):
+        return True
+    return False
+
+
+def affinity(res, affinity_list):
+    flag = True
+    all_comb = []
+    for stp in res.remaining_partitions:
+
+        comb = []
+        for stp1 in stp.params:
+            comb.append(stp1.component_name)
+        all_comb.append(comb)
+    for ind in affinity_list:
+        if not compare_sublists(ind, all_comb):
+            flag = False
+    return flag
+
+
+def anti_affinity(res, anti_affinity_list):
+    all_comb = []
+    for stp in res.remaining_partitions:
+        comb = []
+        for stp1 in stp.params:
+            comb.append(stp1.component_name)
+        all_comb.append(comb)
+    for ind in anti_affinity_list:
+        if compare_sublists(ind, all_comb):
+            return True
+    return False
+
+
+def compare_sublists(l, lol):
+    for sublist in lol:
+        temp = [i for i in sublist if i in l]
+        if sorted(temp) == sorted(l):
+            return True
+    return False
+
+
 def get_fleet_offers(
-    params,
-    region,
-    os,
-    app_size,
-    ec2,
-    payment,
-    architecture,
-    type_major,
-    config_file,
-    provider,
-    bruteforce,
-    **kw
+        params,
+        region,
+        os,
+        app_size,
+        ec2,
+        payment,
+        architecture,
+        type_major,
+        config_file,
+        provider,
+        bruteforce,
+        **kw
 ):
     """Get fleet offers function."""
     res = []
@@ -226,6 +286,7 @@ def get_fleet_offers(
             print("Wrong Provider in Config file")
 
     for region_to_check in regions:
+        print("Searching in region", region_to_check)
         updated_params = params.copy()
         for pl in updated_params:
             for p in pl:
@@ -247,22 +308,28 @@ def get_fleet_offers(
                 res += calculator.get_offers(
                     combination, region_to_check, payment, architecture, type_major
                 )
+                if not check_affinity(res[-1]): ## Validating affinity condition
+                    res = res[:-1]
+                elif check_anti_affinity(res[-1]): ## Validating anti-affinity condition
+                    res = res[:-1]
                 # if runtime > kw["time_per_region"]: ## in case of time limit per region- then stops the brute force
                 #     break
 
         else:  ## Local Search Algorithm
             if "verbose" in kw and kw["verbose"]:
                 print("running optimizer of region: ", region_to_check)
-            print("Searching in region", region_to_check)
             price_calc = price_calc_lambda(
                 calculator, region_to_check, payment, architecture, type_major
             )
-            res += CombOptim(
-                price_calc=price_calc,
-                initial_seperated=updated_params,
-                region=region_to_check,
-                **kw
-            ).run()
+            results_per_region = 2
+            for i in range(1, results_per_region + 1):
+                res += CombOptim(
+                    number_of_results=i,
+                    price_calc=price_calc,
+                    initial_seperated=updated_params,
+                    region=region_to_check,
+                    **kw
+                ).run()
 
         # First Step- match an instance for every component
         # firstBranch = simplest_comb(updated_params, app_size)
@@ -296,6 +363,5 @@ def get_fleet_offers(
 
         ## Full B&B Algorithm
         # Coming Soon
-
     res = list(filter(lambda g: g is not None, res))
     return sort_fleet_offers(res)

@@ -22,6 +22,7 @@ class GetStartNodeMode(IntEnum):
 
 class CombOptim:
     def __init__(self,
+                 number_of_results: int,
                  candidate_list_size: int,
                  price_calc,
                  initial_seperated,
@@ -57,7 +58,7 @@ class CombOptim:
             proportion_amount_node_sons_to_develop=proportion_amount_node_sons_to_develop
         )
         self.start_time = time.time()
-        self.time_per_region = time_per_region
+        self.time_per_region = time_per_region / number_of_results
         self.region = region
         self.exploitation_score_price_bias = exploitation_score_price_bias
         self.exploration_score_depth_bias = exploration_score_depth_bias
@@ -112,11 +113,85 @@ class CombOptim:
         elif self.get_starting_node_mode == GetStartNodeMode.ROOT:
             start_node = self.root
         elif self.get_starting_node_mode == GetStartNodeMode.RANDOM:
-            start_node = Node.random_node_from(self.root)
-            if start_node.getPrice() == np.inf:
-                start_node = self.root
+            while True:
+                start_node = Node.random_node_from(self.root)
+                if self.check_anti_affinity(start_node):
+                    print("anti-affinity")
+                elif not self.check_affinity(start_node):
+                    print("affinity")
+                else:
+                    break
 
+            # if start_node.getPrice() == np.inf:
+            #     start_node = self.root
+        # for nnp in start_node.partitions:
+        #     for nnp1 in nnp:
+        #         arr2 = []
+        #         for nnp2 in nnp1:
+        #             arr = []
+        #             for nnp3 in nnp2:
+        #                 arr.append(nnp3.component_name)
+        #             arr2.append(arr)
+        # print("The Start Node Is:", arr2)
         return start_node
+
+    def check_anti_affinity(self, start_node):
+        anti_affinity_list = []
+        for stp in start_node.partitions[0]:
+            for stp1 in stp:
+                for aff_stp1 in stp1:
+                    anti_affinity_list.append(aff_stp1.anti_affinity) if stp1 is not None else None
+        anti_affinity_list = list(filter(None, anti_affinity_list))
+        if self.anti_affinity(start_node, anti_affinity_list):
+            return True
+        return False
+
+    def check_affinity(self, start_node):
+        affinity_list = []
+        for stp in start_node.partitions[0]:
+            for stp1 in stp:
+                for aff_stp1 in stp1:
+                    affinity_list.append(aff_stp1.affinity) if stp1 is not None else None
+        affinity_list = list(filter(None, affinity_list))
+        if self.affinity(start_node, affinity_list):
+            return True
+        return False
+
+    def affinity(self,next_node, aff):
+        flag = True
+        for nnp in next_node.partitions:
+            for nnp1 in nnp:
+                arr2 = []
+                for nnp2 in nnp1:
+                    arr = []
+                    for nnp3 in nnp2:
+                        arr.append(nnp3.component_name)
+                    arr2.append(arr)
+        for ind in aff:
+            if not self.compare_sublists(ind,arr2):
+                flag = False
+        return flag
+
+    def anti_affinity(self,next_node, aff):
+        for nnp in next_node.partitions:
+            for nnp1 in nnp:
+                arr2 = []
+                for nnp2 in nnp1:
+                    arr = []
+                    for nnp3 in nnp2:
+                        arr.append(nnp3.component_name)
+                    arr2.append(arr)
+        for ind in aff:
+            if self.compare_sublists(ind,arr2):
+                return True
+        return False
+
+    def compare_sublists(self, l, lol):
+        for sublist in lol:
+            temp = [i for i in sublist if i in l]
+            if sorted(temp) == sorted(l):
+                return True
+        return False
 
     def run(self):
         """main function of algorithm.
@@ -129,7 +204,8 @@ class CombOptim:
         # print("comb optimizer starting run.")
         self.create_stats_table()  # in order to save stat info
         i = 1
-        while not self.isDone() or i == 1:  # got more time to run
+        res = []
+        while not self.isDone():
             start_node = self.get_start_node()  # get start node
             path = self.search_algo.run(start_node, self.start_time, self.time_per_region)  # run search from start node
             if path is None:
@@ -137,14 +213,9 @@ class CombOptim:
             if len(path) != 0:
                 self.optim_set.update(path)  # update the final solution
 
-                if self.get_starting_node_mode == GetStartNodeMode.RESET_SELECTOR:
-                    self.reset_sel.update(path)  # update the selector
-
             self.insert_stats(i)  # save stat info
             i += 1
 
-            if self.get_next_mode == GetNextMode.GREEDY:
-                break
         if self.insert_stats is None:
             print("No match found in ", self.region, ". Consider giving extra time per region.")
         self.finish_stats_operation()
@@ -223,11 +294,11 @@ class Node:
 
         Args:
             container (_type_): container of new node.
-            combination (_type_): the combination of 2 recived modules.
+            combination (_type_): the combination of 2 received modules.
             combination_index (_type_): index of combination
-            module1 (_type_): the first module to craete the node from.
+            module1 (_type_): the first module to create the node from.
             module1_index (_type_): index of first module
-            module2 (_type_): the second module to craete the node from.
+            module2 (_type_): the second module to create the node from.
             module2_index (_type_): index of second module
         """
         new_combination = copy.deepcopy(combination)
@@ -393,7 +464,7 @@ class ResetSelector:
             candidate = candidate_dict[node_hash]
 
             # update the subtree penalty of the candidate base on path:
-            if last_candidate != None and candidate != None:
+            if last_candidate is not None and candidate is not None:
                 candidate.subtree_price_penalty = \
                     max(
                         candidate.subtree_price_penalty, 

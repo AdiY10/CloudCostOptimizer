@@ -9,11 +9,14 @@ class Component(object):
 
     def __init__(self, app_index, app_name, component_specs):
         """Initialize class."""
+
         self.memory = float(component_specs["memory"])
         self.vCPUs = float(component_specs["vCPUs"])
         self.network = (
             float(component_specs["network"]) if "network" in component_specs else 0.0
         )
+        self.affinity = self.affinity_list(component_specs)
+        self.anti_affinity = self.anti_affinity_list(component_specs)
         self.behavior = (
             component_specs["behavior"]
             if "behavior" in component_specs
@@ -58,6 +61,17 @@ class Component(object):
         """Get Component name function."""
         return self.component_name
 
+    def affinity_list(self,component_specs):
+        afl = component_specs["affinity"].split(",") if "affinity" in component_specs else None
+        afl.append(component_specs["name"]) if afl is not None else None
+        return afl
+
+    def anti_affinity_list(self,component_specs):
+        if "antiaffinity" in component_specs:
+            component_specs["anti-affinity"] = component_specs.pop("antiaffinity")
+        afl = component_specs["anti-affinity"].split(",") if "anti-affinity" in component_specs else None
+        afl.append(component_specs["name"]) if afl is not None else None
+        return afl
 
 class GroupedParam(object):
     """Group (sum) all the parameters values together."""
@@ -113,7 +127,7 @@ class GroupedInstance(object):
 
     def __init__(self, instance, components, pricing):
         """Initialize class."""
-        self.spot_price = round(float(instance["spot_price"]), 5)
+        self.spot_price = round(float(instance["spot_price"]), 5) if isinstance(instance["spot_price"],float) else 100000
         self.discount = instance["discount"]
         self.components = components
         self.instance = instance
