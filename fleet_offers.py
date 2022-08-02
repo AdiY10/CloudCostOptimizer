@@ -11,14 +11,14 @@ from fleet_classes import (
 )
 from group_generator import create_groups, partition2
 from single_instance_calculator import SpotInstanceCalculator
-from comb_optimizer import CombOptim
+from LocalSearchAlgorithm.comb_optimizer import CombOptim
 
 
 # from single_instance_calculator import EbsCalculator
-# from BBAlgorithm import simplest_comb
-# from BBAlgorithm import one_pair
-# from BBAlgorithm import find_all_poss_pairs
-# from BBAlgorithm import best_current_price
+# from LocalSearchAlgorithm.partitions_generator import simplest_comb
+# from LocalSearchAlgorithm.partitions_generator import one_pair
+# from LocalSearchAlgorithm.partitions_generator import find_all_poss_pairs
+# from LocalSearchAlgorithm.partitions_generator import best_current_price
 
 
 class FleetCalculator:
@@ -67,9 +67,9 @@ class FleetCalculator:
     #     return [[GroupedInstance(instances[i],components, payment)] for i in range(min(len(instances),2))]
 
     def match_group(
-            self, grouped_param: GroupedParam, region, payment, architecture, type_major
+            self, grouped_param: GroupedParam, region, payment, architecture, type_major, provider
     ):  ## finds best configuration for each combination
-        """Match instance to group of components function."""
+        """Match instance to group of components."""
         sub_combination = []
         for single_component in grouped_param.params:
             sub_combination.append(single_component.get_component_name())
@@ -94,6 +94,7 @@ class FleetCalculator:
                     grouped_param.total_memory,
                     architecture,
                     type_major,
+                    provider,
                     region,
                     "all",
                     grouped_param.behavior,
@@ -150,12 +151,12 @@ class FleetCalculator:
     #        result.append(new_group)
     #    return result  ## result is a list of Offer objects
 
-    def get_offers(self, group: Offer, region, payment, architecture, type_major):
+    def get_offers(self, group: Offer, region, payment, architecture, type_major, provider):
         """Get offers function."""
         instances = []
         for i in group.remaining_partitions:
             instances.append(
-                self.match_group(i, region, payment, architecture, type_major)
+                self.match_group(i, region, payment, architecture, type_major, provider)
             )  ## finds best configuration for each combination
         instances = list(filter(None, instances))
         if len(instances) < len(group.remaining_partitions):
@@ -169,12 +170,12 @@ class FleetCalculator:
             result.append(new_group)
         return result  ## result is a list of Offer objects
 
-    def get_best_price(self, group: Offer, region, pricing, architecture, type_major):
+    def get_best_price(self, group: Offer, region, pricing, architecture, type_major, provider):
         """Get offers function."""
         instances = []
         for i in group.remaining_partitions:
             instances.append(
-                self.match_group(i, region, pricing, architecture, type_major)
+                self.match_group(i, region, pricing, architecture, type_major, provider)
             )  ## finds best configuration for each combination
         instances = list(filter(None, instances))
         if len(instances) < len(group.remaining_partitions):
@@ -191,10 +192,10 @@ class FleetCalculator:
         return best_group
 
 
-def price_calc_lambda(calculator, region_to_check, payment, architecture, type_major):
+def price_calc_lambda(calculator, region_to_check, payment, architecture, type_major, provider):
     """Price calc with lambda usage."""
     return lambda comb: calculator.get_best_price(
-        comb, region_to_check, payment, architecture, type_major
+        comb, region_to_check, payment, architecture, type_major, provider
     )
 
 
@@ -306,7 +307,7 @@ def get_fleet_offers(
             )  ## creates all the possible combinations
             for combination in groups:  ## for each combination (group) find best offer
                 res += calculator.get_offers(
-                    combination, region_to_check, payment, architecture, type_major
+                    combination, region_to_check, payment, architecture, type_major, provider
                 )
                 if not check_affinity(res[-1]): ## Validating affinity condition
                     res = res[:-1]
@@ -319,9 +320,9 @@ def get_fleet_offers(
             if "verbose" in kw and kw["verbose"]:
                 print("running optimizer of region: ", region_to_check)
             price_calc = price_calc_lambda(
-                calculator, region_to_check, payment, architecture, type_major
+                calculator, region_to_check, payment, architecture, type_major, provider
             )
-            results_per_region = 2
+            results_per_region = 1
             for i in range(1, results_per_region + 1):
                 res += CombOptim(
                     number_of_results=i,

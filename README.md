@@ -101,7 +101,7 @@ The user's workload should be in the **input_fleet.json** file- **don't forget t
 Where we can see an input of two Applications (App1, App2), which uses linux Operation System.
 App1 includes three components (Comp1, Comp2, Comp5), and App2 includes one component (Comp3). each component
 has different resource requirements, which describes by the memory, vCPUs etc...
-
+### General parameters:
 #### Required parameters:
 * vCPUs - min number of vCPUs required in the instance
 * memory - min Memory (GB) size required in the instance
@@ -115,7 +115,11 @@ has different resource requirements, which describes by the memory, vCPUs etc...
 * AvailabilityZone - used if specific AZ is required
 * filterInstances - used if specific instance types (major, minor or instance type) should not be displayed by Optimizer- for example, if major type a1, and instance type c5.large are not relevant, insert- filterInstances: ["a1","c5.large"]
 * Architecture - processor architecture, can be selected as- 'all' / 'x86_64' (64-bit x86) / 'arm64' (64-bit arm) / 'i386' (32-bit) / 'x86_64_mac' (64-bit mac)
-#### Component parameters:
+### App parameters:
+##### Required parameters:
+* app - The name of the app
+* share - boolean parameter, indicates if the app can share instances with different apps
+### Component parameters:
 ##### Required parameters:
 * name - The name of the component
 * memory - Memory GiB RAM
@@ -133,7 +137,7 @@ has different resource requirements, which describes by the memory, vCPUs etc...
 * iops - Max IOPS (MiB I/O) per volume.
 * throughput - Max throughput (MiB/s) per volume.
 
-#### Configuration file:
+### Configuration file:
 A configuration file with advanced settings is provided to the user, which allows him to edit default settings according to his preferences.
 #### Example of a Configuration file:
 ```
@@ -153,7 +157,7 @@ A configuration file with advanced settings is provided to the user, which allow
 * Data Extraction- The frequency with which the data will be extracted
 * boto3- Do the information retrieval using boto3. Note that in the case of enable, the data extraction process will be slower
 * Provider- which cloud provider should be checked
-* Brute Force- In order to find the optimal solution. Note that this algorithm suitable for less than 7 components. Otherwise, use Local Search Algorithm (explained below)
+* Brute Force- boolean parameter, indicates if the CCO should use BF In order to find the optimal solution, or not. Note that this algorithm suitable for less than 7 components. Otherwise, use Local Search Algorithm (explained below)
 * [Other Parameters are hyperparameters](#hyperParameter) for the [Local Search algorithm](#local-search-algorithm-description)
 
 

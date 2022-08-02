@@ -6,6 +6,7 @@ from flask_cors import CORS, cross_origin
 from fleet_classes import Offer, ComponentOffer
 from fleet_offers import Component
 from get_spot import SpotCalculator
+from LocalSearchAlgorithm.comb_optimizer import DevelopMode, GetNextMode, GetStartNodeMode
 
 # from gevent import monkey
 # monkey.patch_all()  ##internal use- Prevent an Error "greenlet.error: cannot switch to a different thread"
@@ -18,14 +19,14 @@ CORS(app)
 @app.route("/getAWSData", methods=["POST"])
 @cross_origin()
 def get_aws_data_tojson():
-    """Get AWS Data tab."""
+    """Get AWSData tab."""
     print("Extracting Data- Linux")
     aws_data_linux = calc.get_ec2_from_cache("all", "linux")
     print("Extracting Data- Windows")
     aws_data_windows = calc.get_ec2_from_cache("all", "windows")
-    with open("ec2_data_Linux.json", "w", encoding="utf-8") as f:
+    with open("AWSData/ec2_data_Linux.json", "w", encoding="utf-8") as f:
         json.dump(aws_data_linux, f, ensure_ascii=False, indent=4)
-    with open("ec2_data_Windows.json", "w", encoding="utf-8") as f:
+    with open("AWSData/ec2_data_Windows.json", "w", encoding="utf-8") as f:
         json.dump(aws_data_windows, f, ensure_ascii=False, indent=4)
     return jsonify()
 
@@ -135,6 +136,22 @@ def serialize_component(component: ComponentOffer):
 
 def fleet_search(filter, provider):
     """Fleet search for all providers."""
+    file1 = open("Config_file.json")
+    config_file = json.load(file1)
+    bruteforce = config_file["Brute Force"]
+    kw = {
+        "candidate_list_size": config_file["Candidate list size"],
+        "time_per_region": config_file["Time per region"],
+        "exploitation_score_price_bias": 0.5,
+        "exploration_score_depth_bias": 1.0,
+        "exploitation_bias": 0.2,
+        "sql_path": "Run_Statistic.sqlite3",
+        "verbose": config_file["Verbose"],
+        "develop_mode": DevelopMode.PROPORTIONAL,
+        "proportion_amount_node_sons_to_develop": config_file["Proportion amount node/sons"],
+        "get_next_mode": GetNextMode.STOCHASTIC_ANNEALING,
+        "get_starting_node_mode": GetStartNodeMode.RANDOM,
+    }
     shared_apps = []  # list of components of shared apps
     partitions = []  ## list of ALL components
     app_size = dict()  ##size of each app
@@ -172,6 +189,8 @@ def fleet_search(filter, provider):
         type_major,
         filter_instances,
         provider,
+        bruteforce,
+        **kw
     )  ##architecture and typemajor are 'all'
     res = list(map(lambda g: serialize_group(g), offers_list))
     with open("FleetECresults.json", "w", encoding="utf-8") as f:

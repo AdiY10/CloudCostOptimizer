@@ -1,15 +1,15 @@
 """Main calculator class, handles caching and calls to the singleInstanceCalculator and fleetOffers."""
 
-from ec2_prices import Ec2Parser
+from ExtractData.ec2_prices import Ec2Parser
 from fleet_offers import get_fleet_offers
 
 # from fleet_offers import Component
 from single_instance_calculator import SpotInstanceCalculator
 
 # from single_instance_calculator import EbsCalculator
-from FindPrice import GetPriceFromAWS
+from ExtractData.FindPrice import GetPriceFromAWS
 
-# from ebs_prices import get_ebs_for_region, get_ebs
+# from ExtractData.ebs_prices import get_ebs_for_region, get_ebs
 import json
 
 
@@ -33,8 +33,8 @@ class SpotCalculator:
         v_cpus,
         memory,
         storage_size,
-        region="all",
-        type="all",
+        region,
+        type,
         behavior="terminate",
         storage_type="all",
         iops=250,
@@ -47,14 +47,14 @@ class SpotCalculator:
         if provider == "AWS":
             ec2_data = self.get_ec2_from_cache(region, os)
         elif provider == "Azure":
-            file = open("Azure_data_v2.json")
+            file = open("AzureData/Azure_data_v2.json")
             ec2_data = json.load(file)
         elif provider == "Hybrid":
             if os == "linux":
-                file_aws = open("ec2_data_Linux.json")
+                file_aws = open("AWSData/ec2_data_Linux.json")
             else:
-                file_aws = open("ec2_data_Windows.json")
-            file_azure = open("Azure_data_v2.json")
+                file_aws = open("AWSData/ec2_data_Windows.json")
+            file_azure = open("AzureData/Azure_data_v2.json")
             aws_data = json.load(file_aws)
             azure_data = json.load(file_azure)
             ec2_data = dict()
@@ -85,6 +85,7 @@ class SpotCalculator:
             memory,
             "all",
             "all",
+            provider,
             region,
             type,
             behavior,
@@ -156,23 +157,23 @@ class SpotCalculator:
                     if (
                         datetime.datetime.now()
                         - datetime.datetime.fromtimestamp(
-                            os.path.getmtime("ec2_data_Linux.json")
+                            os.path.getmtime("AWSData/ec2_data_Linux.json")
                         )
                     ).days != 0:  ## if the file hasn't modified today
                         ec2_data = self.get_ec2_from_cache(region, user_os)
                     else:
-                        file = open("ec2_data_Linux.json")
+                        file = open("AWSData/ec2_data_Linux.json")
                         ec2_data = json.load(file)
                 else:
                     if (
                         datetime.datetime.now()
                         - datetime.datetime.fromtimestamp(
-                            os.path.getmtime("ec2_data_Windows.json")
+                            os.path.getmtime("AWSData/ec2_data_Windows.json")
                         )
                     ).days != 0:  ## if the file hasn't modified today
                         ec2_data = self.get_ec2_from_cache(region, user_os)
                     else:
-                        file = open("ec2_data_Windows.json")
+                        file = open("AWSData/ec2_data_Windows.json")
                         ec2_data = json.load(file)
             elif config_file["Data Extraction (always / onceAday)"] == "always":
                 ec2_data = self.get_ec2_from_cache(region, user_os)
@@ -192,7 +193,7 @@ class SpotCalculator:
                             list_of_relevant_instances.append(i)
                     ec2_data[k] = list_of_relevant_instances
         elif provider == "Azure":
-            file = open("Azure_data_v2.json")
+            file = open("AzureData/Azure_data_v2.json")
             all_vms = json.load(file)
             ec2_data = dict()
             for k, v in all_vms.items():
@@ -202,10 +203,10 @@ class SpotCalculator:
                         ec2_data[k].append(instance)
         else:
             if user_os == "linux":
-                file_aws = open("ec2_data_Linux.json")
+                file_aws = open("AWSData/ec2_data_Linux.json")
             else:
-                file_aws = open("ec2_data_Windows.json")
-            file_azure = open("Azure_data_v2.json")
+                file_aws = open("AWSData/ec2_data_Windows.json")
+            file_azure = open("AzureData/Azure_data_v2.json")
             aws_data = json.load(file_aws)
             azure_data = json.load(file_azure)
             ec2_data = dict()
@@ -243,19 +244,19 @@ class SpotCalculator:
         """Calculate discount per user."""
         if provider == "AWS":
             if user_os == "linux":
-                file = open("ec2_discount_Linux.json")
+                file = open("AWSData/ec2_discount_Linux.json")
             else:
-                file = open("ec2_discount_Windows.json")
+                file = open("AWSData/ec2_discount_Windows.json")
             discount = json.load(file)
         elif provider == "Azure":
-            file = open("vm_discount.json")
+            file = open("AzureData/vm_discount.json")
             discount = json.load(file)
         else:  ##Hybrid
             if user_os == "linux":
-                file_aws = open("ec2_data_Linux.json")
+                file_aws = open("AWSData/ec2_data_Linux.json")
             else:
-                file_aws = open("ec2_data_Windows.json")
-            file_azure = open("Azure_data_v2.json")
+                file_aws = open("AWSData/ec2_data_Windows.json")
+            file_azure = open("AzureData/Azure_data_v2.json")
             aws_data = json.load(file_aws)
             azure_data = json.load(file_azure)
             discount = dict()
@@ -320,10 +321,10 @@ class SpotCalculator:
                 ec2_data = ec2.get_ec2_for_region(os, region)
                 ec2_data = self.aws_price.calculate_spot_price(ec2_data, region)
                 if os == "linux":
-                    with open("ec2_data_Linux.json", "w", encoding="utf-8") as f:
+                    with open("AWSData/ec2_data_Linux.json", "w", encoding="utf-8") as f:
                         json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 else:
-                    with open("ec2_data_Windows.json", "w", encoding="utf-8") as f:
+                    with open("AWSData/ec2_data_Windows.json", "w", encoding="utf-8") as f:
                         json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 if os not in self.ec2_cache:
                     self.ec2_cache[os] = {}
@@ -333,10 +334,10 @@ class SpotCalculator:
                 ec2_data = ec2.get_ec2(os, region)
                 ec2_data = self.aws_price.calculate_spot_price(ec2_data, region)
                 if os == "linux":
-                    with open("ec2_data_Linux.json", "w", encoding="utf-8") as f:
+                    with open("AWSData/ec2_data_Linux.json", "w", encoding="utf-8") as f:
                         json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 else:
-                    with open("ec2_data_Windows.json", "w", encoding="utf-8") as f:
+                    with open("AWSData/ec2_data_Windows.json", "w", encoding="utf-8") as f:
                         json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 self.ec2_cache[os] = ec2_data
                 self.cached_os[os] = True

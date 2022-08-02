@@ -1,0 +1,86 @@
+{
+    "us-east-2": [
+        {
+            "region": "us-east-2",
+            "os": "Windows",
+            "typeName": "r5dn.metal",
+            "discount": 60
+        },
+        {
+            "region": "us-east-2",
+            "os": "Windows",
+            "typeName": "c5n.18xlarge",
+            "discount": 60
+        }
+    ],
+    "us-east-1": [
+        {
+            "region": "us-east-1",
+            "os": "Windows",
+            "typeName": "c6gn.16xlarge",
+            "discount": 70
+        }
+    ],
+    "us-west-1": [
+        {
+            "region": "us-west-1",
+            "os": "Windows",
+            "typeName": "m5a.xlarge",
+            "discount": 50
+        },
+        {
+            "region": "us-west-1",
+            "os": "Windows",
+            "typeName": "m6i.8xlarge",
+            "discount": 50
+        },
+        {
+            "region": "us-west-1",
+            "os": "Windows",
+            "typeName": "z1d.2xlarge",
+            "discount": 50
+        }
+    ],
+    "us-west-2": [
+        {
+            "region": "us-west-2",
+            "os": "Windows",
+            "typeName": "x2gd.metal",
+            "discount": 60
+        }
+    ],
+    "af-south-1": [
+        {
+            "region": "af-south-1",
+            "os": "Windows",
+            "typeName": "r5d.4xlarge",
+            "discount": 70
+        }
+    ],
+    "ap-east-1": [
+        {
+            "region": "ap-east-1",
+            "os": "Windows",
+            "typeName": "r6g.12xlarge",
+            "discount": 80
+        }
+    ],
+    "ap-south-1": [
+        {
+            "region": "ap-south-1",
+            "os": "Windows",
+            "typeName": "c5d.9xlarge",
+            "discount": 70
+        }
+    ],
+    "ap-northeast-3": [
+        {
+            "region": "ap-northeast-3",
+            "os": "Windows",
+            "typeName": "m5d.12xlarge",
+            "discount": 50
+        }
+    ]    
+}
+        
+

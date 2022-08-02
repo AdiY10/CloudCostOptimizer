@@ -1,0 +1,58 @@
+{
+    "Canada East": [
+        {
+            "typeName": "B1s",
+            "region": "Canada East",
+            "os": "CentOS or Ubuntu Linux",
+            "discount": 70
+        },
+        {
+            "typeName": "B1ms",
+            "region": "Canada East",
+            "os": "CentOS or Ubuntu Linux",
+            "discount": 60
+        }
+    ],
+    "Central US": [
+        {
+            "typeName": "B1s",
+            "region": "Central US",
+            "os": "CentOS or Ubuntu Linux",
+            "discount": 50
+        }
+    ],
+    "Central India": [
+        {
+            "typeName": "D8a v4",
+            "region": "Central India",
+            "os": "CentOS or Ubuntu Linux",
+            "discount": 50
+        }
+    ],
+    "East US 2": [
+        {
+            "typeName": "F4s v2",
+            "region": "East US 2",
+            "os": "CentOS or Ubuntu Linux",
+            "discount": 60
+        },
+        {
+            "typeName": "F72s v2",
+            "region": "East US 2",
+            "os": "CentOS or Ubuntu Linux",
+            "discount": 70
+        },
+        {
+            "typeName": "D8as v4",
+            "region": "East US 2",
+            "os": "CentOS or Ubuntu Linux",
+            "discount": 40
+        },
+        {
+            "typeName": "D8a v4",
+            "region": "East US 2",
+            "os": "CentOS or Ubuntu Linux",
+            "discount": 40
+        }
+    ]
+}

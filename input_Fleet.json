@@ -1,44 +1,24 @@
 {
     "selectedOs": "linux",
     "region": "all",
-    "spot/onDemand": "spot",
+    "spot/onDemand": "onDemand",
     "apps": [
         {
             "app": "App1",
             "share": true,
             "components": [
                 {
-                    "memory": 12,
+                    "memory": 15,
                     "vCPUs": 12,
                     "behavior": "terminate",
-                    "anti-affinity": "Comp3",
+                    "anti-affinity": "Comp2",
                     "name": "Comp1"
                 },
                 {
-                    "memory": 12,
+                    "memory": 1,
                     "vCPUs": 12,
                     "behavior": "terminate",
-                    "affinity": "Comp4",
                     "name": "Comp2"
-                },
-                {
-                    "memory": 13,
-                    "vCPUs": 13,
-                    "behavior": "terminate",
-                    "name": "Comp3"
-                },
-                {
-                    "memory": 12,
-                    "vCPUs": 12,
-                    "behavior": "terminate",
-                    "name": "Comp4"
-                },
-                {
-                    "memory": 6,
-                    "vCPUs": 6,
-                    "behavior": "terminate",
-                    "affinity": "Comp4",
-                    "name": "Comp5"
                 }
             ]
         }
