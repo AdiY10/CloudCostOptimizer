@@ -34,7 +34,7 @@ $ pip install numpy
 
 ### Usage
 ```
-$ python Fleet_Optimizer.py
+$ python CCO.py
 ```
 Where the following command activate the Optimizer
 
@@ -113,7 +113,7 @@ has different resource requirements, which described by their memory, vCPUs etc.
 ### General parameters:
 #### Required parameters:
 * selectedOs - operating system (OS) for the workloads
-* spot/onDemand - choose AWS instances pricing option- **spot / on-Demand**
+* spot/onDemand - choose instances pricing option- **spot / on-Demand**
 #### Optional parameters:
 * Region - used if a specific region is required, otherwise, searches in all regions.
   * region defined as "all"- to look for the best configuration, in all regions
@@ -122,6 +122,10 @@ has different resource requirements, which described by their memory, vCPUs etc.
 * filterInstances - used if specific instance types (major, minor or instance type) should not be displayed by Optimizer- for example, if major type a1, and instance type c5.large are not relevant, insert- filterInstances: ["a1","c5.large"]
 * Architecture - processor architecture, can be selected as- 'all' / 'x86_64' (64-bit x86) / 'arm64' (64-bit arm) / 'i386' (32-bit) / 'x86_64_mac' (64-bit mac)
 * AvailabilityZone - used if specific AZ is required
+### App parameters:
+##### Required parameters:
+* app - name of app
+* share - boolean parameter, indicates if the app can share instances with different apps
 ### Component parameters:
 ##### Required parameters:
 * name - The name of the component

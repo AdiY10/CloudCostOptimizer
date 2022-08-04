@@ -1,0 +1,34 @@
+"""
+POST endpoint to get spot fleet hourly price estimations
+body: configuration for fleet, i.e apps,components and other optional configurations
+    dto = {
+        selectedOs: <str>               REQUIRED, requested instances os. options: linux,windows
+        region: <str>                   OPTIONAL, region for instances (see README)
+        spot/onDemand: <str>            REQUIRED, instances pricing option (spot or on-demand/pay-as-you-go)
+        filterInstances: <list>         OPTIONAL, if specific instances shouldn't be displayed
+        architecture: <str>             OPTIONAL, processor architecture
+        apps: [                         REQUIRED, list of app specifications
+            {
+            app: <str>                  REQUIRED, name of app
+            share: <str>                REQUIRED, boolean parameter, indicates if the app can share instances with different apps
+            components:[                REQUIRED, list of component specifications
+                {
+                    name: <str>         REQUIRED, name of component
+                    vCPUs: <int>        REQUIRED, required cpu for component
+                    memory: <int>       REQUIRED, required memory for component (GB)
+                    network: <int>      OPTIONAL, component network consumption (GBs)
+                    behavior: <str>     OPTIONAL, component required interruption behavior: options: terminate,stop,hibernation
+                    frequency: <int>     OPTIONAL, limit interruption frequency of the instances. options: 0-4 (see README)
+                    size: <int>  OPTIONAL, component storage size (GB)
+                    iops: <int>         OPTIONAL, component required IOPS (MiB I/O)
+                    throughput: <int>   OPTIONAL, component required throughput (MB/s)
+                    affinity: <str>     OPTIONAL, components names, that must be on the same instance
+                    anti-affinity: <str>OPTIONAL, components names, that mustn't be on the same instance
+                    typeMajor: <str>    OPTIONAL, when specific instance types are required (see README)
+                }
+                ]
+            }
+        ]
+
+
+"""

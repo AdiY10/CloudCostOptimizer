@@ -149,7 +149,7 @@ class SpotCalculator:
         import os.path
         import datetime
 
-        file = open("Config_file.json")
+        file = open("config_file.json")
         config_file = json.load(file)
         if provider == "AWS":
             if config_file["Data Extraction (always / onceAday)"] == "onceAday":

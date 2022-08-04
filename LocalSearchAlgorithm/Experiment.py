@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-import Fleet_Optimizer
+import CCO
 import math
 import json
 import numpy as np
@@ -261,7 +261,7 @@ class Sample:
         for repetition in range(control_parameters["significance"]):
             sample_attempts_left = retry
             def run_alg():
-                Fleet_Optimizer.run_optimizer(
+                CCO.run_optimizer(
                     **search_algorithm_parameters,
                     **reset_algorithm_parameters,
                     time_per_region = control_parameters["time_per_region"],

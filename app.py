@@ -136,7 +136,7 @@ def serialize_component(component: ComponentOffer):
 
 def fleet_search(filter, provider):
     """Fleet search for all providers."""
-    file1 = open("Config_file.json")
+    file1 = open("config_file.json")
     config_file = json.load(file1)
     bruteforce = config_file["Brute Force"]
     kw = {

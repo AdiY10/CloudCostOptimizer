@@ -52,7 +52,7 @@ def serialize_instance(instance, os):
         os = "Linux"
     if os == "windows":
         os = "Windows"
-    file = open("Config_file.json")
+    file = open("config_file.json")
     config_file = json.load(file)
     if config_file["boto3 (enable / disable)"] == "enable":
         boto3_data = use_boto3(
@@ -79,8 +79,8 @@ def serialize_component(component: ComponentOffer):
 
 def run_optimizer(
     bruteforce,
-    input_file_name="input_Fleet.json",
-    output_file_name="FleetResults.json",
+    input_file_name="input_fleet.json",
+    output_file_name="fleet_results.json",
     **kw
 ):
     """Run Optimizer- Fleet calculator."""
@@ -89,7 +89,7 @@ def run_optimizer(
     partitions = []
     app_size = dict()
     filter = json.load(file)
-    file1 = open("Config_file.json")
+    file1 = open("config_file.json")
     config_file = json.load(file1)
     provider = config_file["Provider (AWS / Azure / Hybrid)"]
     for i, a in enumerate(filter["apps"]):
@@ -147,14 +147,14 @@ def run_optimizer(
 
 
 if __name__ == "__main__":
-    file1 = open("Config_file.json")
+    file1 = open("config_file.json")
     config_file = json.load(file1)
     candidate_list_size = config_file["Candidate list size"]
     time_per_region = config_file["Time per region"]
     proportion_amount_node_sons_to_develop = config_file["Proportion amount node/sons"]
     verbose = True if config_file["Verbose"] == "True" else False
-    INPUT_FILE = "input_Fleet.json"
-    OUTPUT_FILE = "FleetResults.json"
+    INPUT_FILE = "input_fleet.json"
+    OUTPUT_FILE = "fleet_results.json"
     brute_force = True if config_file["Brute Force"] == "True" else False
     ALG_PARAMETERS = {
         "candidate_list_size": candidate_list_size,
