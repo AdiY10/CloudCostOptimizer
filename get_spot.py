@@ -7,7 +7,7 @@ from fleet_offers import get_fleet_offers
 from single_instance_calculator import SpotInstanceCalculator
 
 # from single_instance_calculator import EbsCalculator
-from ExtractData.FindPrice import GetPriceFromAWS
+from ExtractData.aws_spot_prices import GetPriceFromAWS
 
 # from ExtractData.ebs_prices import get_ebs_for_region, get_ebs
 import json

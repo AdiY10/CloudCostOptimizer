@@ -1,7 +1,7 @@
 {
     "selectedOs": "linux",
     "region": "all",
-    "spot/onDemand": "onDemand",
+    "spot/onDemand": "spot",
     "apps": [
         {
             "app": "App1",
@@ -9,16 +9,22 @@
             "components": [
                 {
                     "memory": 15,
-                    "vCPUs": 12,
+                    "vCPUs": 22,
                     "behavior": "terminate",
                     "anti-affinity": "Comp2",
                     "name": "Comp1"
                 },
                 {
-                    "memory": 1,
-                    "vCPUs": 12,
+                    "memory": 14,
+                    "vCPUs": 22,
                     "behavior": "terminate",
                     "name": "Comp2"
+                },
+                {
+                    "memory": 14,
+                    "vCPUs": 22,
+                    "behavior": "terminate",
+                    "name": "Comp3"
                 }
             ]
         }

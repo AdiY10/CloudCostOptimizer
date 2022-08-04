@@ -3,9 +3,17 @@ THE PROJECT HAS BEEN MOVED - This project is still under development, but it has
 https://github.com/aicoe-aiops/cloud-price-analysis-public/tree/master/src/CloudCostOptimizer%20(CCO)
 
 # Cloud Cost Optimizer
-The goal of the project is to provide the user an api for getting [AWS spot instances](https://aws.amazon.com/ec2/spot/) (or on-demand) best offers based on a given configuration.
-The Optimizer first gets from the user application(s) requirements such as OS, region, cpu, memory, storage, network, etc..
-After calculating All the options, the Optimizer suggests the user the cheapest configuration of EC2 instances to run their app.
+The goal of the project is to provide the user an API for the best configuration for cloud services according to their requirements. The Optimizer supports multiple cloud providers simultaneously (AWS / Azure), or you can combine both (Hybrid).
+First, the user determines his system requirements based on the architecture of his applications and components, and then for each component determines the required operating system, CPU, region, memory, storage, network, etc..
+
+The Optimizer calculates all possible options and proposes set of the cheapest configuration of instances.
+
+For further information:
+* [AWS EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html)
+* [AWS Spot Instances](https://aws.amazon.com/ec2/spot/)
+* [Azure VMs](https://azure.microsoft.com/en-us/)
+* [Azure Spot Virtual Macines](https://azure.microsoft.com/en-us/services/virtual-machines/spot/#features)
+* [Hybrid Cloud](https://cloud.google.com/learn/what-is-hybrid-cloud)
 
 ## Getting Started
 To start using The Cloud Cost Optimizer, please *clone* this git repository:
@@ -19,28 +27,27 @@ git clone https://github.com/AdiY10/CloudCostOptimizer.git
 ### Installation
 ```
 $ python -m pip install requests
-$ pip3 install urllib3
+$ pip install urllib3
 $ pip install grequests
 $ pip install numpy
 ```
 
 ### Usage
 ```
-$ python3 Fleet_Optimizer.py
+$ python Fleet_Optimizer.py
 ```
 Where the following command activate the Optimizer
 
 ## Parameters
-The file **input_fleet.json** is an example of an input (see input_fleet_instructions.json for more explanations).
+The file **input_fleet.json** is an example of an input (see input_fleet_instructions.json for further information).
 The user's workload should be in the **input_fleet.json** file- **don't forget to change it according to your needs.**
 #### Example of an input json file:
 ```
 {
     "selectedOs": "linux",
-    "region": ["eu-south-1", "eu-west-3", "us-east-2","us-east-1"],
     "spot/onDemand": "spot",
+    "region": ["eu-south-1", "eu-west-3", "us-east-2","us-east-1"],
     "filterInstances": ["a1","t3a","c5a.xlarge"],
-    "AvailabilityZone": "all",
     "Architecture": "all",
     "apps": [
         {
@@ -54,7 +61,8 @@ The user's workload should be in the **input_fleet.json** file- **don't forget t
                     "behavior": "terminate",
                     "frequency": "2",
                     "storageType": null,
-                    "name": "Comp1"
+                    "affinity": "Comp2",
+                    "name": "Comp1",
                 },
                 {
                     "memory": 8,
@@ -64,6 +72,7 @@ The user's workload should be in the **input_fleet.json** file- **don't forget t
                     "frequency": "3",
                     "storageType": null,
                     "burstable": true,
+                    "anti-affinity": "Comp3",
                     "name": "comp2"
                 },
                                 {
@@ -98,13 +107,11 @@ The user's workload should be in the **input_fleet.json** file- **don't forget t
 }
 ```
 
-Where we can see an input of two Applications (App1, App2), which uses linux Operation System.
-App1 includes three components (Comp1, Comp2, Comp5), and App2 includes one component (Comp3). each component
-has different resource requirements, which describes by the memory, vCPUs etc...
+Where we can see an input of two Applications (App1, App2), which uses linux as their Operation System.
+App1 includes three components (Comp1, Comp2, Comp5), and App2 includes only one component (Comp3). each component
+has different resource requirements, which described by their memory, vCPUs etc...
 ### General parameters:
 #### Required parameters:
-* vCPUs - min number of vCPUs required in the instance
-* memory - min Memory (GB) size required in the instance
 * selectedOs - operating system (OS) for the workloads
 * spot/onDemand - choose AWS instances pricing option- **spot / on-Demand**
 #### Optional parameters:
@@ -112,27 +119,23 @@ has different resource requirements, which describes by the memory, vCPUs etc...
   * region defined as "all"- to look for the best configuration, in all regions
   * region defined as specific region, for example "us-east-2"- to look for the best configuration only in us-east-2
   * region defined as list of multiple regions- ["eu-west-1","eu-east-2","sa-east-1"]- to look for the best configuration in these regions
-* AvailabilityZone - used if specific AZ is required
 * filterInstances - used if specific instance types (major, minor or instance type) should not be displayed by Optimizer- for example, if major type a1, and instance type c5.large are not relevant, insert- filterInstances: ["a1","c5.large"]
 * Architecture - processor architecture, can be selected as- 'all' / 'x86_64' (64-bit x86) / 'arm64' (64-bit arm) / 'i386' (32-bit) / 'x86_64_mac' (64-bit mac)
-### App parameters:
-##### Required parameters:
-* app - The name of the app
-* share - boolean parameter, indicates if the app can share instances with different apps
+* AvailabilityZone - used if specific AZ is required
 ### Component parameters:
 ##### Required parameters:
 * name - The name of the component
-* memory - Memory GiB RAM
-* vCPUs - Virtual CPUs
+* memory - Min Memory (GB) size required in the instance
+* vCPUs - Min number of vCPUs (virtual CPUs) required in the instance
 ##### Optional parameters:
 * affinity - An affinity rule places a group of virtual machines on a specific Instance
-* anti-affinity - An anti-affinity rule places a group of virtual machines on a specific Instance
+* anti-affinity - An anti-affinity rule places a group of virtual machines on a different Instance
 * type - required instance type ["General Purpose","Compute Optimized","Memory Optimized","Media Accelerator Instances","Storage Optimized","GPU Instances"]
-* behavior- Displays only instances meeting a specific Interruption Behavior criteria (stop / hibernate / terminate) - in case of using Spot instances.
-* frequency- Represents the rate at which Spot will be reclaimed capacity (0- *< 5%*,1- *5-10%*,2- *10-15%*,3- *15-20%*, 4- *>20%*) - in case of using Spot instances.
+* behavior- Displays only instances meeting a specific Interruption Behavior criteria (stop / hibernate / terminate) - *in case of using Spot instances.*
+* frequency- Represents the rate at which Spot will be reclaimed capacity (0- *< 5%*,1- *5-10%*,2- *10-15%*,3- *15-20%*, 4- *>20%*) - *in case of using Spot instances.*
 * typeMajor - Used when specific instance types are required. For example, when only C5, R5, A1 are supported- insert "typeMajor": ["c5", "r5", "a1"]
 * Category - Specifies the instance category- General Purpose, Compute Optimized, Memory Optimized, Media Accelerator Instance, Storage Optimized, GPU instance.
-* * network - required network capacity (Gbs)
+* network - required network capacity (Gbs)
 * size - Min storage size (GB)
 * iops - Max IOPS (MiB I/O) per volume.
 * throughput - Max throughput (MiB/s) per volume.
@@ -155,8 +158,8 @@ A configuration file with advanced settings is provided to the user, which allow
 * When using Brute Force (marked as "True"), other parameters are irrelevant (Time per region,Candidate list size, * When using Brute Force (marked as "True"), other parameters are irrelevant (Time per region, Candidate list size, Proportion amount node/sons).
 ####Configuration Parameters
 * Data Extraction- The frequency with which the data will be extracted
-* boto3- Do the information retrieval using boto3. Note that in the case of enable, the data extraction process will be slower
-* Provider- which cloud provider should be checked
+* boto3- Do the information retrieval using [boto3](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html). Note that in the case of enable, the data extraction process will be slower
+* Provider- which cloud provider should be supported
 * Brute Force- boolean parameter, indicates if the CCO should use BF In order to find the optimal solution, or not. Note that this algorithm suitable for less than 7 components. Otherwise, use Local Search Algorithm (explained below)
 * [Other Parameters are hyperparameters](#hyperParameter) for the [Local Search algorithm](#local-search-algorithm-description)
 
