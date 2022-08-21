@@ -7,18 +7,22 @@ import copy
 from LocalSearchAlgorithm.partitions_generator import separate_partitions
 from enum import IntEnum
 
+
 class DevelopMode(IntEnum):
     ALL = 1
     PROPORTIONAL = 2
+
 
 class GetNextMode(IntEnum):
     STOCHASTIC_ANNEALING = 1
     GREEDY = 2
 
+
 class GetStartNodeMode(IntEnum):
     RESET_SELECTOR = 1
     ROOT = 2
     RANDOM = 3
+
 
 class CombOptim:
     def __init__(self,
@@ -37,7 +41,7 @@ class CombOptim:
                  proportion_amount_node_sons_to_develop: float = 0.05,
                  get_next_mode=GetNextMode.STOCHASTIC_ANNEALING,
                  get_starting_node_mode=GetStartNodeMode.RESET_SELECTOR
-    ):
+                 ):
         self.verbose = verbose
         Node.verbose = verbose
         Node.node_cache.clear()
@@ -132,6 +136,7 @@ class CombOptim:
         return start_node
 
     def check_anti_affinity(self, start_node):
+        """Check if there are pairs that shouldn't be paired (anti-affinity)."""
         anti_affinity_list = []
         for stp in start_node.partitions[0]:
             for stp1 in stp:
@@ -143,6 +148,7 @@ class CombOptim:
         return False
 
     def check_affinity(self, start_node):
+        """Check if there are pairs that must be paired together (affinity)."""
         affinity_list = []
         for stp in start_node.partitions[0]:
             for stp1 in stp:
@@ -153,7 +159,8 @@ class CombOptim:
             return True
         return False
 
-    def affinity(self,next_node, aff):
+    def affinity(self, next_node, aff):
+        """Check if there are pairs that must be paired together (affinity)."""
         flag = True
         for nnp in next_node.partitions:
             for nnp1 in nnp:
@@ -164,11 +171,12 @@ class CombOptim:
                         arr.append(nnp3.component_name)
                     arr2.append(arr)
         for ind in aff:
-            if not self.compare_sublists(ind,arr2):
+            if not self.compare_sublists(ind, arr2):
                 flag = False
         return flag
 
-    def anti_affinity(self,next_node, aff):
+    def anti_affinity(self, next_node, aff):
+        """Check if there are pairs that shouldn't be paired (anti-affinity)."""
         for nnp in next_node.partitions:
             for nnp1 in nnp:
                 arr2 = []
@@ -178,14 +186,15 @@ class CombOptim:
                         arr.append(nnp3.component_name)
                     arr2.append(arr)
         for ind in aff:
-            if self.compare_sublists(ind,arr2):
+            if self.compare_sublists(ind, arr2):
                 return True
         return False
 
-    def compare_sublists(self, l, lol):
-        for sublist in lol:
-            temp = [i for i in sublist if i in l]
-            if sorted(temp) == sorted(l):
+    def compare_sublists(list, listoflists):
+        """Check if list listoflists contains list."""
+        for sublist in listoflists:
+            temp = [i for i in sublist if i in list]
+            if sorted(temp) == sorted(list):
                 return True
         return False
 
@@ -221,13 +230,14 @@ class CombOptim:
     def isDone(self) -> bool:
         return time.time() - self.start_time > self.time_per_region
 
+
 class Node:
-    #declare node_cache dict with type annotation
+    # declare node_cache dict with type annotation
     node_cache: dict = {}
     verbose = False
 
     @staticmethod
-    def getGroupHash(group_set)->int:
+    def getGroupHash(group_set) -> int:
         group_set_hashable_parts = []
         for group in group_set:
             group_hashable_parts = []
@@ -237,7 +247,7 @@ class Node:
                     module_hashable_parts.append(hash(component.component_name))
                 group_hashable_parts.append(hash(tuple(sorted(module_hashable_parts))))
             group_set_hashable_parts.append(hash(tuple(sorted(group_hashable_parts))))
-        
+
         group_set_hashable = tuple(sorted(group_set_hashable_parts))
         return hash(group_set_hashable)
 
@@ -395,7 +405,7 @@ class ResetSelector:
                 this candidate.
                  * Each node that can be reached from this candidate has a 'reachable_bonus' associated
                 with it and the candidate.
-                 * At any givem time, the candidate will save the maximum 'reachable_bonus' that it gets from 
+                 * At any givem time, the candidate will save the maximum 'reachable_bonus' that it gets from
                 any nodes that have been reached in runs starting from itself."""
             self.node = node
             self.total_score = None
@@ -422,7 +432,7 @@ class ResetSelector:
 
         self.updateTotalScores()
 
-    def getStartNode(self)->Node:
+    def getStartNode(self) -> Node:
         """this method represents the main functionality of the reset-selector: based on all data seen so far
             - the reset-selector will return the the node it thinks the next run should start from."""
         scores_list = [candidate.total_score for candidate in self.top_candidates]
@@ -463,7 +473,7 @@ class ResetSelector:
             if last_candidate is not None and candidate is not None:
                 candidate.subtree_price_penalty = \
                     max(
-                        candidate.subtree_price_penalty, 
+                        candidate.subtree_price_penalty,
                         last_candidate.subtree_price_penalty * self.penalty_base
                     )
             last_candidate = candidate
@@ -587,7 +597,8 @@ class ResetSelector:
         )
         price_scores = ResetSelector.normalizeArray(np.array([-c.node.price for c in self.top_candidates]))
         exploitation_scores = ResetSelector.normalizeArray(self.exploitation_score_price_bias * price_scores
-                                                    + (1-self.exploitation_score_price_bias) * reachable_bonus_scores)
+                                                           + (
+                                                                       1 - self.exploitation_score_price_bias) * reachable_bonus_scores)
 
         return exploitation_scores
 
