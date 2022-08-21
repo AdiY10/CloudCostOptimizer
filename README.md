@@ -3,8 +3,8 @@ THE PROJECT HAS BEEN MOVED - This project is still under development, but it has
 https://github.com/aicoe-aiops/cloud-price-analysis-public/tree/master/src/CloudCostOptimizer%20(CCO)
 
 # Cloud Cost Optimizer
-The goal of the project is to provide the user an API for the best configuration for cloud services according to their requirements. The Optimizer supports multiple cloud providers simultaneously (AWS / Azure), or you can combine both (Hybrid).
-First, the user determines his system requirements based on the architecture of his applications and components, and then for each component determines the required operating system, CPU, region, memory, storage, network, etc..
+The project aims to provide users with an API for selecting the best cloud service configuration based on their particular needs. The Optimizer supports multiple cloud providers simultaneously (AWS / Azure), or combines both (Hybrid).
+First, the user determines system requirements based on applications and components architecture, and then for each component determines the required operating system, CPU, region, memory, storage, network, etc..
 
 The Optimizer calculates all possible options and proposes set of the cheapest configuration of instances.
 
