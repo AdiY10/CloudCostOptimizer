@@ -67,7 +67,13 @@ class FleetCalculator:
     #     return [[GroupedInstance(instances[i],components, payment)] for i in range(min(len(instances),2))]
 
     def match_group(
-            self, grouped_param: GroupedParam, region, payment, architecture, type_major, provider
+        self,
+        grouped_param: GroupedParam,
+        region,
+        payment,
+        architecture,
+        type_major,
+        provider,
     ):  ## finds best configuration for each combination
         """Match instance to group of components."""
         sub_combination = []
@@ -76,7 +82,7 @@ class FleetCalculator:
         sub_combination.append(region)
         sub_combination_str = str(sub_combination)
         if (
-                sub_combination_str in self.calculated_combinations
+            sub_combination_str in self.calculated_combinations
         ):  ## prevent repetitive calculations
             instances = self.calculated_combinations[sub_combination_str]
             # self.rep = self.rep + 1 ## check number of repetitive calculation
@@ -86,8 +92,8 @@ class FleetCalculator:
             limits_cpu = self.calculate_limits_cpu(region)
             limits_memory = self.calculate_limits_memory(region)
             if (
-                    grouped_param.total_vcpus <= limits_cpu
-                    and grouped_param.total_memory <= limits_memory
+                grouped_param.total_vcpus <= limits_cpu
+                and grouped_param.total_memory <= limits_memory
             ):
                 instances = self.ec2_calculator.get_spot_estimations(
                     grouped_param.total_vcpus,
@@ -151,7 +157,9 @@ class FleetCalculator:
     #        result.append(new_group)
     #    return result  ## result is a list of Offer objects
 
-    def get_offers(self, group: Offer, region, payment, architecture, type_major, provider):
+    def get_offers(
+        self, group: Offer, region, payment, architecture, type_major, provider
+    ):
         """Get offers function."""
         instances = []
         for i in group.remaining_partitions:
@@ -170,7 +178,9 @@ class FleetCalculator:
             result.append(new_group)
         return result  ## result is a list of Offer objects
 
-    def get_best_price(self, group: Offer, region, pricing, architecture, type_major, provider):
+    def get_best_price(
+        self, group: Offer, region, pricing, architecture, type_major, provider
+    ):
         """Get offers function."""
         instances = []
         for i in group.remaining_partitions:
@@ -192,7 +202,9 @@ class FleetCalculator:
         return best_group
 
 
-def price_calc_lambda(calculator, region_to_check, payment, architecture, type_major, provider):
+def price_calc_lambda(
+    calculator, region_to_check, payment, architecture, type_major, provider
+):
     """Price calc with lambda usage."""
     return lambda comb: calculator.get_best_price(
         comb, region_to_check, payment, architecture, type_major, provider
@@ -200,6 +212,7 @@ def price_calc_lambda(calculator, region_to_check, payment, architecture, type_m
 
 
 def check_anti_affinity(res):
+    """Check if there are pairs that shouldn't be paired (anti-affinity)."""
     anti_affinity_list = []
     for stp in res.remaining_partitions:
         for stp1 in stp.params:
@@ -210,8 +223,8 @@ def check_anti_affinity(res):
     return False
 
 
-
 def check_affinity(res):
+    """Check if there are pairs that must be paired together (affinity)."""
     affinity_list = []
     for stp in res.remaining_partitions:
         for stp1 in stp.params:
@@ -223,10 +236,10 @@ def check_affinity(res):
 
 
 def affinity(res, affinity_list):
+    """Check if there are pairs that must be paired together (affinity)."""
     flag = True
     all_comb = []
     for stp in res.remaining_partitions:
-
         comb = []
         for stp1 in stp.params:
             comb.append(stp1.component_name)
@@ -238,6 +251,7 @@ def affinity(res, affinity_list):
 
 
 def anti_affinity(res, anti_affinity_list):
+    """Check if there are pairs that shouldn't be paired (anti-affinity)."""
     all_comb = []
     for stp in res.remaining_partitions:
         comb = []
@@ -250,27 +264,28 @@ def anti_affinity(res, anti_affinity_list):
     return False
 
 
-def compare_sublists(l, lol):
-    for sublist in lol:
-        temp = [i for i in sublist if i in l]
-        if sorted(temp) == sorted(l):
+def compare_sublists(list, listoflists):
+    """Check if list listoflists contains list."""
+    for sublist in listoflists:
+        temp = [i for i in sublist if i in list]
+        if sorted(temp) == sorted(list):
             return True
     return False
 
 
 def get_fleet_offers(
-        params,
-        region,
-        os,
-        app_size,
-        ec2,
-        payment,
-        architecture,
-        type_major,
-        config_file,
-        provider,
-        bruteforce,
-        **kw
+    params,
+    region,
+    os,
+    app_size,
+    ec2,
+    payment,
+    architecture,
+    type_major,
+    config_file,
+    provider,
+    bruteforce,
+    **kw
 ):
     """Get fleet offers function."""
     res = []
@@ -307,11 +322,18 @@ def get_fleet_offers(
             )  ## creates all the possible combinations
             for combination in groups:  ## for each combination (group) find best offer
                 res += calculator.get_offers(
-                    combination, region_to_check, payment, architecture, type_major, provider
+                    combination,
+                    region_to_check,
+                    payment,
+                    architecture,
+                    type_major,
+                    provider,
                 )
-                if not check_affinity(res[-1]): ## Validating affinity condition
+                if not check_affinity(res[-1]):  ## Validating affinity condition
                     res = res[:-1]
-                elif check_anti_affinity(res[-1]): ## Validating anti-affinity condition
+                elif check_anti_affinity(
+                    res[-1]
+                ):  ## Validating anti-affinity condition
                     res = res[:-1]
                 # if runtime > kw["time_per_region"]: ## in case of time limit per region- then stops the brute force
                 #     break

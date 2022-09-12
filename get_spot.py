@@ -321,10 +321,14 @@ class SpotCalculator:
                 ec2_data = ec2.get_ec2_for_region(os, region)
                 ec2_data = self.aws_price.calculate_spot_price(ec2_data, region)
                 if os == "linux":
-                    with open("AWSData/ec2_data_Linux.json", "w", encoding="utf-8") as f:
+                    with open(
+                        "AWSData/ec2_data_Linux.json", "w", encoding="utf-8"
+                    ) as f:
                         json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 else:
-                    with open("AWSData/ec2_data_Windows.json", "w", encoding="utf-8") as f:
+                    with open(
+                        "AWSData/ec2_data_Windows.json", "w", encoding="utf-8"
+                    ) as f:
                         json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 if os not in self.ec2_cache:
                     self.ec2_cache[os] = {}
@@ -334,10 +338,14 @@ class SpotCalculator:
                 ec2_data = ec2.get_ec2(os, region)
                 ec2_data = self.aws_price.calculate_spot_price(ec2_data, region)
                 if os == "linux":
-                    with open("AWSData/ec2_data_Linux.json", "w", encoding="utf-8") as f:
+                    with open(
+                        "AWSData/ec2_data_Linux.json", "w", encoding="utf-8"
+                    ) as f:
                         json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 else:
-                    with open("AWSData/ec2_data_Windows.json", "w", encoding="utf-8") as f:
+                    with open(
+                        "AWSData/ec2_data_Windows.json", "w", encoding="utf-8"
+                    ) as f:
                         json.dump(ec2_data, f, ensure_ascii=False, indent=4)
                 self.ec2_cache[os] = ec2_data
                 self.cached_os[os] = True

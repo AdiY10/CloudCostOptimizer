@@ -3,10 +3,11 @@ THE PROJECT HAS BEEN MOVED - This project is still under development, but it has
 https://github.com/aicoe-aiops/cloud-price-analysis-public/tree/master/src/CloudCostOptimizer%20(CCO)
 
 # Cloud Cost Optimizer
-The project aims to provide users with an API for selecting the best cloud service configuration based on their particular needs. The Optimizer supports multiple cloud providers simultaneously (AWS / Azure), or combines both (Hybrid).
-First, the user determines system requirements based on applications and components architecture, and then for each component determines the required operating system, CPU, region, memory, storage, network, etc..
-
-The Optimizer calculates all possible options and proposes set of the cheapest configuration of instances.
+The goal of this project is to design and implement a scalable multi-cloud cost optimizer capable of calculating the best scheme for deploying a given arbitrary complex workload over a public (hybrid) cloud, thus reducing the involved monetary costs.
+As an input, the optimizer receives the specification of the desired workload. It includes the resource requirements for each of the components comprising the workload, the connections between the components, and additional constraints. CCO analyzes this specification and calculates the mapping of the workload components to cloud resources (VM instances) that minimizes the expected monetary cost of deploying the application over a public cloud. This operation could be performed over a given single cloud provider (e.g., AWS) or over a set of cloud providers by splitting the workload over multiple clouds in accordance with the hybrid cloud paradigm.
+The optimization problem to be solved by CCO is increasingly complex due to a combination of: (1) its inherently convoluted structure - each workload component must be allocated to some cloud resource and the number of ways they can share a resource is exponential; and (2) the multitude of parameters - for instance, AWS provides over 9000 combinations of a VM instance type, region, and operating system. To overcome the combinatorial hardness of the problem, our optimizer utilizes a combination of metaheuristics including Tabu search and simulated annealing.
+The currently available version of the optimizer supports AWS and Azure. An intuitive and well-documented plugin interface makes it possible to easily support additional public clouds. CCO fully supports both on-demand / pay-as-you-go and spot instances, with the latter option allowing customers to save up to 90% in the instance cost. The tool can be used via a web-based UI and an API.
+While the fully functional version of CCO is already available for use, there is no shortage of possible extensions and further improvements. To list a few examples, we are planning to replace a metaheuristic-based optimization algorithm with a reinforcement learning approach; to support planning ahead-of-time by predicting future prices of instances based on the market situation; to predict future interruption rates of spot instances and factor them in the calculations performed by CCO.
 
 For further information:
 * [AWS EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html)
@@ -26,15 +27,16 @@ git clone https://github.com/AdiY10/CloudCostOptimizer.git
 
 ### Installation
 ```
-$ python -m pip install requests
-$ pip install urllib3
-$ pip install grequests
-$ pip install numpy
+$ python3 -m pip install requests
+$ pip3 install urllib3
+$ pip3 install grequests
+$ pip3 install numpy
+$ pip3 install boto3
 ```
 
 ### Usage
 ```
-$ python CCO.py
+$ python3 CCO.py
 ```
 Where the following command activate the Optimizer
 
@@ -290,7 +292,7 @@ flowchart TD
     O[initial node]
     A[decide proportion of sons to develop]
     B[develop proportion node sons]
-    C[Split the group of sons:\n ones that improve start node price  \n ones that lower start node price]
+    C[Split the group of sons:\n one that improve start node price  \n one that deteriorated start node price]
     D{decide to improve?}
     E[select one of the bad nodes stochastically,\n weighted by diff]
     F[select one of the good nodes stochastically,\n weighted by diff]

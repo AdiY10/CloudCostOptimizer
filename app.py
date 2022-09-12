@@ -6,7 +6,11 @@ from flask_cors import CORS, cross_origin
 from fleet_classes import Offer, ComponentOffer
 from fleet_offers import Component
 from get_spot import SpotCalculator
-from LocalSearchAlgorithm.comb_optimizer import DevelopMode, GetNextMode, GetStartNodeMode
+from LocalSearchAlgorithm.comb_optimizer import (
+    DevelopMode,
+    GetNextMode,
+    GetStartNodeMode,
+)
 
 # from gevent import monkey
 # monkey.patch_all()  ##internal use- Prevent an Error "greenlet.error: cannot switch to a different thread"
@@ -115,9 +119,19 @@ def serialize_group(group: Offer):
 def serialize_instance(instance):
     """Lower level of serialize group in fleet option."""
     result = instance.instance.copy()
-    result["spot_price"] = round(instance.instance["spot_price"], 5) if isinstance(instance.instance["spot_price"],float) else 10000
-    result["priceAfterDiscount"] = round(instance.instance["spot_price"] * (1 - instance.instance["discount"] / 100), 5) if \
-        instance.instance["discount"] != 0 else round(instance.instance["spot_price"],5)
+    result["spot_price"] = (
+        round(instance.instance["spot_price"], 5)
+        if isinstance(instance.instance["spot_price"], float)
+        else 10000
+    )
+    result["priceAfterDiscount"] = (
+        round(
+            instance.instance["spot_price"] * (1 - instance.instance["discount"] / 100),
+            5,
+        )
+        if instance.instance["discount"] != 0
+        else round(instance.instance["spot_price"], 5)
+    )
     # result['CPU/Price_Score'] = round(instance.instance['score_cpu_price'],5)
     # result['Memory/Price_Score'] = round(instance.instance['score_memory_price'],5)
     result["components"] = list(
@@ -148,7 +162,9 @@ def fleet_search(filter, provider):
         "sql_path": "Run_Statistic.sqlite3",
         "verbose": config_file["Verbose"],
         "develop_mode": DevelopMode.PROPORTIONAL,
-        "proportion_amount_node_sons_to_develop": config_file["Proportion amount node/sons"],
+        "proportion_amount_node_sons_to_develop": config_file[
+            "Proportion amount node/sons"
+        ],
         "get_next_mode": GetNextMode.STOCHASTIC_ANNEALING,
         "get_starting_node_mode": GetStartNodeMode.RANDOM,
     }

@@ -124,15 +124,6 @@ class CombOptim:
 
             # if start_node.getPrice() == np.inf:
             #     start_node = self.root
-        # for nnp in start_node.partitions:
-        #     for nnp1 in nnp:
-        #         arr2 = []
-        #         for nnp2 in nnp1:
-        #             arr = []
-        #             for nnp3 in nnp2:
-        #                 arr.append(nnp3.component_name)
-        #             arr2.append(arr)
-        # print("The Start Node Is:", arr2)
         return start_node
 
     def check_anti_affinity(self, start_node):
@@ -190,8 +181,8 @@ class CombOptim:
                 return True
         return False
 
-    def compare_sublists(list, listoflists):
-        """Check if list listoflists contains list."""
+    def compare_sublists(self, list, listoflists):
+        """Check if list 'listoflists' contains the list 'list'."""
         for sublist in listoflists:
             temp = [i for i in sublist if i in list]
             if sorted(temp) == sorted(list):

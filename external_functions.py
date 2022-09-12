@@ -24,5 +24,5 @@ def calculate_offer_score(groups):
 
 def sort_fleet_offers(offers):
     """Sort fleet offers function."""
-    return sorted(offers, key=lambda g: g.total_price)[:10]
+    return sorted(offers, key=lambda g: g.total_price)[:20]
     # return sorted(offers,key=lambda g: g.total_price)[:20] ## not needed in case of one option per region
