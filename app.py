@@ -12,8 +12,8 @@ from LocalSearchAlgorithm.comb_optimizer import (
     GetStartNodeMode,
 )
 
-# from gevent import monkey
-# monkey.patch_all()  ##internal use- Prevent an Error "greenlet.error: cannot switch to a different thread"
+from gevent import monkey
+monkey.patch_all()  ##internal use- Prevent an Error "greenlet.error: cannot switch to a different thread"
 
 calc = SpotCalculator()
 app = Flask(__name__)

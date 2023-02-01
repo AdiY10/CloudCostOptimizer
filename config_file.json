@@ -1,7 +1,7 @@
 {
-    "Data Extraction (always / onceAday)": "onceAday",
+    "Data Extraction (Always / onceAday / Never)": "Never",
     "boto3 (enable / disable)": "disable",
-    "Provider (AWS / Azure / Hybrid)": "Azure",
+    "Provider (AWS / Azure / Hybrid)": "AWS",
     "Brute Force": "True",
     "Time per region": 0.1,
     "Candidate list size": 100,

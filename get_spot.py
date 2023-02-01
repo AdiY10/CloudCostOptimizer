@@ -43,9 +43,19 @@ class SpotCalculator:
         network=0,
         burstable=True,
     ):
+        file = open("config_file.json")
+        config_file = json.load(file)
         """Get_spot_estimations function."""
         if provider == "AWS":
-            ec2_data = self.get_ec2_from_cache(region, os)
+            if config_file["Data Extraction (Always / onceAday / Never)"] == "Never":
+                if os == "linux":
+                    file = open("AWSData/ec2_data_Linux.json")
+                    ec2_data = json.load(file)
+                else:
+                    file = open("AWSData/ec2_data_Windows.json")
+                    ec2_data = json.load(file)
+            else:
+                ec2_data = self.get_ec2_from_cache(region, os)
         elif provider == "Azure":
             file = open("AzureData/Azure_data_v2.json")
             ec2_data = json.load(file)
@@ -152,7 +162,7 @@ class SpotCalculator:
         file = open("config_file.json")
         config_file = json.load(file)
         if provider == "AWS":
-            if config_file["Data Extraction (always / onceAday)"] == "onceAday":
+            if config_file["Data Extraction (Always / onceAday / Never)"] == "onceAday":
                 if user_os == "linux":
                     if (
                         datetime.datetime.now()
@@ -175,8 +185,15 @@ class SpotCalculator:
                     else:
                         file = open("AWSData/ec2_data_Windows.json")
                         ec2_data = json.load(file)
-            elif config_file["Data Extraction (always / onceAday)"] == "always":
+            elif config_file["Data Extraction (Always / onceAday / Never)"] == "Always":
                 ec2_data = self.get_ec2_from_cache(region, user_os)
+            elif config_file["Data Extraction (Always / onceAday / Never)"] == "Never":
+                if user_os == "linux":
+                    file = open("AWSData/ec2_data_Linux.json")
+                    ec2_data = json.load(file)
+                else:
+                    file = open("AWSData/ec2_data_Windows.json")
+                    ec2_data = json.load(file)
             else:
                 print(
                     "Data Extraction parameter in configuration file is not defined well"

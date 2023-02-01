@@ -9,14 +9,14 @@
             "components": [
                 {
                     "memory": 15,
-                    "vCPUs": 2,
+                    "vCPUs": 20,
                     "behavior": "terminate",
                     "anti-affinity": "Comp2",
                     "name": "Comp1"
                 },
                 {
                     "memory": 14,
-                    "vCPUs": 2,
+                    "vCPUs": 20,
                     "behavior": "terminate",
                     "name": "Comp2"
                 },

@@ -4,7 +4,7 @@ import json
 from fleet_classes import Offer, ComponentOffer
 from fleet_offers import Component
 from get_spot import SpotCalculator
-import boto3
+# import boto3
 from LocalSearchAlgorithm.comb_optimizer import (
     DevelopMode,
     GetNextMode,
