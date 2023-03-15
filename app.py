@@ -106,6 +106,13 @@ def get_hybrid_cloud_fleet_prices():
     else:
         return jsonify()
 
+@app.route("/ApplyResults", methods=["POST"])
+@cross_origin()
+def get_apply_results():
+    """apply the CCO results."""
+    print("Working")
+    return jsonify()
+
 
 def serialize_group(group: Offer):
     """Serialize group in fleet option."""
