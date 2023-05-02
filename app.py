@@ -110,9 +110,57 @@ def get_hybrid_cloud_fleet_prices():
 @cross_origin()
 def get_apply_results():
     """apply the CCO results."""
-    print("Working")
-    return jsonify()
+    if request.method == "POST":
+        result_to_apply = request.get_json()
+    return apply_UI_results(result_to_apply - 1)
 
+
+def apply_UI_results(result_to_apply):
+    file = open("FleetECresults.json")
+    results_json = json.load(file)
+    return send_request(result_to_apply, results_json)
+
+
+def send_request(result_to_apply, results_json):
+    import subprocess
+    region = results_json[result_to_apply]['region']
+    price = results_json[result_to_apply]['price']
+    instances_dict = {}
+    print("Region: ", region, " And price: ", price)
+    for i in results_json[result_to_apply]['instances']:
+        if i["typeName"] in instances_dict:
+            instances_dict[i["typeName"]] += 1
+        else:
+            instances_dict[i["typeName"]] = 1
+    for k, v in instances_dict.items():
+        print(k, v)
+
+        # # For real cases
+        # api_json = {
+        #     "name": "amz-linux-us-east-1",
+        #     "source_id": "377634",
+        #     "image_id": "5486d178-243e-4c91-993d-e6b021f8e150",
+        #     "amount": v,
+        #     "instance_type": k,
+        #     "pubkey_id": 1180,
+        #     "region": "us-east-2"
+        # }
+        # api_command_json = json.dumps(api_json)
+        # subprocess.run(['curl', '-s', '--header', 'X-RH-Identity: eyJpZGVudGl0eSI6IHsidHlwZSI6ICJVc2VyIiwgImFjY291bnRfbnVtYmVyIjoiNjQxMjgzNCIsICJpbnRlcm5hbCI6eyJvcmdfaWQiOiIxMzQ2OTE2MyJ9fX0K',
+        #                          '--proxy', 'http://squid.corp.redhat.com:3128', '-u', 'amirfefer10:changeme123', '-X', 'POST',
+        #                          'https://console.stage.redhat.com/api/provisioning/v1/reservations/aws', '-H', 'content-type:application/json', '-d',
+        #                          api_command_json])
+
+
+    # For Tests!
+    # api_command = ['curl', '-s', '--header',
+    #                'X-RH-Identity: eyJpZGVudGl0eSI6IHsidHlwZSI6ICJVc2VyIiwgImFjY291bnRfbnVtYmVyIjoiNjQxMjgzNCIsICJpbnRlcm5hbCI6eyJvcmdfaWQiOiIxMzQ2OTE2MyJ9fX0K',
+    #                '--proxy', 'http://squid.corp.redhat.com:3128', '-u', 'amirfefer10:changeme123', '-X', 'POST',
+    #                'https://console.stage.redhat.com/api/provisioning/v1/reservations/aws', '-H',
+    #                'content-type:application/json', '-d',
+    #                '{ "name": "amz-linux-us-east-1", "source_id": "377634", "image_id": "5486d178-243e-4c91-993d-e6b021f8e150", "amount": 1, "instance_type": "t2.nano", "pubkey_id": 1180 }']
+    # subprocess.run(api_command)
+    return "7"
 
 def serialize_group(group: Offer):
     """Serialize group in fleet option."""
