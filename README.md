@@ -12,7 +12,7 @@ For further information:
 * [Azure Spot Virtual Macines](https://azure.microsoft.com/en-us/services/virtual-machines/spot/#features)
 * [Hybrid Cloud](https://cloud.google.com/learn/what-is-hybrid-cloud)
 
-[SYSTOR23_Adi Yehoshua_extended_version.pdf](SYSTOR23_Adi Yehoshua_extended_version.pdf)
+[SYSTOR23_Adi Yehoshua Extended Version PDF](https://github.com/AdiY10/CloudCostOptimizer/blob/master/SYSTOR23_Adi%20Yehoshua_extended_version.pdf)
 
 ## Getting Started
 To start using The Cloud Cost Optimizer, please *clone* this git repository:
