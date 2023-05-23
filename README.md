@@ -1,4 +1,6 @@
 # Cloud Cost Optimizer
+[SYSTOR23_Adi Yehoshua Extended Version PDF](https://github.com/AdiY10/CloudCostOptimizer/blob/master/SYSTOR23_Adi%20Yehoshua_extended_version.pdf)
+
 The goal of this project is to design and implement a scalable multi-cloud cost optimizer capable of calculating the best scheme for deploying a given arbitrary complex workload over a public (hybrid) cloud, thus reducing the involved monetary costs.
 As an input, the optimizer receives the specification of the desired workload. It includes the resource requirements for each of the components comprising the workload, the connections between the components, and additional constraints. CCO analyzes this specification and calculates the mapping of the workload components to cloud resources (VM instances) that minimizes the expected monetary cost of deploying the application over a public cloud. This operation could be performed over a given single cloud provider (e.g., AWS) or over a set of cloud providers by splitting the workload over multiple clouds in accordance with the hybrid cloud paradigm.
 The optimization problem to be solved by CCO is increasingly complex due to a combination of: (1) its inherently convoluted structure - each workload component must be allocated to some cloud resource and the number of ways they can share a resource is exponential; and (2) the multitude of parameters - for instance, AWS provides over 9000 combinations of a VM instance type, region, and operating system. To overcome the combinatorial hardness of the problem, our optimizer utilizes a combination of metaheuristics including Tabu search and simulated annealing.
@@ -12,7 +14,7 @@ For further information:
 * [Azure Spot Virtual Macines](https://azure.microsoft.com/en-us/services/virtual-machines/spot/#features)
 * [Hybrid Cloud](https://cloud.google.com/learn/what-is-hybrid-cloud)
 
-[SYSTOR23_Adi Yehoshua Extended Version PDF](https://github.com/AdiY10/CloudCostOptimizer/blob/master/SYSTOR23_Adi%20Yehoshua_extended_version.pdf)
+
 
 ## Getting Started
 To start using The Cloud Cost Optimizer, please *clone* this git repository:
